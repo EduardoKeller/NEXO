@@ -1,515 +1,500 @@
-# Architecture Document
+# SYSTEM ARCHITECTURE
 
-**Projeto:** NEXO
-**Versão:** 1.0
-**Status:** MVP
+**Projeto:** NEXO Platform  
+**Documento:** 02_ARCHITECTURE.md  
+**Versão:** 2.0  
+**Status:** Draft (Sprint 0 Review)  
+**Última atualização:** 01/08/2026
 
 ---
 
 # 1. Objetivo
 
-Este documento define toda a arquitetura técnica da plataforma NEXO.
+Este documento define a arquitetura oficial da plataforma NEXO.
 
-Seu objetivo é garantir organização, padronização, escalabilidade e facilidade de manutenção.
+Seu objetivo é garantir que toda implementação siga uma estrutura consistente, escalável e independente de tecnologia específica.
 
-Toda implementação deve seguir obrigatoriamente este documento.
-
-Caso exista conflito entre este documento e qualquer implementação, a implementação deverá ser revisada.
+Toda decisão arquitetural deverá respeitar este documento.
 
 ---
 
-# 2. Filosofia da Arquitetura
+# 2. Filosofia
 
-Toda decisão técnica deve respeitar os princípios abaixo.
+A arquitetura da NEXO foi projetada seguindo cinco princípios fundamentais.
 
-- Mobile First
-- Componentização
-- Separação de responsabilidades
-- Código reutilizável
-- Performance
-- Escalabilidade
-- Acessibilidade
-- Simplicidade
+## 1. Mobile First
 
-Nenhuma decisão deve priorizar velocidade de desenvolvimento em detrimento da qualidade da arquitetura.
+Toda experiência será projetada inicialmente para smartphones.
+
+Desktop representa apenas uma adaptação.
 
 ---
 
-# 3. Stack Tecnológica
+## 2. Content Driven
 
-## Framework
+A lógica da plataforma deverá consumir conteúdos oficiais da Content Library.
 
-Next.js 15
-
-(App Router)
-
-## Linguagem
-
-TypeScript
-
-Strict Mode obrigatório.
-
-## Estilização
-
-Tailwind CSS
-
-## Animações
-
-Framer Motion
-
-## Ícones
-
-Lucide React
-
-## Deploy
-
-Vercel
+Nenhum texto deverá ser criado diretamente na interface.
 
 ---
 
-# 4. Estrutura Oficial do Projeto
+## 3. Engine Based
 
-A estrutura deverá seguir exatamente o padrão abaixo.
+Toda regra de negócio deverá existir dentro das Engines.
 
-```text
-nexo/
-│
-├── app/
-│   ├── page.tsx
-│   ├── layout.tsx
-│   ├── globals.css
-│   │
-│   ├── quiz/
-│   │   └── page.tsx
-│   │
-│   ├── result/
-│   │   └── page.tsx
-│   │
-│   ├── privacy/
-│   │   └── page.tsx
-│   │
-│   └── terms/
-│       └── page.tsx
-│
-├── components/
-│   ├── ui/
-│   ├── layout/
-│   ├── quiz/
-│   └── result/
-│
-├── data/
-│   ├── questions.ts
-│   ├── profiles.ts
-│   └── constants.ts
-│
-├── services/
-│   └── profileCalculator.ts
-│
-├── hooks/
-│
-├── lib/
-│
-├── types/
-│
-├── assets/
-│
-├── public/
-│
-├── docs/
-│
-└── styles/
-```
-
-Nenhuma pasta deverá possuir responsabilidade duplicada.
+A interface nunca deverá executar regras complexas.
 
 ---
 
-# 5. Arquitetura Baseada em Dados
+## 4. Modularidade
 
-A aplicação deverá ser orientada por dados.
+Cada módulo deverá possuir uma única responsabilidade.
 
-Nenhuma pergunta deverá ficar escrita diretamente dentro dos componentes React.
-
-Todas as perguntas deverão estar em:
-
-```
-data/questions.ts
-```
-
-Todos os perfis deverão estar em:
-
-```
-data/profiles.ts
-```
-
-Toda lógica de cálculo deverá estar em:
-
-```
-services/profileCalculator.ts
-```
-
-Essa arquitetura permitirá criar novos diagnósticos futuramente sem alterar a interface.
+Nenhum módulo poderá assumir responsabilidades de outro.
 
 ---
 
-# 6. Organização dos Componentes
+## 5. Evolução Contínua
 
-Cada componente deverá possuir apenas uma responsabilidade.
+Toda arquitetura deverá permitir expansão futura sem reescrita estrutural.
 
-Exemplos:
+---
 
-Button
+# 3. Visão Geral
+
+A NEXO é composta por cinco camadas principais.
+
+Presentation Layer
 
 ↓
 
-renderizar botão.
-
-QuestionCard
+Application Layer
 
 ↓
 
-renderizar pergunta.
-
-ProgressBar
+Domain Layer
 
 ↓
 
-renderizar progresso.
-
-LoadingScreen
+Content Layer
 
 ↓
 
-renderizar processamento.
+Infrastructure Layer
 
-ProfileCard
-
-↓
-
-renderizar resultado.
-
-Jamais criar componentes responsáveis por múltiplas funcionalidades.
+Cada camada possui responsabilidades específicas.
 
 ---
 
-# 7. Separação de Responsabilidades
+# 4. Presentation Layer
 
-A arquitetura deverá respeitar rigorosamente a separação abaixo.
+Responsável pela interação com o usuário.
 
-## UI
+Componentes:
 
-Responsável apenas pela renderização.
+- Landing Page
+- Assessment
+- Resultado
+- Plano de Evolução
+- Relatório
+- Componentes Visuais
 
-Nunca conter regras de negócio.
-
----
-
-## Business
-
-Responsável pelo cálculo dos perfis.
-
-Nunca renderizar componentes.
+Esta camada nunca deverá realizar cálculos.
 
 ---
 
-## Data
+# 5. Application Layer
 
-Responsável apenas por armazenar perguntas, perfis e constantes.
+Responsável pela orquestração da plataforma.
 
----
+Ela contém o **NEXO Core**.
 
-## Services
+O NEXO Core é composto pelos seguintes módulos.
 
-Responsável pelo processamento.
+- Assessment Engine
+- Validation Engine
+- Score Engine
+- Behavior Engine
+- Insight Engine
+- Evolution Engine
+- Report Engine
+- Result Builder
 
----
-
-## Utils
-
-Responsável apenas por funções auxiliares.
-
----
-
-# 8. Estrutura do Questionário
-
-Cada pergunta deverá possuir obrigatoriamente:
-
-```ts
-id
-
-title
-
-description
-
-options
-
-order
-```
-
-Cada alternativa deverá possuir:
-
-```ts
-id
-
-label
-
-profile
-```
-
-Nunca utilizar textos fixos dentro dos componentes.
+Cada módulo possui responsabilidade única.
 
 ---
 
-# 9. Estrutura dos Perfis
+# 6. Domain Layer
 
-Cada perfil deverá possuir:
+Representa as regras centrais da plataforma.
 
-```ts
-id
+Contém:
 
-name
+- Business Rules
+- Data Model
+- Algoritmos
+- Critérios de Pontuação
+- Regras de Evolução
 
-description
-
-strengths
-
-weaknesses
-
-recommendation
-
-pdf
-```
-
-O conteúdo textual ficará exclusivamente em `data/profiles.ts`.
+Nenhum componente visual poderá depender diretamente desta camada.
 
 ---
 
-# 10. Fluxo da Aplicação
+# 7. Content Layer
+
+Representa o conhecimento oficial da plataforma.
+
+Contém:
+
+- Perguntas
+- Dimensões
+- Indicadores
+- Perfis
+- Recomendações
+- Exercícios
+- Missões
+- Relatórios
+- Landing Content
+
+Toda comunicação deverá ser originada desta camada.
+
+---
+
+# 8. Infrastructure Layer
+
+Responsável por serviços externos.
+
+Inclui:
+
+- Vercel
+- Geração de PDF
+- Analytics
+- Armazenamento
+- APIs futuras
+
+Esta camada nunca deverá conter regras de negócio.
+
+---
+
+# 9. NEXO Journey
+
+Toda experiência da plataforma seguirá a jornada oficial.
 
 Landing
 
 ↓
 
-Quiz
+Assessment
 
 ↓
 
-Loading
+Behavior Analysis
 
 ↓
 
-Resultado
+Insights
 
 ↓
 
-Download PDF
+Behavior Archetype
 
-Nunca permitir que o usuário pule etapas.
+↓
 
----
+Evolution Plan
 
-# 11. Estados da Aplicação
+↓
 
-A aplicação deverá possuir apenas os estados abaixo.
+Personalized Report
 
-Landing
+↓
 
-Questionário
+Mission
 
-Calculando
+↓
 
-Resultado
+Next Step
 
-Erro
-
-Loading
-
-Todos deverão possuir tratamento visual.
+Cada etapa deverá entregar valor ao usuário.
 
 ---
 
-# 12. Gerenciamento de Estado
+# 10. Fluxo da Assessment
 
-Utilizar estado local sempre que possível.
+1. Usuário inicia a avaliação.
 
-React Context apenas quando realmente necessário.
+↓
 
-Evitar bibliotecas externas durante o MVP.
+2. Assessment Engine recebe as respostas.
+
+↓
+
+3. Validation Engine valida os dados.
+
+↓
+
+4. Score Engine calcula as pontuações.
+
+↓
+
+5. Behavior Engine interpreta os indicadores.
+
+↓
+
+6. Insight Engine gera observações.
+
+↓
+
+7. Evolution Engine seleciona o plano de evolução.
+
+↓
+
+8. Report Engine monta o relatório.
+
+↓
+
+9. Result Builder consolida todas as informações.
+
+↓
+
+10. Interface apresenta o resultado.
 
 ---
 
-# 13. Performance
+# 11. Engines Oficiais
+
+## Assessment Engine
+
+Orquestra todo o processo.
+
+---
+
+## Validation Engine
+
+Valida perguntas, respostas e estrutura.
+
+---
+
+## Score Engine
+
+Calcula pontuações.
+
+Não conhece textos.
+
+Não conhece componentes.
+
+---
+
+## Behavior Engine
+
+Transforma pontuação em padrões comportamentais.
+
+Retorna apenas dados.
+
+---
+
+## Insight Engine
+
+Interpreta os resultados.
+
+Gera:
+
+- insights;
+- observações;
+- oportunidades de evolução.
+
+Nunca altera pontuações.
+
+---
+
+## Evolution Engine
+
+Seleciona:
+
+- plano de evolução;
+- hábitos;
+- exercícios;
+- checklist;
+- recursos;
+- missões.
+
+---
+
+## Report Engine
+
+Constrói o relatório personalizado.
+
+---
+
+## Result Builder
+
+Agrupa todos os resultados em um único objeto.
+
+---
+
+# 12. Fluxo de Dados
+
+Presentation Layer
+
+↓
+
+Assessment Engine
+
+↓
+
+Validation Engine
+
+↓
+
+Score Engine
+
+↓
+
+Behavior Engine
+
+↓
+
+Insight Engine
+
+↓
+
+Evolution Engine
+
+↓
+
+Report Engine
+
+↓
+
+Result Builder
+
+↓
+
+Presentation Layer
+
+---
+
+# 13. Dependências
+
+As Engines dependem apenas de:
+
+- Business Rules
+- Data Model
+- Content Library
+
+Nunca deverão depender de:
+
+- React
+- Next.js
+- Tailwind
+- Componentes Visuais
+
+---
+
+# 14. Princípios Técnicos
+
+Toda implementação deverá seguir:
+
+- SOLID
+- Clean Architecture
+- Separation of Concerns
+- Dependency Inversion
+- Single Responsibility
+- Composition over Inheritance
+
+---
+
+# 15. Escalabilidade
+
+A arquitetura deverá permitir:
+
+- novas avaliações;
+- novos algoritmos;
+- novos idiomas;
+- novos perfis;
+- novos relatórios;
+- novos módulos;
+- novas integrações.
+
+Sem alterar a estrutura principal.
+
+---
+
+# 16. Segurança
+
+Toda entrada deverá ser validada.
+
+Nenhuma regra de negócio poderá ser executada exclusivamente no frontend.
+
+Dados sensíveis nunca deverão ser expostos.
+
+---
+
+# 17. Performance
 
 Objetivos mínimos.
 
-Primeira renderização inferior a 2 segundos.
+Primeira renderização:
 
-Lighthouse
+< 2 segundos
 
-Performance >=95
+Processamento da Assessment:
 
-Accessibility >=95
+< 300 ms
 
-SEO >=95
+Geração do resultado:
 
-Best Practices >=95
+< 500 ms
 
-Evitar bibliotecas pesadas.
+PDF:
 
-Evitar renderizações desnecessárias.
-
----
-
-# 14. Responsividade
-
-A aplicação deverá ser desenvolvida seguindo Mobile First.
-
-Larguras mínimas suportadas.
-
-360px
-
-375px
-
-390px
-
-414px
-
-768px
-
-1024px
-
-1280px
-
-Jamais utilizar larguras fixas.
-
-Jamais permitir scroll horizontal.
-
-Toda pergunta deverá ocupar apenas uma tela.
+< 2 segundos
 
 ---
 
-# 15. Acessibilidade
+# 18. Observabilidade
 
-Seguir WCAG AA.
+Registrar eventos técnicos.
 
-Contraste adequado.
+Exemplos:
 
-ARIA Labels.
+- Assessment iniciada
+- Assessment concluída
+- Erro de validação
+- PDF gerado
 
-Suporte para teclado.
-
-Foco visível.
-
-Redução de animações quando solicitado pelo sistema operacional.
-
----
-
-# 16. Convenções
-
-Componentes
-
-PascalCase
-
-Hooks
-
-useCamelCase
-
-Arquivos utilitários
-
-camelCase
-
-Pastas
-
-kebab-case
-
-Nunca utilizar nomes genéricos.
-
-Exemplo incorreto.
-
-```
-utils.ts
-```
-
-Correto.
-
-```
-profileCalculator.ts
-```
+Nunca registrar respostas pessoais em logs.
 
 ---
 
-# 17. Escalabilidade
+# 19. Preparação para Evolução
 
-A arquitetura deverá permitir futuramente.
+A arquitetura já deverá suportar futuramente:
 
-Novos diagnósticos.
+- IA personalizada;
+- múltiplas Assessments;
+- gamificação;
+- histórico de evolução;
+- comunidade;
+- API pública;
+- aplicativo móvel;
+- White Label.
 
-Novos perfis.
-
-Novos relatórios.
-
-Novos idiomas.
-
-Autenticação.
-
-Painel administrativo.
-
-Sem necessidade de reestruturar o projeto.
+Nenhuma dessas funcionalidades deverá exigir alteração estrutural.
 
 ---
 
-# 18. Boas Práticas
+# 20. Critérios de Aceite
 
-Nunca utilizar any.
+A arquitetura será considerada aprovada quando:
 
-Nunca duplicar código.
+✓ Todas as responsabilidades estiverem separadas.
 
-Nunca misturar UI e regras de negócio.
+✓ Toda regra de negócio estiver nas Engines.
 
-Sempre reutilizar componentes.
+✓ Toda comunicação vier da Content Library.
 
-Sempre utilizar tipagem explícita.
+✓ O frontend apenas consumir resultados.
 
-Sempre separar dados da interface.
+✓ O sistema permitir expansão sem refatoração estrutural.
 
----
-
-# 19. Checklist Arquitetural
-
-Antes de qualquer implementação responder.
-
-Existe componente reutilizável?
-
-Existe código semelhante?
-
-A responsabilidade está correta?
-
-O componente é pequeno?
-
-A implementação respeita Mobile First?
-
-O código é escalável?
-
-Se qualquer resposta for negativa, a implementação deverá ser revisada.
-
----
-
-# 20. Critério de Aceite
-
-A arquitetura será considerada correta quando.
-
-✔ Estrutura respeitada.
-
-✔ Componentes reutilizáveis.
-
-✔ Dados separados da interface.
-
-✔ Responsabilidades desacopladas.
-
-✔ Código tipado.
-
-✔ Mobile First.
-
-✔ Build sem erros.
-
-✔ Projeto preparado para crescimento.
+✓ Toda documentação estiver consistente com este documento.
