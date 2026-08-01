@@ -1,323 +1,422 @@
 # BUSINESS RULES
 
-**Projeto:** NEXO Platform  
-**Documento:** 04_BUSINESS_RULES.md  
-**Versão:** 3.0  
-**Status:** Approved  
+**Projeto:** NEXO Platform
+**Documento:** 04_BUSINESS_RULES.md
+**Versão:** 2.0
+**Status:** Draft (Sprint 0 Review)
 **Última atualização:** 01/08/2026
 
 ---
 
 # 1. Objetivo
 
-Este documento define as regras de negócio oficiais da plataforma NEXO.
+Este documento define todas as regras oficiais da plataforma NEXO.
 
-Seu objetivo é estabelecer o comportamento esperado das Avaliações NEXO, independentemente da tecnologia utilizada.
+Toda implementação deverá seguir estas regras.
 
-Este documento não define arquitetura, implementação ou interface.
-
-Toda alteração funcional da plataforma deverá ser refletida aqui antes da implementação.
+Caso exista conflito entre código e este documento, este documento prevalece.
 
 ---
 
-# 2. Princípios da Plataforma
+# 2. Princípios Gerais
 
-A NEXO é uma plataforma de desenvolvimento pessoal baseada em avaliações comportamentais.
+Toda regra da plataforma deverá respeitar os princípios da NEXO.
 
-Seu objetivo é identificar tendências de comportamento e oferecer informações que promovam autoconhecimento.
+- Clareza
+- Consistência
+- Evolução
+- Simplicidade
+- Neutralidade
 
-A plataforma possui finalidade exclusivamente educativa.
-
-A NEXO:
-
-✔ identifica tendências comportamentais
-
-✔ apresenta recomendações práticas
-
-✔ incentiva reflexão
-
-✔ promove evolução contínua
-
-A NEXO NÃO:
-
-✖ realiza diagnósticos médicos
-
-✖ realiza diagnósticos psicológicos
-
-✖ substitui profissionais especializados
-
-✖ promete resultados garantidos
+Nenhuma regra poderá induzir, manipular ou julgar o usuário.
 
 ---
 
-# 3. Terminologia Oficial
+# 3. Assessment
 
-Os seguintes termos deverão ser utilizados em toda a plataforma.
+Uma Assessment representa uma avaliação comportamental estruturada.
+
+Cada Assessment deverá possuir:
+
+- Identificador único
+- Nome
+- Versão
+- Idioma
+- Dimensões
+- Indicadores
+- Perguntas
+- Perfis
+- Algoritmo
+
+Uma Assessment poderá evoluir sem alterar sua identidade.
+
+---
+
+# 4. Estrutura Oficial
 
 Assessment
 
-Avaliação composta por perguntas organizadas para identificar padrões comportamentais.
+↓
 
-Dimension
+Dimensões
 
-Área específica de comportamento analisada.
+↓
 
-Question
+Indicadores
 
-Pergunta pertencente a uma dimensão.
+↓
 
-Option
+Perguntas
 
-Alternativa de resposta.
+↓
 
-Profile
+Alternativas
 
-Perfil comportamental identificado ao final da avaliação.
+↓
 
-Assessment Result
+Pontuação
 
-Resultado consolidado da avaliação.
+↓
 
-Personalized Report
+Insights
 
-Relatório personalizado entregue ao usuário.
+↓
 
----
+Arquétipo Comportamental
 
-# 4. Estrutura da Avaliação
+↓
 
-Toda avaliação deverá possuir:
+Plano de Evolução
 
-- título
-- descrição
-- objetivo
-- conjunto de dimensões
-- conjunto de perguntas
-- conjunto de perfis
-- regras de pontuação
-- modelo de relatório
+↓
 
-Nenhuma avaliação poderá existir sem essas informações.
+Relatório
 
 ---
 
 # 5. Dimensões
 
-Toda avaliação deverá ser dividida em dimensões comportamentais.
+Cada dimensão representa uma área específica do comportamento.
 
-Cada dimensão representa uma competência ou aspecto específico do comportamento humano.
+No MVP existirão cinco dimensões.
 
-Uma dimensão deverá possuir pelo menos uma pergunta.
+- Iniciativa
+- Planejamento
+- Pressão
+- Distração
+- Consistência
 
----
+Cada dimensão possui peso próprio.
 
-# 6. Perguntas
-
-Cada pergunta deverá:
-
-- pertencer a apenas uma dimensão;
-- possuir quatro alternativas;
-- possuir peso configurável;
-- ser obrigatória.
-
-O usuário somente poderá concluir a avaliação após responder todas as perguntas.
+Nenhuma dimensão poderá medir mais de um objetivo principal.
 
 ---
 
-# 7. Alternativas
+# 6. Indicadores
 
-Cada alternativa deverá estar vinculada a apenas um perfil comportamental.
+Os indicadores representam comportamentos observáveis.
 
-Cada alternativa possui um peso próprio.
+Eles são permanentes.
 
-Não será permitido que uma alternativa pontue simultaneamente para mais de um perfil.
+As perguntas podem mudar.
 
----
+Os indicadores permanecem.
 
-# 8. Perfis
-
-Os perfis representam padrões predominantes de comportamento.
-
-Cada avaliação define seus próprios perfis.
-
-Os perfis não fazem parte da plataforma de forma fixa.
-
-Cada perfil deverá possuir:
-
-- nome;
-- descrição;
-- pontos fortes;
-- pontos de atenção;
-- recomendações;
-- relatório correspondente.
+Cada indicador pertence obrigatoriamente a uma única dimensão.
 
 ---
 
-# 9. Sistema de Pontuação
+# 7. Perguntas
 
-Toda resposta gera pontuação.
+Cada pergunta deverá medir apenas um indicador principal.
 
-A pontuação considera:
+Cada pergunta deverá conter.
 
-- alternativa escolhida;
-- peso da pergunta;
-- peso da dimensão.
+- objetivo
+- indicador
+- dimensão
+- alternativas
+- peso
 
-A regra de cálculo é configurável por avaliação.
+Perguntas nunca deverão:
 
-Não existe pontuação negativa.
+- induzir respostas;
+- utilizar linguagem técnica;
+- revelar qual alternativa representa determinado perfil.
 
 ---
 
-# 10. Resultado
+# 8. Alternativas
 
-Ao concluir a avaliação, deverá ser identificado:
+Cada pergunta possuirá quatro alternativas.
 
-- perfil predominante;
-- distribuição dos demais perfis;
+Cada alternativa representa uma tendência predominante.
+
+As alternativas deverão parecer igualmente válidas.
+
+Nenhuma alternativa deverá parecer "correta".
+
+---
+
+# 9. Pontuação
+
+Toda alternativa adicionará pontos ao perfil correspondente.
+
+O cálculo seguirá.
+
+Pontuação da Alternativa
+
+×
+
+Peso da Pergunta
+
+×
+
+Peso da Dimensão
+
+↓
+
+Score Final
+
+Nenhum cálculo poderá ser realizado diretamente na interface.
+
+---
+
+# 10. Distribuição
+
+Ao finalizar a Assessment o sistema deverá calcular.
+
+- score bruto;
+- score ponderado;
 - percentual de cada perfil.
 
-O resultado nunca deverá apresentar apenas um rótulo.
-
-Sempre deverá explicar o comportamento identificado.
+A soma dos percentuais deverá totalizar 100%.
 
 ---
 
-# 11. Resultado Híbrido
+# 11. Arquétipo Comportamental
 
-Caso dois perfis apresentem pontuação equivalente dentro da margem definida pela plataforma, o sistema poderá apresentar um resultado híbrido.
+O usuário receberá um arquétipo predominante.
 
-Exemplo:
+No MVP existirão quatro arquétipos.
 
-"Seu comportamento apresenta características dos perfis Explorador Analítico e Refinador Estratégico."
+- Executor Sob Pressão
+- Refinador Estratégico
+- Explorador Analítico
+- Acumulador de Prioridades
 
-O resultado híbrido deverá explicar ambos os perfis.
+O arquétipo representa uma tendência predominante.
 
----
-
-# 12. Relatório Personalizado
-
-Todo relatório deverá conter:
-
-- introdução;
-- explicação do perfil predominante;
-- distribuição dos perfis;
-- pontos fortes;
-- pontos de atenção;
-- plano de ação;
-- próximos passos;
-- aviso legal.
+Nunca uma definição permanente da pessoa.
 
 ---
 
-# 13. Persistência
+# 12. Insights
 
-Durante uma avaliação:
+Após identificar o arquétipo predominante, a plataforma deverá gerar insights personalizados.
 
-o progresso deverá ser preservado.
+Cada insight deverá:
 
-Caso o usuário retorne posteriormente, a plataforma poderá restaurar o estado anterior.
+- explicar um comportamento observado;
+- utilizar linguagem educativa;
+- incentivar reflexão;
+- preparar o usuário para o plano de evolução.
 
-A estratégia de persistência é responsabilidade da implementação técnica.
-
----
-
-# 14. Casos de Exceção
-
-Caso a avaliação esteja incompleta:
-
-não gerar resultado.
-
-Caso não exista resultado válido:
-
-reiniciar o fluxo.
-
-Caso o relatório não esteja disponível:
-
-informar o usuário e permitir nova tentativa.
-
-Mensagens técnicas nunca deverão ser apresentadas ao usuário final.
+Insights nunca deverão realizar diagnósticos.
 
 ---
 
-# 15. Linguagem
+# 13. Plano de Evolução
 
-Toda comunicação deverá utilizar linguagem:
+Todo usuário deverá receber um plano personalizado.
 
-- clara;
-- educativa;
-- positiva;
-- objetiva.
+Cada plano conterá:
 
-Nunca utilizar linguagem alarmista.
+- primeiro passo;
+- hábito recomendado;
+- exercício;
+- checklist;
+- recursos;
+- missão.
 
-Nunca afirmar condições médicas ou psicológicas.
-
-Sempre utilizar expressões como:
-
-- "Você tende a..."
-- "Seu comportamento sugere..."
-- "É comum que pessoas com este perfil..."
+O plano deverá respeitar o arquétipo predominante.
 
 ---
 
-# 16. Escalabilidade
+# 14. Missões
 
-A plataforma deverá permitir:
+As missões representam pequenas ações práticas.
 
-- novas avaliações;
-- novos perfis;
+Cada missão deverá possuir:
+
+- objetivo;
+- duração;
+- dificuldade;
+- benefício esperado.
+
+As missões deverão ser simples de iniciar.
+
+---
+
+# 15. Relatório
+
+Todo usuário deverá receber um relatório personalizado.
+
+O relatório deverá conter.
+
+- resumo;
+- distribuição;
+- arquétipo;
+- insights;
+- plano de evolução;
+- exercícios;
+- próximos passos.
+
+O relatório nunca deverá repetir apenas respostas.
+
+---
+
+# 16. Empates
+
+Caso dois ou mais arquétipos obtenham exatamente a mesma pontuação.
+
+Aplicar.
+
+1. Maior pontuação na Dimensão Consistência.
+
+Persistindo.
+
+2. Maior pontuação na Dimensão Planejamento.
+
+Persistindo.
+
+3. Maior pontuação na última pergunta respondida.
+
+Persistindo.
+
+4. Prioridade oficial.
+
+Refinador Estratégico
+
+↓
+
+Explorador Analítico
+
+↓
+
+Executor Sob Pressão
+
+↓
+
+Acumulador de Prioridades
+
+---
+
+# 17. Regras de Comunicação
+
+Toda comunicação deverá.
+
+- ser educativa;
+- ser objetiva;
+- evitar culpa;
+- incentivar evolução.
+
+Nunca utilizar.
+
+- "Você é..."
+
+Preferir.
+
+- "Seus resultados indicam..."
+
+---
+
+# 18. Validação
+
+Uma Assessment somente poderá ser concluída quando.
+
+Todas as perguntas forem respondidas.
+
+Nenhuma resposta poderá ficar vazia.
+
+---
+
+# 19. Persistência
+
+No MVP.
+
+As respostas poderão permanecer apenas durante a sessão.
+
+Versões futuras poderão armazenar histórico mediante consentimento.
+
+---
+
+# 20. Performance
+
+O processamento completo deverá ocorrer em menos de 300 ms.
+
+A geração do relatório em menos de 2 segundos.
+
+---
+
+# 21. Segurança
+
+Nunca confiar em dados enviados pelo frontend.
+
+Toda resposta deverá ser validada antes do cálculo.
+
+---
+
+# 22. Evolução da Plataforma
+
+A arquitetura deverá permitir futuramente.
+
+- novos arquétipos;
 - novas dimensões;
-- novos idiomas;
-- novos relatórios.
+- novos indicadores;
+- novas avaliações;
+- novos algoritmos;
+- novos idiomas.
 
-Sem alterar estas regras de negócio.
-
----
-
-# 17. Regras de Evolução
-
-Uma nova avaliação somente poderá ser adicionada quando possuir:
-
-- objetivo definido;
-- dimensões definidas;
-- perguntas definidas;
-- perfis definidos;
-- relatório definido.
-
-Nenhuma avaliação poderá ser publicada incompleta.
+Sem alterar a estrutura principal.
 
 ---
 
-# 18. Restrições
+# 23. Restrições
 
-É proibido que qualquer avaliação:
+A plataforma não poderá.
 
-- realize diagnóstico clínico;
-- realize diagnóstico psicológico;
-- faça promessas de transformação;
-- utilize linguagem discriminatória;
-- apresente resultados sem explicação.
-
----
-
-# 19. Critérios de Aceite
-
-Uma avaliação será considerada válida quando:
-
-- todas as perguntas estiverem respondidas;
-- todos os perfis estiverem definidos;
-- todas as regras de pontuação estiverem configuradas;
-- existir um resultado válido;
-- existir um relatório correspondente;
-- todos os casos de exceção estiverem tratados.
+- emitir diagnósticos clínicos;
+- substituir profissionais especializados;
+- prometer resultados garantidos;
+- classificar pessoas como melhores ou piores.
 
 ---
 
-# 20. Definição Oficial
+# 24. Critérios de Aceite
 
-A plataforma NEXO identifica tendências comportamentais a partir das respostas fornecidas pelo usuário.
+As Business Rules serão consideradas aprovadas quando.
 
-Todo resultado representa uma interpretação baseada no modelo definido para cada avaliação e possui finalidade exclusivamente educativa.
+✓ Todas as regras estiverem documentadas.
 
-Nenhuma avaliação da plataforma deverá ser interpretada como diagnóstico profissional.
+✓ Nenhuma regra depender da interface.
+
+✓ O algoritmo estiver desacoplado.
+
+✓ Toda Assessment seguir a mesma estrutura.
+
+✓ O plano de evolução for obrigatório.
+
+✓ O relatório for gerado a partir dos resultados.
+
+✓ Toda implementação puder ser validada utilizando este documento.
+
+---
+
+# 25. Regra Suprema
+
+Toda regra da plataforma deverá responder positivamente à seguinte pergunta.
+
+"Esta regra ajuda o usuário a compreender melhor seus padrões e agir de forma prática?"
+
+Caso a resposta seja negativa, a regra deverá ser reavaliada.
