@@ -1,9 +1,9 @@
 # NEXO METHODOLOGY
 
-**Projeto:** NEXO Platform
-**Documento:** 00A_METHODOLOGY.md
-**Versão:** 1.0
-**Status:** Draft (Sprint 0 Review)
+**Projeto:** NEXO Platform  
+**Documento:** 00A_METHODOLOGY.md  
+**Versão:** 2.0  
+**Status:** Draft (Sprint 0 Review)  
 **Última atualização:** 01/08/2026
 
 ---
@@ -12,11 +12,9 @@
 
 Este documento define a metodologia oficial utilizada pela plataforma NEXO.
 
-Toda Assessment desenvolvida para a plataforma deverá seguir estes princípios.
+A metodologia representa a base conceitual da plataforma e estabelece como comportamentos são observados, interpretados e transformados em recomendações práticas.
 
-A metodologia é independente de tecnologia, interface e implementação.
-
-Ela representa a base científica e estrutural do produto.
+Todos os demais documentos da NEXO deverão estar alinhados a esta metodologia.
 
 ---
 
@@ -26,25 +24,21 @@ A NEXO parte de um princípio simples.
 
 Pessoas não podem ser reduzidas a um único perfil.
 
-O comportamento humano é dinâmico.
+Comportamentos variam conforme contexto, rotina, ambiente e momento de vida.
 
-Por isso, a plataforma não procura responder:
+Por esse motivo, a NEXO não mede identidade.
 
-"Quem você é?"
+Ela observa padrões comportamentais.
 
-Ela procura responder:
+O objetivo da plataforma não é dizer quem uma pessoa é.
 
-"Quais padrões você apresenta neste momento?"
-
-A metodologia mede tendências comportamentais observáveis.
-
-Nunca identidade.
+O objetivo é mostrar quais comportamentos predominam naquele momento e como eles podem evoluir.
 
 ---
 
 # 3. Princípios Metodológicos
 
-Toda Assessment deverá respeitar os seguintes princípios.
+Toda Assessment deverá respeitar estes princípios.
 
 ## Observação
 
@@ -56,23 +50,23 @@ Nunca características permanentes.
 
 ## Neutralidade
 
-Nenhuma resposta é considerada melhor.
+Nenhum comportamento é considerado melhor.
 
-Cada comportamento possui vantagens e limitações.
+Cada padrão possui vantagens e limitações.
 
 ---
 
 ## Contexto
 
-Toda Assessment representa um retrato de um momento específico.
+Toda Assessment representa apenas um retrato do momento atual.
 
-Os resultados podem mudar com o tempo.
+Resultados podem evoluir.
 
 ---
 
 ## Evolução
 
-Todo resultado deve produzir um plano de ação.
+Todo resultado deve produzir uma ação prática.
 
 Conhecimento sem aplicação não gera valor.
 
@@ -82,13 +76,11 @@ Conhecimento sem aplicação não gera valor.
 
 Resultados devem ser compreendidos por qualquer pessoa.
 
-Evitar linguagem técnica.
-
 ---
 
-# 4. Estrutura da Metodologia
+# 4. Modelo Metodológico
 
-Toda Assessment deverá seguir exatamente esta estrutura.
+Toda Assessment seguirá obrigatoriamente esta estrutura.
 
 Comportamento
 
@@ -106,7 +98,7 @@ Pergunta
 
 ↓
 
-Alternativa
+Resposta
 
 ↓
 
@@ -114,7 +106,7 @@ Pontuação
 
 ↓
 
-Análise
+Índices Comportamentais
 
 ↓
 
@@ -132,7 +124,7 @@ Plano de Evolução
 
 Relatório
 
-Nenhuma etapa deverá ser removida.
+Nenhuma etapa poderá ser removida.
 
 ---
 
@@ -140,15 +132,15 @@ Nenhuma etapa deverá ser removida.
 
 As dimensões representam grandes áreas do comportamento.
 
-No MVP:
+No MVP.
 
 - Iniciativa
 - Planejamento
-- Pressão
-- Distração
+- Gestão da Pressão
+- Gestão da Distração
 - Consistência
 
-Novas dimensões poderão ser adicionadas futuramente.
+Cada dimensão mede apenas um aspecto específico.
 
 ---
 
@@ -166,17 +158,21 @@ Exemplo.
 
 Dimensão
 
+↓
+
 Planejamento
 
 ↓
 
 Indicador
 
+↓
+
 Antecipação
 
 ↓
 
-Perguntas diferentes ao longo das versões.
+Perguntas diferentes podem medir esse mesmo indicador.
 
 ---
 
@@ -184,74 +180,130 @@ Perguntas diferentes ao longo das versões.
 
 As perguntas existem apenas para medir indicadores.
 
-Perguntas nunca são o objetivo final.
+Nunca representam conhecimento permanente.
 
-Perguntas podem ser substituídas sem alterar a metodologia.
+Cada pergunta mede prioritariamente um indicador.
+
+A linguagem deverá ser simples, neutra e cotidiana.
 
 ---
 
-# 8. Arquétipos
+# 8. Pontuação
 
-Arquétipos representam tendências predominantes.
+Cada resposta gera uma pontuação.
+
+A pontuação é agregada em:
+
+- Indicadores;
+- Dimensões;
+- Índices Comportamentais.
+
+Nenhuma resposta individual determina o resultado final.
+
+---
+
+# 9. Índices Comportamentais
+
+Os Índices Comportamentais representam a intensidade relativa de cada dimensão observada.
+
+No MVP serão calculados cinco índices.
+
+- Índice de Iniciativa
+- Índice de Planejamento
+- Índice de Gestão da Pressão
+- Índice de Gestão da Distração
+- Índice de Consistência
+
+Esses índices serão a base para toda interpretação posterior.
+
+---
+
+# 10. Arquétipos
+
+Os arquétipos representam interpretações dos Índices Comportamentais.
 
 Eles não representam personalidade.
 
 Eles não representam identidade.
 
-Eles representam padrões comportamentais observados.
+Representam tendências predominantes observadas durante a Assessment.
+
+No MVP existirão quatro arquétipos.
+
+- Executor Sob Pressão
+- Refinador Estratégico
+- Explorador Analítico
+- Acumulador de Prioridades
+
+Arquiteturalmente, novos arquétipos poderão ser adicionados sem alterar a metodologia.
 
 ---
 
-# 9. Insights
+# 11. Insights
 
-Insights transformam dados em compreensão.
+Os Insights transformam dados em compreensão.
 
-Um Insight deve explicar.
+Cada Insight deverá explicar.
 
-- por que determinado comportamento ocorre;
-- como ele influencia a rotina;
-- quais oportunidades existem para evolução.
+- o comportamento observado;
+- possíveis impactos;
+- oportunidades de evolução.
+
+Todos os Insights deverão existir previamente na Content Library.
+
+A IA poderá selecionar e combinar Insights.
+
+Nunca inventá-los.
 
 ---
 
-# 10. Plano de Evolução
+# 12. Plano de Evolução
 
-Todo resultado gera um Plano de Evolução.
+Todo resultado deverá gerar um Plano de Evolução.
 
-O plano sempre deverá conter.
+O plano deverá conter.
 
 - primeiro passo;
-- hábito;
+- hábito recomendado;
 - exercício;
 - checklist;
-- recursos;
-- missão.
+- recursos gratuitos;
+- missão inicial.
 
-Sem exceções.
-
----
-
-# 11. Missões
-
-Missões representam pequenas mudanças práticas.
-
-Uma missão nunca deverá parecer difícil.
-
-O objetivo é gerar pequenas vitórias.
+O plano sempre deverá ser simples de iniciar.
 
 ---
 
-# 12. Relatório
+# 13. Relatório
 
-O relatório representa uma interpretação da Assessment.
+O relatório representa a consolidação da Assessment.
 
-Nunca uma repetição das respostas.
+Ele deverá apresentar.
+
+- resumo executivo;
+- distribuição dos índices;
+- arquétipo predominante;
+- Insights;
+- Plano de Evolução;
+- próximos passos.
+
+O relatório nunca deverá reproduzir apenas as respostas do usuário.
 
 ---
 
-# 13. Princípio da Progressão
+# 14. Evolução Contínua
 
-Toda Assessment deverá seguir a sequência.
+A metodologia considera que comportamento pode evoluir ao longo do tempo.
+
+Por esse motivo, novas Assessments poderão ser realizadas futuramente para acompanhar mudanças.
+
+Comparações históricas não fazem parte do MVP, mas a metodologia já deverá suportá-las.
+
+---
+
+# 15. Princípio da Progressão
+
+Toda experiência da NEXO seguirá a sequência.
 
 Compreender
 
@@ -267,94 +319,63 @@ Agir
 
 Evoluir
 
-Nunca inverter esta ordem.
+Nunca inverter essa ordem.
 
 ---
 
-# 14. Princípio da Neutralidade
+# 16. Princípio da Generosidade
 
-Nenhum arquétipo é melhor.
+A metodologia da NEXO deverá entregar valor completo ao usuário durante o MVP.
 
-Nenhum arquétipo é pior.
+Todo usuário deverá receber:
 
-Todos possuem.
+- interpretação clara;
+- plano de evolução;
+- recursos gratuitos.
 
-- forças;
-- limitações;
-- oportunidades.
-
----
-
-# 15. Princípio da Evolução
-
-A plataforma nunca deverá terminar no resultado.
-
-Todo resultado deverá indicar.
-
-"O que fazer agora?"
-
----
-
-# 16. Princípio da Clareza
-
-Toda comunicação deverá responder.
-
-O que foi observado?
-
-Por que isso acontece?
-
-Como evoluir?
-
-Caso qualquer resposta não esteja clara, o conteúdo deverá ser revisado.
+A metodologia não dependerá de conteúdos pagos para cumprir seu propósito.
 
 ---
 
 # 17. Escalabilidade
 
-A metodologia deverá permitir.
+A metodologia deverá suportar.
 
 - novas Assessments;
-- novos arquétipos;
 - novas dimensões;
 - novos indicadores;
+- novos arquétipos;
+- novos idiomas;
 - novos algoritmos.
 
-Sem alterar sua estrutura principal.
+Sem alterar sua estrutura fundamental.
 
 ---
 
-# 18. Compatibilidade
+# 18. Critérios de Validação
 
-Toda nova Assessment criada para a NEXO deverá utilizar esta metodologia.
+Uma Assessment será considerada compatível com a metodologia quando.
 
-Ela representa o padrão oficial da plataforma.
+✓ Medir comportamentos observáveis.
 
----
+✓ Utilizar dimensões.
 
-# 19. Critérios de Validação
+✓ Utilizar indicadores.
 
-Uma Assessment será considerada compatível quando.
+✓ Calcular Índices Comportamentais.
 
-✔ medir comportamentos;
+✓ Identificar arquétipos.
 
-✔ utilizar dimensões;
+✓ Gerar Insights.
 
-✔ utilizar indicadores;
+✓ Produzir um Plano de Evolução.
 
-✔ gerar arquétipos;
-
-✔ produzir insights;
-
-✔ gerar plano de evolução;
-
-✔ entregar relatório.
+✓ Gerar um relatório consistente.
 
 ---
 
-# 20. Princípio Supremo
+# 19. Princípio Supremo
 
-A metodologia NEXO possui um único objetivo.
+A metodologia NEXO existe para transformar comportamentos observáveis em compreensão prática, gerando ações que favoreçam uma evolução contínua.
 
-Transformar comportamentos observáveis em compreensão prática para promover evolução contínua.
-
-Toda decisão metodológica deverá preservar esse objetivo.
+Toda decisão metodológica deverá preservar esse princípio.
