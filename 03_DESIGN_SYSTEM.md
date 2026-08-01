@@ -1,232 +1,311 @@
----
+# 21. Experience Patterns
 
-# 23. Design Tokens
+Os Experience Patterns definem como o usuário deverá se sentir em cada etapa da NEXO Journey.
 
-Toda a interface deverá utilizar Design Tokens.
-
-Nenhum componente poderá utilizar valores fixos de cores, espaçamentos, bordas ou tipografia diretamente.
-
-Os tokens deverão ser centralizados para facilitar futuras alterações de identidade visual.
-
-## Cores
-
-```css
---color-background
---color-surface
---color-surface-hover
-
---color-primary
---color-primary-hover
-
---color-success
---color-error
-
---color-text-primary
---color-text-secondary
-
---color-border
-```
-
-## Espaçamentos
-
-```css
---space-xs
---space-sm
---space-md
---space-lg
---space-xl
---space-2xl
-```
-
-## Bordas
-
-```css
---radius-sm
---radius-md
---radius-lg
---radius-xl
-```
-
-## Tipografia
-
-```css
---font-display
---font-title
---font-body
---font-caption
-```
-
-Todos os componentes deverão utilizar exclusivamente esses tokens.
+Eles complementam o Design System tradicional e garantem consistência na experiência.
 
 ---
 
-# 24. Biblioteca Oficial de Componentes
+## 21.1 Landing
 
-Todo componente deverá possuir uma única responsabilidade.
+Objetivo
 
-A identidade visual deverá ser consistente em toda a aplicação.
+Gerar curiosidade.
 
-## Button
+Transmitir confiança.
 
-Variantes oficiais:
+Conduzir para a Assessment.
 
-- Primary
-- Secondary
-- Ghost
-- Loading
-
-Nunca criar novos estilos de botão sem necessidade.
+Nunca tentar vender.
 
 ---
 
-## Card
+## 21.2 Assessment
 
-Variantes oficiais:
+Objetivo
 
-- Default
-- Question
-- Result
-- Profile
+Transmitir leveza.
 
----
+Evitar ansiedade.
 
-## Badge
+Cada pergunta deverá parecer uma conversa.
 
-Variantes oficiais:
-
-- Success
-- Warning
-- Info
+Nunca um formulário burocrático.
 
 ---
 
-## Progress Bar
+## 21.3 Processamento
 
-Utilizada apenas durante:
+Objetivo
 
-- Questionário
-- Processamento
+Gerar expectativa.
 
-Sempre apresentar animação suave.
+Enquanto a plataforma processa os dados, explicar o que está acontecendo.
 
----
+Exemplos.
 
-## Inputs
+✔ Analisando seus padrões...
 
-Componentes oficiais:
+✔ Identificando comportamentos...
 
-- Text Input
-- Email Input
-- Radio Group
+✔ Preparando seu plano personalizado...
 
-Todos deverão seguir exatamente o mesmo padrão visual.
+Nunca utilizar barras falsas de progresso.
 
 ---
 
-## Feedback
+## 21.4 Resultado
 
-Componentes obrigatórios:
+Objetivo
 
-- Loading Screen
-- Error Message
-- Success Message
-- Empty State
+Surpreender positivamente.
 
-Todos devem reutilizar o mesmo padrão visual.
+O usuário deve sentir que recebeu uma análise personalizada.
 
----
+Nunca apenas um título.
 
-# 25. Estados Visuais
+Sempre apresentar:
 
-Todos os componentes interativos deverão possuir obrigatoriamente os estados abaixo.
-
-## Default
-
-Estado inicial.
+- resumo;
+- insights;
+- próximos passos.
 
 ---
 
-## Hover
+## 21.5 Evolução
 
-Pequena alteração visual.
+Objetivo
 
-Sem animações exageradas.
+Fazer o usuário acreditar que consegue evoluir.
 
----
+Nunca apresentar uma lista enorme.
 
-## Active
-
-Feedback imediato ao clique.
+Sempre iniciar por uma única ação.
 
 ---
 
-## Focus
+## 21.6 Relatório
 
-Sempre visível.
+Objetivo
 
-Compatível com navegação por teclado.
+Transmitir profissionalismo.
 
----
-
-## Disabled
-
-Redução de contraste.
-
-Nunca remover completamente o componente.
+O relatório deve parecer um material produzido exclusivamente para aquele usuário.
 
 ---
 
-## Loading
+## 21.7 Missões
 
-Indicador visual.
+Objetivo
 
-Jamais bloquear a interface sem feedback.
+Criar pequenas vitórias.
 
----
-
-# 26. Consistência Visual
-
-Todos os componentes devem seguir as mesmas regras.
-
-Mesmo espaçamento.
-
-Mesmo raio.
-
-Mesma tipografia.
-
-Mesmo comportamento.
-
-Nunca criar exceções sem justificativa.
+Cada missão deve parecer fácil de iniciar.
 
 ---
 
-# 27. Evolução do Design System
+# 22. Motion Guidelines
 
-Toda nova tela deverá utilizar exclusivamente componentes existentes.
+Toda animação possui um objetivo.
 
-Caso um novo componente seja necessário:
-
-1. Verificar se existe componente semelhante.
-
-2. Verificar se pode ser reutilizado.
-
-3. Caso não exista, adicionar oficialmente ao Design System.
-
-Nenhum componente deverá ser criado apenas para uma única tela.
+Nunca animar apenas por estética.
 
 ---
 
-# 28. Critérios de Aprovação do Design
+Fade
 
-Uma interface somente será considerada concluída quando atender aos critérios abaixo.
+Entrada de conteúdo.
 
-- Interface limpa.
-- Mobile First.
-- Responsiva.
-- Apenas uma ação principal por tela.
-- Hierarquia visual clara.
-- Componentes reutilizáveis.
-- Design Tokens utilizados.
-- Sem estilos duplicados.
-- Sem valores fixos espalhados pelo código.
-- Consistente com toda a identidade visual da NEXO.
+---
+
+Slide
+
+Mudança de etapa.
+
+---
+
+Scale
+
+Feedback de sucesso.
+
+---
+
+Progress
+
+Assessment.
+
+---
+
+Micro Interaction
+
+Botões.
+
+Cards.
+
+Inputs.
+
+---
+
+Nunca utilizar animações que atrasem a navegação.
+
+---
+
+# 23. UX Writing
+
+Toda comunicação deverá seguir.
+
+Clareza.
+
+Empatia.
+
+Objetividade.
+
+Naturalidade.
+
+Nunca utilizar linguagem técnica.
+
+Nunca utilizar termos clínicos.
+
+Nunca utilizar linguagem de vendas agressiva.
+
+Exemplo.
+
+❌ Você procrastina muito.
+
+✔ É comum adiar tarefas quando existem muitas prioridades ao mesmo tempo.
+
+---
+
+# 24. Emotional Design
+
+A experiência deverá provocar.
+
+✔ Curiosidade.
+
+✔ Descoberta.
+
+✔ Clareza.
+
+✔ Esperança.
+
+✔ Evolução.
+
+Nunca provocar.
+
+✖ Culpa.
+
+✖ Vergonha.
+
+✖ Medo.
+
+✖ Dependência.
+
+---
+
+# 25. Gamification Guidelines (Future)
+
+A gamificação será opcional.
+
+Ela deverá incentivar constância.
+
+Nunca competição.
+
+Exemplos.
+
+- Missões.
+
+- Sequência de dias.
+
+- Evolução pessoal.
+
+Nunca utilizar rankings públicos no MVP.
+
+---
+
+# 26. Empty States
+
+Toda tela vazia deverá orientar o usuário.
+
+Nunca apenas informar ausência de dados.
+
+Exemplo.
+
+"Você ainda não realizou nenhuma avaliação."
+
+↓
+
+"Comece sua primeira Assessment e descubra seu Perfil Comportamental."
+
+---
+
+# 27. Error States
+
+Toda mensagem de erro deverá:
+
+Explicar.
+
+Orientar.
+
+Permitir recuperação.
+
+Exemplo.
+
+❌ Ocorreu um erro.
+
+↓
+
+✔ Não foi possível concluir sua avaliação.
+
+Tente novamente em alguns instantes.
+
+---
+
+# 28. Success States
+
+Todo sucesso deverá incentivar continuidade.
+
+Exemplo.
+
+"Sua avaliação foi concluída."
+
+↓
+
+"Agora descubra como evoluir com base nos seus resultados."
+
+---
+
+# 29. Accessibility Experience
+
+Além da WCAG.
+
+A experiência deverá considerar.
+
+- contraste elevado;
+
+- leitores de tela;
+
+- navegação por teclado;
+
+- redução de animações;
+
+- preferência por alto contraste;
+
+- tamanhos mínimos de toque.
+
+---
+
+# 30. Design Principles
+
+Toda tela deverá responder.
+
+O usuário sabe onde está?
+
+↓
+
+O usuário sabe o que fazer?
+
+↓
+
+O usuário sabe o que acontecerá depois?
+
+Se qualquer resposta for "não", a interface deverá ser revisada.
