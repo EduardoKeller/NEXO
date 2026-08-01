@@ -1,55 +1,56 @@
-# Product Requirements Document (PRD)
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Projeto:** NEXO
-**Versão:** 1.0
-**Status:** MVP
-**Autor:** Eduardo Keller
-**Última atualização:** 31/07/2026
+**Projeto:** NEXO Platform  
+**Documento:** 01_PRD.md  
+**Versão:** 2.0  
+**Status:** Draft (Sprint 0 Review)  
+**Última atualização:** 01/08/2026
 
 ---
 
 # 1. Visão do Produto
 
-## Objetivo
+A NEXO é uma plataforma de Inteligência Comportamental desenvolvida para ajudar pessoas a compreender seus padrões de comportamento relacionados à produtividade, execução e desenvolvimento pessoal.
 
-A NEXO é uma plataforma digital de autoconhecimento que ajuda pessoas a compreender padrões de comportamento relacionados à produtividade, foco e procrastinação.
+Por meio de uma avaliação estruturada, a plataforma identifica tendências comportamentais, interpreta os resultados utilizando um mecanismo próprio de análise, gera insights personalizados e apresenta um plano de evolução prático.
 
-O primeiro produto da plataforma será um questionário interativo capaz de identificar um perfil comportamental predominante e apresentar um relatório personalizado com orientações práticas.
-
-A aplicação possui caráter exclusivamente educativo e informativo, não realizando diagnósticos clínicos, psicológicos ou médicos.
+A plataforma possui finalidade exclusivamente educativa e não realiza diagnósticos psicológicos, psiquiátricos ou clínicos.
 
 ---
 
-# 2. Problema
+# 2. Missão
 
-Milhões de pessoas acreditam que procrastinam apenas por falta de disciplina.
-
-Na prática, diferentes padrões comportamentais podem influenciar a forma como cada indivíduo inicia tarefas, toma decisões e reage à pressão.
-
-Hoje não existe uma ferramenta simples, rápida e visual que ajude o usuário a compreender esses padrões de forma acessível.
+Ajudar pessoas a compreenderem como seus comportamentos influenciam sua produtividade e fornecer orientações práticas para promover mudanças consistentes ao longo do tempo.
 
 ---
 
-# 3. Objetivo do MVP
+# 3. Visão de Longo Prazo
 
-Construir uma aplicação web capaz de:
-
-- apresentar um questionário interativo;
-- identificar um perfil comportamental predominante;
-- exibir um resultado personalizado;
-- disponibilizar um relatório gratuito em PDF.
-
-O MVP tem como principal objetivo validar o interesse dos usuários e a experiência proposta.
+Transformar a NEXO na principal plataforma digital de Inteligência Comportamental da América Latina, oferecendo avaliações, planos personalizados de evolução, acompanhamento contínuo e recursos educacionais baseados em comportamento.
 
 ---
 
-# 4. Público-alvo
+# 4. Objetivos do Produto
+
+O usuário deverá ser capaz de:
+
+- realizar uma avaliação comportamental;
+- compreender seus padrões predominantes;
+- visualizar indicadores comportamentais;
+- receber insights personalizados;
+- acessar um plano de evolução;
+- baixar um relatório personalizado;
+- iniciar uma jornada contínua de desenvolvimento.
+
+---
+
+# 5. Público-Alvo
 
 Faixa etária:
 
 18 a 45 anos.
 
-Perfis mais comuns:
+Perfis:
 
 - estudantes;
 - profissionais;
@@ -60,237 +61,310 @@ Perfis mais comuns:
 
 ---
 
-# 5. Proposta de Valor
+# 6. Problema
 
-Em poucos minutos o usuário consegue compreender melhor como costuma agir diante de tarefas importantes, recebendo uma explicação clara e recomendações práticas para iniciar mudanças.
+Grande parte das pessoas sabe que procrastina ou possui dificuldade para manter consistência, porém não compreende os motivos comportamentais que levam a esse padrão.
 
-A proposta da NEXO é oferecer clareza, e não rótulos.
+As soluções disponíveis normalmente apresentam apenas testes superficiais ou conteúdos genéricos, sem oferecer direcionamentos práticos.
 
----
-
-# 6. Escopo do MVP
-
-O MVP deverá possuir apenas as funcionalidades abaixo.
-
-## Landing Page
-
-Apresentação da plataforma e convite para iniciar o questionário.
+A NEXO busca preencher essa lacuna.
 
 ---
 
-## Questionário
+# 7. Proposta de Valor
 
-Questionário composto por cinco perguntas objetivas.
+A NEXO entrega uma experiência composta por quatro etapas:
 
-Cada pergunta possui quatro alternativas.
+1. Identificação do comportamento.
+2. Interpretação dos resultados.
+3. Plano personalizado de evolução.
+4. Conteúdo educativo para aplicação prática.
+
+O objetivo não é apenas informar um perfil, mas orientar uma evolução contínua.
 
 ---
 
-## Processamento
+# 8. Escopo do MVP
 
-Após responder todas as perguntas, o sistema deverá calcular automaticamente o perfil predominante.
+O MVP deverá conter:
+
+- Landing Page
+- Assessment
+- Assessment Engine
+- Behavior Engine
+- Insight Engine (MVP)
+- Evolution Engine
+- Report Engine
+- Página de Resultado
+- Relatório em PDF
+- Mobile First
+- Deploy na Vercel
 
 ---
 
-## Resultado
+# 9. Fora do Escopo do MVP
 
-Exibição do perfil identificado contendo:
+Não fazem parte desta versão:
 
-- nome do perfil;
+- Login
+- Cadastro
+- Dashboard
+- Histórico de avaliações
+- Gamificação
+- Comunidade
+- Aplicativo Mobile
+- Integração com pagamentos
+- Área administrativa
+- IA Conversacional
+
+Esses itens poderão ser implementados em versões futuras.
+
+---
+
+# 10. Jornada do Usuário
+
+A jornada oficial da plataforma será denominada **NEXO Journey**.
+
+Fluxo:
+
+Landing
+
+↓
+
+Assessment
+
+↓
+
+Behavior Analysis
+
+↓
+
+Insights
+
+↓
+
+Behavior Profile
+
+↓
+
+Evolution Plan
+
+↓
+
+Personalized Report
+
+↓
+
+Mission
+
+↓
+
+Next Step
+
+Cada etapa deverá entregar valor ao usuário e incentivá-lo a continuar sua evolução.
+
+---
+
+# 11. Assessment
+
+A avaliação será composta inicialmente por:
+
+- 10 perguntas;
+- 5 dimensões comportamentais;
+- 4 perfis predominantes;
+- algoritmo baseado em pesos.
+
+A arquitetura deverá permitir expansão futura sem alterações estruturais.
+
+---
+
+# 12. Dimensões Avaliadas
+
+O MVP avaliará cinco dimensões principais.
+
+- Iniciativa
+- Planejamento
+- Pressão
+- Distração
+- Consistência
+
+Cada dimensão será composta por indicadores comportamentais específicos.
+
+---
+
+# 13. Perfis
+
+O MVP possuirá quatro perfis predominantes.
+
+- Executor Sob Pressão
+- Refinador Estratégico
+- Explorador Analítico
+- Acumulador de Prioridades
+
+Cada perfil possuirá:
+
 - descrição;
 - pontos fortes;
 - pontos de atenção;
-- recomendação inicial.
+- plano de evolução;
+- exercícios;
+- recomendações.
 
 ---
 
-## Relatório
+# 14. Resultados
 
-Disponibilização de um relatório em PDF relacionado ao resultado apresentado.
+Ao concluir a avaliação o usuário receberá:
 
----
-
-# 7. Fora do Escopo
-
-As funcionalidades abaixo não fazem parte da primeira versão.
-
-- autenticação;
-- cadastro de usuários;
-- painel administrativo;
-- dashboard;
-- histórico de resultados;
-- pagamentos;
-- integração com plataformas de afiliados;
-- envio automático de e-mails;
-- inteligência artificial.
+- Perfil predominante;
+- Distribuição dos perfis;
+- Indicadores comportamentais;
+- Insights personalizados;
+- Plano de Evolução;
+- Relatório em PDF.
 
 ---
 
-# 8. Fluxo Principal
+# 15. Objetivos de Negócio
 
-Landing Page
+O MVP deverá validar:
 
-↓
-
-Introdução
-
-↓
-
-Pergunta 1
-
-↓
-
-Pergunta 2
-
-↓
-
-Pergunta 3
-
-↓
-
-Pergunta 4
-
-↓
-
-Pergunta 5
-
-↓
-
-Processamento
-
-↓
-
-Resultado
-
-↓
-
-Download do relatório
+- interesse do público;
+- taxa de conclusão da avaliação;
+- taxa de download do relatório;
+- percepção de valor;
+- potencial de retenção.
 
 ---
 
-# 9. Perfis
+# 16. Indicadores de Sucesso (KPIs)
 
-A primeira versão deverá possuir quatro perfis comportamentais.
+Concluir a Assessment:
 
-- Reativo
-- Perfeccionista
-- Analítico
-- Sobrecarregado
+> 70%
 
-A definição detalhada de cada perfil será descrita no documento Business Rules.
+Conversão Landing → Assessment:
 
----
+> 35%
 
-# 10. Requisitos Funcionais
+Download do Relatório:
 
-RF-01
+> 80%
 
-O usuário deve conseguir iniciar o questionário.
+Tempo médio da avaliação:
 
-RF-02
+< 3 minutos
 
-O sistema deve apresentar uma pergunta por vez.
+Bounce Rate:
 
-RF-03
-
-Todas as perguntas são obrigatórias.
-
-RF-04
-
-O sistema deve calcular automaticamente o perfil predominante.
-
-RF-05
-
-O sistema deve apresentar o resultado imediatamente após o processamento.
-
-RF-06
-
-O sistema deve permitir o download do relatório correspondente.
+< 45%
 
 ---
 
-# 11. Requisitos Não Funcionais
+# 17. Princípios do Produto
 
-RNF-01
+Toda funcionalidade deverá seguir os princípios abaixo.
 
-A aplicação deve seguir abordagem Mobile First.
+## Educacional
 
-RNF-02
-
-A interface deve ser responsiva.
-
-RNF-03
-
-O carregamento deve ser rápido.
-
-RNF-04
-
-A navegação deve ser intuitiva.
-
-RNF-05
-
-O sistema deve seguir boas práticas de acessibilidade.
-
-RNF-06
-
-A aplicação deve transmitir sensação de simplicidade, confiança e qualidade.
+A plataforma possui finalidade educativa.
 
 ---
 
-# 12. Critérios de Sucesso do MVP
+## Baseada em Evidências
+
+As avaliações deverão medir indicadores comportamentais previamente definidos.
+
+---
+
+## Evolução Contínua
+
+Todo resultado deverá gerar um plano de ação.
+
+---
+
+## Clareza
+
+A comunicação deverá ser simples e objetiva.
+
+---
+
+## Mobile First
+
+Toda experiência será projetada inicialmente para smartphones.
+
+---
+
+## Escalabilidade
+
+A arquitetura deverá permitir novas avaliações, novos perfis e novos algoritmos.
+
+---
+
+# 18. Requisitos Não Funcionais
+
+- Mobile First;
+- Performance elevada;
+- Acessibilidade WCAG AA;
+- Lighthouse superior a 95;
+- Compatibilidade com navegadores modernos;
+- Código em TypeScript;
+- Hospedagem na Vercel.
+
+---
+
+# 19. Tecnologias
+
+Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+
+Infraestrutura
+
+- Vercel
+
+Documentação
+
+- Markdown
+
+---
+
+# 20. Critérios de Aceite
 
 O MVP será considerado concluído quando:
 
-- o questionário estiver funcional;
-- o cálculo do perfil estiver correto;
-- o resultado for exibido corretamente;
-- o relatório estiver disponível para download;
-- a aplicação estiver totalmente responsiva;
-- a aplicação estiver publicada em ambiente de produção.
+- Landing Page publicada;
+- Assessment funcional;
+- Assessment Engine operacional;
+- Behavior Engine operacional;
+- Insight Engine operacional;
+- Evolution Engine operacional;
+- Report Engine operacional;
+- Resultado correto sendo apresentado;
+- PDF gerado corretamente;
+- Interface responsiva;
+- Deploy realizado.
 
 ---
 
-# 13. Critérios de Aceite
+# 21. Restrições
 
-A entrega será aceita quando:
+A plataforma não deverá:
 
-- todos os requisitos funcionais forem atendidos;
-- todos os fluxos estiverem funcionando;
-- não existirem erros críticos;
-- a navegação funcionar em dispositivos móveis e desktop;
-- o usuário conseguir concluir toda a jornada sem assistência.
-
----
-
-# 14. Evoluções Futuras
-
-Versão 1.1
-
-- analytics;
-- métricas de conversão.
-
-Versão 1.2
-
-- captura de e-mail;
-- envio automático do relatório.
-
-Versão 2.0
-
-- múltiplos diagnósticos;
-- área do usuário;
-- painel administrativo;
-- recomendações personalizadas.
+- realizar diagnósticos clínicos;
+- substituir profissionais especializados;
+- utilizar linguagem alarmista;
+- induzir respostas;
+- coletar dados desnecessários.
 
 ---
 
-# 15. Princípios do Produto
+# 22. Definição de Sucesso
 
-A NEXO seguirá permanentemente os princípios abaixo.
+O sucesso do MVP será medido pela capacidade da plataforma de entregar uma experiência clara, rápida e útil, incentivando o usuário a compreender seus padrões comportamentais e iniciar uma jornada prática de evolução.
 
-- Clareza acima de complexidade.
-- Simplicidade acima de excesso de funcionalidades.
-- Mobile First.
-- Performance acima de efeitos visuais.
-- Conteúdo baseado em comportamento, nunca em diagnósticos clínicos.
-- Experiência premium em toda a jornada.
-- Arquitetura preparada para crescimento futuro.
+A principal métrica da NEXO não será apenas a conclusão da avaliação, mas a percepção de valor gerada ao usuário.
