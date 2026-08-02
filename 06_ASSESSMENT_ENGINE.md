@@ -1,520 +1,481 @@
 # ASSESSMENT ENGINE
 
-**Projeto:** NEXO Platform  
-**Documento:** 06_ASSESSMENT_ENGINE.md  
-**Versão:** 1.0  
-**Status:** Approved  
+**Projeto:** NEXO Platform
+**Documento:** 06_ASSESSMENT_ENGINE.md
+**Versão:** 2.0
+**Status:** Draft (Sprint 0 Review)
 **Última atualização:** 01/08/2026
 
 ---
 
 # 1. Objetivo
 
-A Assessment Engine é o núcleo responsável por executar qualquer avaliação da plataforma NEXO.
+A Assessment Engine é o núcleo responsável por executar qualquer Avaliação da plataforma NEXO.
 
-Ela recebe uma Assessment configurada, processa as respostas do usuário, calcula os resultados, gera o plano de evolução e retorna um objeto estruturado.
+Sua responsabilidade é transformar respostas em conhecimento estruturado.
 
-A Engine não possui qualquer dependência da interface gráfica.
+Ela nunca deverá:
 
-Ela poderá ser utilizada por:
+- conhecer componentes da interface;
+- acessar diretamente o banco de dados;
+- gerar textos;
+- conter regras de negócio duplicadas.
 
-- Website
-- Aplicativo Mobile
-- API
-- Inteligência Artificial
-- Painel Administrativo
-- Integrações futuras
+Seu único objetivo é processar uma Avaliação.
 
 ---
 
 # 2. Princípios
 
-A Assessment Engine deverá seguir os princípios abaixo.
+Toda Engine deverá seguir.
 
-- Separação de responsabilidades
-- Configuração acima de código
-- Independência de framework
-- Independência de banco de dados
-- Independência da interface
-- Alta coesão
-- Baixo acoplamento
+## Determinística
+
+As mesmas respostas deverão produzir exatamente o mesmo resultado.
 
 ---
 
-# 3. Fluxo Geral
+## Desacoplada
+
+A Engine deverá funcionar independentemente de:
+
+- Frontend
+- Backend
+- API
+- Banco de Dados
+
+---
+
+## Configurável
+
+Perguntas, indicadores e arquétipos nunca deverão existir diretamente no código.
+
+Toda configuração deverá vir da Content Library.
+
+---
+
+## Escalável
+
+Novas Avaliações poderão ser adicionadas sem alterar a estrutura da Engine.
+
+---
+
+# 3. Arquitetura
+
+A Assessment Engine é composta pelos seguintes módulos.
+
+```
+
+Validation Engine
+
+↓
+
+Score Engine
+
+↓
+
+Behavior Engine
+
+↓
+
+Insight Engine
+
+↓
+
+Evolution Engine
+
+↓
+
+Report Engine
+
+↓
+
+Result Builder
+
+```
+
+Cada módulo possui responsabilidade única.
+
+---
+
+# 4. Fluxo Oficial
+
+```
 
 Assessment
 
 ↓
 
+Validation
+
+↓
+
+Score Calculation
+
+↓
+
+Behavior Analysis
+
+↓
+
+Behavior Indexes
+
+↓
+
+Behavior Archetype
+
+↓
+
+Insight Selection
+
+↓
+
+Evolution Plan
+
+↓
+
+Report
+
+↓
+
+Final Result
+
+```
+
+---
+
+# 5. Validation Engine
+
+Responsável por validar.
+
+- estrutura da Assessment;
+- respostas;
+- perguntas;
+- alternativas;
+- indicadores;
+- dimensões.
+
+Nenhum cálculo poderá ocorrer antes da validação.
+
+---
+
+# 6. Score Engine
+
+Recebe.
+
+- respostas;
+- pesos;
+- indicadores;
+- dimensões.
+
+Calcula.
+
+- score por pergunta;
+- score por indicador;
+- score por dimensão.
+
+O Score Engine nunca interpreta resultados.
+
+Ele apenas calcula.
+
+---
+
+# 7. Behavior Engine
+
+Recebe.
+
+- scores;
+- indicadores;
+- dimensões.
+
+Calcula.
+
+- Índices Comportamentais;
+- distribuição dos índices;
+- predominância;
+- nível de confiança.
+
+A saída deste módulo nunca é um Arquétipo.
+
+Sua saída são apenas dados estruturados.
+
+---
+
+# 8. Behavior Indexes
+
+No MVP existirão cinco Índices.
+
+- Initiative Index
+- Planning Index
+- Pressure Management Index
+- Distraction Management Index
+- Consistency Index
+
+Cada índice será normalizado entre.
+
+0
+
+↓
+
+100
+
+Esses índices serão utilizados por todos os módulos seguintes.
+
+---
+
+# 9. Archetype Resolver
+
+Responsável por interpretar os Índices Comportamentais.
+
+Entrada.
+
+```
+
+Behavior Indexes
+
+```
+
+Saída.
+
+```
+
+Behavior Archetype
+
+Confidence Score
+
+Supporting Indicators
+
+```
+
+O Arquétipo representa uma interpretação.
+
+Nunca um cálculo direto das respostas.
+
+---
+
+# 10. Insight Engine
+
+Recebe.
+
+- Arquétipo;
+- Índices;
+- Indicadores predominantes.
+
+Seleciona.
+
+- Insights;
+- Pontos Fortes;
+- Pontos de Atenção.
+
+Todos os Insights deverão existir previamente na Content Library.
+
+A Engine nunca cria novos Insights.
+
+---
+
+# 11. Evolution Engine
+
+Recebe.
+
+- Arquétipo;
+- Índices;
+- Insights.
+
+Seleciona.
+
+- Primeiro Passo;
+- Hábito;
+- Exercício;
+- Missão;
+- Recursos.
+
+Toda recomendação deverá possuir origem na Content Library.
+
+---
+
+# 12. Report Engine
+
+Recebe.
+
+- Resultado Final;
+- Insights;
+- Plano de Evolução.
+
+Produz.
+
+- HTML
+- PDF
+
+O Report Engine não interpreta dados.
+
+Apenas organiza.
+
+---
+
+# 13. Result Builder
+
+Responsável por consolidar todas as informações.
+
+Estrutura oficial.
+
+```yaml
+assessment
+
+behaviorIndexes
+
+behaviorArchetype
+
+confidenceScore
+
+insights
+
+strengths
+
+attentionPoints
+
+evolutionPlan
+
+missions
+
+resources
+
+report
+```
+
+Este objeto representa a resposta oficial da Assessment Engine.
+
+---
+
+# 14. Tratamento de Empates
+
+Caso dois Arquétipos apresentem pontuação semelhante.
+
+Aplicar.
+
+1.
+
+Maior Confidence Score.
+
+↓
+
+2.
+
+Maior Índice de Consistência.
+
+↓
+
+3.
+
+Maior Índice de Planejamento.
+
+↓
+
+4.
+
+Maior quantidade de Indicadores predominantes.
+
+↓
+
+5.
+
+Prioridade definida nas Business Rules.
+
+---
+
+# 15. Performance
+
+Objetivos.
+
 Validação
+
+<100 ms
 
 ↓
 
 Processamento
 
-↓
-
-Pontuação
+<150 ms
 
 ↓
 
-Interpretação
+Resultado
 
-↓
-
-Plano de Evolução
+<300 ms
 
 ↓
 
 Relatório
 
-↓
-
-Resultado
-
----
-
-# 4. Pipeline
-
-A Engine deverá executar exatamente esta sequência.
-
-1. Carregar Assessment
-
-↓
-
-2. Validar Estrutura
-
-↓
-
-3. Validar Perguntas
-
-↓
-
-4. Receber Respostas
-
-↓
-
-5. Validar Respostas
-
-↓
-
-6. Calcular Score
-
-↓
-
-7. Calcular Percentuais
-
-↓
-
-8. Identificar Perfil Predominante
-
-↓
-
-9. Identificar Perfis Secundários
-
-↓
-
-10. Calcular Nível de Confiança
-
-↓
-
-11. Gerar Plano de Evolução
-
-↓
-
-12. Gerar Relatório
-
-↓
-
-13. Retornar Resultado
-
-Nenhuma etapa poderá ser ignorada.
-
----
-
-# 5. Módulos da Engine
-
-A Assessment Engine será composta pelos módulos abaixo.
-
-## Assessment Loader
-
-Responsável por carregar uma Assessment.
-
-Nunca realiza cálculos.
-
----
-
-## Validation Engine
-
-Valida:
-
-- estrutura
-- perguntas
-- alternativas
-- respostas
-
-Impede processamento inválido.
-
----
-
-## Score Engine
-
-Responsável exclusivamente pelos cálculos.
-
-Nunca conhece:
-
-- textos
-- componentes
-- layouts
-
-Recebe:
-
-- perguntas
-- respostas
-- pesos
-
-Retorna:
-
-Score bruto.
-
----
-
-## Behavior Engine
-
-Recebe o Score.
-
-Calcula:
-
-- perfil predominante
-- distribuição percentual
-- perfis secundários
-- nível de confiança
-
----
-
-## Evolution Engine
-
-Recebe o perfil.
-
-Seleciona:
-
-- plano de evolução
-- exercícios
-- hábitos
-- checklist
-- recursos
-
----
-
-## Report Engine
-
-Monta o relatório personalizado.
-
-Não realiza cálculos.
-
----
-
-## Result Builder
-
-Agrupa todas as informações.
-
-Retorna um único objeto.
-
----
-
-# 6. Ciclo de Vida
-
-A Assessment passa pelos seguintes estados.
-
-Created
-
-↓
-
-Loaded
-
-↓
-
-Validated
-
-↓
-
-Running
-
-↓
-
-Calculated
-
-↓
-
-Completed
-
-↓
-
-Delivered
-
----
-
-# 7. Score Engine
-
-Responsabilidades.
-
-Receber respostas.
-
-↓
-
-Aplicar peso da alternativa.
-
-↓
-
-Aplicar peso da pergunta.
-
-↓
-
-Aplicar peso da dimensão.
-
-↓
-
-Somar pontuações.
-
-↓
-
-Retornar Score.
-
-Nunca deverá conhecer perfis por nome.
-
-Utilizar apenas IDs.
-
----
-
-# 8. Behavior Engine
-
-Responsável por transformar pontuações em comportamento.
-
-Deverá calcular.
-
-- perfil predominante
-- percentual
-- perfis secundários
-- confiança
-
-Nunca gerar textos.
-
-Apenas dados.
-
----
-
-# 9. Evolution Engine
-
-Recebe o perfil predominante.
-
-Busca na Content Library.
-
-Retorna.
-
-- primeiro passo
-- hábito
-- exercício
-- checklist
-- recursos
-- missão
-
-Nenhuma regra deverá ficar fixa no código.
-
----
-
-# 10. Report Engine
-
-Recebe.
-
-- perfil
-- evolução
-- recursos
-
-Monta.
-
-- relatório
-- PDF
-- HTML
-
-No MVP.
-
-Gerar apenas PDF.
-
-A arquitetura deverá permitir novos formatos.
-
----
-
-# 11. Result Builder
-
-Objeto final entregue para qualquer interface.
-
-O Result Builder deverá agrupar.
-
-- assessment
-- perfil
-- distribuição
-- confiança
-- evolução
-- relatório
-- estatísticas
-
-Nenhuma informação deverá ser perdida.
-
----
-
-# 12. Fluxo de Erros
-
-Caso ocorra erro.
-
-Validation Error
-
-↓
-
-Interromper processamento.
-
-↓
-
-Retornar mensagem amigável.
-
-Nunca gerar resultado parcial.
-
----
-
-# 13. Cache
-
-A Engine poderá utilizar cache para.
-
-- Assessments
-- Perfis
-- Relatórios
-
-Nunca armazenar respostas sensíveis além do necessário.
-
----
-
-# 14. Performance
-
-Tempo máximo esperado.
-
-Carregamento
-
-< 200 ms
-
-Processamento
-
-< 100 ms
-
-Resultado
-
-< 300 ms
-
-Toda operação deverá ser assíncrona quando necessário.
-
----
-
-# 15. Escalabilidade
-
-A Engine deverá permitir.
-
-- múltiplas Assessments
-- múltiplos idiomas
-- novos algoritmos
-- novos relatórios
-- novos perfis
-- novas dimensões
-
-Sem alteração estrutural.
+<2 segundos
 
 ---
 
 # 16. Segurança
 
-Nunca confiar em dados recebidos pelo frontend.
+Toda entrada deverá ser validada.
 
-Toda resposta deverá ser validada.
+Nunca confiar em dados enviados pelo cliente.
 
-Nunca executar regras diretamente na interface.
+Toda regra oficial pertence às Business Rules.
 
----
-
-# 17. Testabilidade
-
-Cada módulo deverá possuir testes unitários independentes.
-
-A Engine deverá permitir testes completos sem interface gráfica.
+Toda metodologia pertence ao documento Methodology.
 
 ---
 
-# 18. Logs
+# 17. Observabilidade
 
-Registrar apenas eventos técnicos.
+Registrar.
 
-Exemplos.
+- início da Assessment;
+- tempo de processamento;
+- erros;
+- conclusão.
 
-Assessment carregada.
-
-Assessment concluída.
-
-Erro de validação.
-
-Nunca registrar respostas pessoais do usuário em logs.
+Nunca registrar respostas individuais identificáveis durante o MVP.
 
 ---
 
-# 19. Dependências
+# 18. Escalabilidade
 
-A Engine depende apenas de.
+A Engine deverá suportar.
 
-- Content Library
-- Business Rules
-- Data Model
+- novas Assessments;
+- novos Arquétipos;
+- novas Dimensões;
+- novos Indicadores;
+- novos idiomas;
+- múltiplos algoritmos.
 
-Não depende de:
-
-- React
-- Next.js
-- Tailwind
-- Banco de Dados
+Sem alteração estrutural.
 
 ---
 
-# 20. Evolução
+# 19. Critérios de Aceite
 
-No futuro a Engine deverá suportar.
+A Assessment Engine será considerada concluída quando.
 
-- IA personalizada
-- Novos algoritmos
-- Machine Learning
-- Recomendações inteligentes
-- Histórico do usuário
-- Gamificação
-- Missões adaptativas
+✓ Validar qualquer Assessment.
 
-Sem reescrever sua arquitetura.
+✓ Calcular todos os Índices.
 
----
+✓ Identificar corretamente o Arquétipo.
 
-# 21. Critérios de Aceite
+✓ Selecionar Insights.
 
-A Assessment Engine será considerada pronta quando.
+✓ Construir o Plano de Evolução.
 
-✓ Processar qualquer Assessment configurada.
-
-✓ Calcular corretamente os Scores.
-
-✓ Identificar o perfil predominante.
-
-✓ Gerar a distribuição percentual.
-
-✓ Calcular o nível de confiança.
-
-✓ Gerar o plano de evolução.
-
-✓ Gerar o relatório.
+✓ Gerar o Relatório.
 
 ✓ Retornar um objeto padronizado.
 
 ✓ Permanecer independente da interface.
 
-✓ Ser totalmente reutilizável.
+---
+
+# 20. Princípio Supremo
+
+A Assessment Engine não interpreta pessoas.
+
+Ela interpreta padrões comportamentais observados durante uma Avaliação.
+
+Seu objetivo é transformar respostas em conhecimento estruturado, preservando integralmente a metodologia oficial da NEXO.
