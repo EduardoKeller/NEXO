@@ -1,284 +1,466 @@
 # AI DEVELOPMENT CHARTER
 
-**Projeto:** NEXO Platform  
-**Documento:** 08_AI_DEVELOPMENT_CHARTER.md  
-**Versão:** 1.0  
-**Status:** Approved  
-**Última atualização:** 01/08/2026
+**Projeto:** NEXO Platform
+**Documento:** 08_AI_DEVELOPMENT_CHARTER.md
+**Versão:** 1.0
+**Status:** Approved
+**Última atualização:** 03/08/2026
 
 ---
 
 # 1. Objetivo
 
-Este documento define as regras que toda Inteligência Artificial deverá seguir durante o desenvolvimento da plataforma NEXO.
+Este documento estabelece as regras obrigatórias para qualquer Inteligência Artificial utilizada no desenvolvimento da plataforma NEXO.
 
-O objetivo é garantir consistência, qualidade e previsibilidade em todas as implementações.
+Seu objetivo é garantir que todo código gerado por IA seja consistente com a arquitetura, metodologia e documentação oficial do projeto.
 
-Nenhuma IA deverá tomar decisões de arquitetura sem autorização explícita.
+Toda IA deverá considerar este documento como referência obrigatória antes de iniciar qualquer implementação.
 
 ---
 
-# 2. Ordem de Prioridade
+# 2. Princípios Fundamentais
 
-Sempre seguir esta ordem de documentação.
+Toda IA deverá seguir os seguintes princípios.
+
+## A documentação é a fonte da verdade
+
+A IA nunca deverá criar comportamento baseado em suposições.
+
+Sempre deverá consultar os documentos oficiais.
+
+---
+
+## O domínio vem antes da tecnologia
+
+Toda decisão deverá partir do domínio do problema.
+
+Frameworks, bibliotecas e ORMs são ferramentas.
+
+Nunca o centro da arquitetura.
+
+---
+
+## Simplicidade
+
+Escolher sempre a solução mais simples que atenda ao requisito.
+
+Evitar abstrações desnecessárias.
+
+---
+
+## Evolução incremental
+
+Implementar pequenas entregas completas.
+
+Evitar grandes implementações sem validação.
+
+---
+
+## Reutilização
+
+Antes de criar qualquer componente.
+
+Perguntar.
+
+Existe algo semelhante já implementado?
+
+---
+
+# 3. Ordem de Consulta da Documentação
+
+Antes de implementar qualquer funcionalidade, a IA deverá consultar.
 
 1. Vision
 
-2. PRD
+↓
 
-3. Business Rules
+2. Methodology
+
+↓
+
+3. PRD
+
+↓
 
 4. Architecture
 
-5. Assessment Engine
+↓
 
-6. Data Model
+5. Business Rules
 
-7. Content Library
+↓
 
-8. Design System
+6. Content Library
 
-Caso exista conflito entre documentos, interromper a implementação e informar o conflito.
+↓
 
-Nunca assumir comportamentos não documentados.
+7. Assessment Engine
 
----
+↓
 
-# 3. Responsabilidades da IA
+8. Data Model
 
-A IA deverá:
+↓
 
-- implementar funcionalidades;
-- sugerir melhorias arquiteturais;
-- identificar inconsistências;
-- propor refatorações quando apropriado;
-- escrever código limpo;
-- criar testes;
-- respeitar toda a documentação.
+9. API Contracts
 
-A IA nunca deverá modificar regras de negócio sem aprovação.
+↓
+
+10. Storage Model
+
+↓
+
+11. Prisma Mapping
+
+↓
+
+12. Implementation Guide
+
+Se existir conflito entre documentos.
+
+Prevalece o documento de maior nível.
 
 ---
 
 # 4. Restrições
 
-A IA nunca deverá:
+A IA nunca deverá.
 
-- alterar a arquitetura sem autorização;
-- modificar o algoritmo da Assessment Engine;
-- criar regras de negócio novas;
-- remover funcionalidades existentes;
-- duplicar código;
-- criar componentes desnecessários;
-- alterar o Design System.
+✖ Criar entidades não documentadas.
 
----
+✖ Alterar a metodologia.
 
-# 5. Filosofia de Desenvolvimento
+✖ Alterar regras de negócio.
 
-Toda implementação deverá priorizar:
+✖ Inventar endpoints.
 
-- simplicidade;
-- reutilização;
-- modularidade;
-- legibilidade;
-- escalabilidade;
-- testabilidade.
+✖ Criar tabelas adicionais.
 
-Sempre preferir soluções simples e bem documentadas.
+✖ Criar lógica fora das Engines.
+
+✖ Duplicar código.
+
+✖ Ignorar contratos.
+
+✖ Ignorar Design System.
 
 ---
 
-# 6. Estrutura do Código
+# 5. Regras para Implementação
 
-Todo código deverá:
+Antes de escrever código, a IA deverá validar.
 
-- possuir responsabilidade única;
-- utilizar TypeScript;
-- evitar lógica duplicada;
-- utilizar componentes reutilizáveis;
-- manter baixo acoplamento.
+- Qual problema será resolvido?
+- Existe documentação para isso?
+- Existe componente reutilizável?
+- Existe regra de negócio relacionada?
+- Existe contrato de API correspondente?
+- Existe entidade oficial?
 
----
+Caso qualquer resposta seja negativa.
 
-# 7. Componentização
-
-Antes de criar qualquer componente, verificar:
-
-- Já existe um componente semelhante?
-- É possível reutilizar um componente existente?
-- O novo componente será reutilizado em mais de um local?
-
-Se todas as respostas forem negativas, evitar criar um novo componente.
+A implementação deverá ser interrompida.
 
 ---
 
-# 8. Regras para Alterações
+# 6. Organização do Código
 
-Sempre que uma alteração afetar:
+Toda implementação deverá respeitar a estrutura oficial do projeto.
 
-- arquitetura;
-- regras de negócio;
-- modelo de dados;
-- conteúdo oficial;
+```text
+src/
 
-a IA deverá sugerir a atualização da documentação correspondente.
+app/
 
-Nenhuma implementação deverá divergir da documentação.
+components/
 
----
+features/
 
-# 9. Tratamento de Erros
+domain/
 
-Toda operação deverá prever:
+engines/
 
-- estados de carregamento;
-- estados vazios;
-- mensagens amigáveis;
-- recuperação de erro.
+services/
 
-Nunca expor erros técnicos ao usuário.
+hooks/
 
----
+lib/
 
-# 10. Performance
+types/
 
-Priorizar:
+tests/
+```
 
-- carregamento rápido;
-- componentes leves;
-- lazy loading quando apropriado;
-- otimização de renderização;
-- redução de requisições.
+Nenhum arquivo deverá ser criado fora dessa estrutura sem justificativa.
 
 ---
 
-# 11. Segurança
+# 7. Regras para Componentes
 
-Nunca confiar em dados do frontend.
+Todo componente deverá.
 
-Sempre validar:
+✔ Possuir responsabilidade única.
 
-- entradas;
-- parâmetros;
-- respostas.
+✔ Ser reutilizável.
 
-Nunca expor informações sensíveis.
+✔ Possuir tipagem.
 
----
+✔ Possuir testes quando aplicável.
 
-# 12. Testes
+Nunca misturar.
 
-Toda funcionalidade deverá possuir testes compatíveis com sua complexidade.
-
-Priorizar:
-
-- testes unitários;
-- testes de integração;
-- testes de componentes.
+- interface;
+- regra de negócio;
+- acesso a dados.
 
 ---
 
-# 13. Documentação
+# 8. Regras para Engines
 
-Sempre que uma funcionalidade for implementada:
+Cada Engine deverá possuir.
 
-- verificar se a documentação continua válida;
-- identificar inconsistências;
-- sugerir melhorias.
+Entrada definida.
 
-Nunca deixar código e documentação divergirem.
+↓
 
----
+Processamento.
 
-# 14. Processo de Desenvolvimento
+↓
 
-Para cada nova funcionalidade:
+Saída definida.
 
-1. Ler a documentação relevante.
+Nenhuma Engine poderá acessar diretamente.
 
-2. Planejar a implementação.
-
-3. Validar impactos.
-
-4. Implementar.
-
-5. Testar.
-
-6. Revisar.
-
-7. Atualizar documentação, se necessário.
+- componentes React;
+- banco de dados;
+- interface.
 
 ---
 
-# 15. Comunicação
+# 9. Regras para API
 
-Ao apresentar uma solução, a IA deverá informar:
+Toda API deverá.
 
-- objetivo da alteração;
-- impacto esperado;
-- riscos;
-- arquivos modificados;
-- próximos passos.
+Seguir os contratos definidos em.
 
----
+07B_API_CONTRACTS.md
 
-# 16. Critérios de Qualidade
+Nunca retornar estruturas diferentes.
 
-Todo código deverá ser:
+Toda resposta deverá possuir.
 
-- limpo;
-- legível;
-- reutilizável;
-- modular;
-- documentado quando necessário.
+```json
+{
+  "success": true,
+  "data": {},
+  "meta": {}
+}
+```
 
-Evitar otimizações prematuras.
+Ou.
 
----
-
-# 17. Compatibilidade
-
-Toda implementação deverá manter compatibilidade com:
-
-- documentação oficial;
-- versões futuras;
-- evolução da plataforma.
+```json
+{
+  "success": false,
+  "error": {},
+  "meta": {}
+}
+```
 
 ---
 
-# 18. Definição de Pronto
+# 10. Regras para Banco de Dados
 
-Uma funcionalidade somente será considerada concluída quando:
+Toda persistência deverá respeitar.
 
-- atender ao PRD;
-- respeitar as Business Rules;
-- utilizar o Data Model oficial;
-- seguir o Design System;
-- passar pelos testes;
-- não gerar regressões.
+07C_STORAGE_MODEL.md
 
----
+07D_PRISMA_MAPPING.md
 
-# 19. Melhoria Contínua
-
-A IA poderá sugerir melhorias.
-
-Essas sugestões deverão:
-
-- ser justificadas;
-- indicar impactos;
-- preservar compatibilidade;
-- nunca ser aplicadas automaticamente.
+Nunca criar tabelas não documentadas.
 
 ---
 
-# 20. Princípio Fundamental
+# 11. Regras para Testes
 
-A IA é uma ferramenta de implementação.
+Antes de concluir uma implementação.
 
-As decisões de produto pertencem ao Product Owner.
+A IA deverá verificar.
 
-Nenhuma decisão estratégica deverá ser tomada automaticamente pela IA.
+- Tipagem.
+- Build.
+- Lint.
+- Testes.
+- Contratos.
+- Performance.
 
-O objetivo da IA é acelerar o desenvolvimento mantendo fidelidade à visão da plataforma NEXO.
+---
+
+# 12. Checklist Obrigatório
+
+Antes de finalizar qualquer tarefa.
+
+- A documentação foi consultada?
+- O código segue a arquitetura?
+- Existe duplicação?
+- Existe componente reutilizável?
+- Os contratos foram respeitados?
+- O código é simples?
+- A funcionalidade possui testes?
+- O comportamento segue as Business Rules?
+
+Se qualquer resposta for negativa.
+
+A tarefa não deverá ser considerada concluída.
+
+---
+
+# 13. Processo de Implementação
+
+Toda funcionalidade deverá seguir o fluxo.
+
+```text
+Ler documentação
+
+↓
+
+Planejar
+
+↓
+
+Implementar
+
+↓
+
+Testar
+
+↓
+
+Revisar
+
+↓
+
+Documentar
+
+↓
+
+Commit
+```
+
+Nunca inverter essa ordem.
+
+---
+
+# 14. Critérios de Qualidade
+
+Todo código produzido por IA deverá.
+
+✓ Compilar.
+
+✓ Passar no lint.
+
+✓ Passar nos testes.
+
+✓ Seguir a arquitetura.
+
+✓ Ser legível.
+
+✓ Ser reutilizável.
+
+✓ Ser documentado.
+
+---
+
+# 15. Critérios de Recusa
+
+A IA deverá recusar implementar quando.
+
+- A documentação estiver inconsistente.
+- Existirem requisitos conflitantes.
+- Faltarem regras de negócio.
+- O pedido violar a arquitetura oficial.
+- A implementação exigir decisões ainda não documentadas.
+
+Nesses casos, deverá solicitar esclarecimentos antes de continuar.
+
+---
+
+# 16. Processo de Revisão
+
+Antes de considerar uma implementação concluída, a IA deverá realizar uma autoavaliação.
+
+### Arquitetura
+
+- A solução respeita a Clean Architecture?
+- As responsabilidades estão separadas?
+
+### Domínio
+
+- O comportamento segue a Methodology?
+- As Business Rules foram respeitadas?
+
+### Código
+
+- Existe duplicação?
+- Os nomes são claros?
+- A tipagem está completa?
+
+### Performance
+
+- Há processamento desnecessário?
+- Existem consultas repetidas?
+- Há oportunidade de simplificação?
+
+---
+
+# 17. Compatibilidade entre Agentes
+
+Todos os agentes de IA utilizados no projeto deverão seguir este documento.
+
+Exemplos.
+
+- ChatGPT
+- Claude
+- GitHub Copilot
+- Cursor
+- Windsurf
+- Continue.dev
+
+Independentemente da ferramenta, as regras permanecem as mesmas.
+
+---
+
+# 18. Evolução do Documento
+
+Este Charter poderá evoluir conforme o projeto crescer.
+
+Toda alteração deverá.
+
+- ser documentada;
+- possuir versão;
+- ser revisada;
+- manter compatibilidade com os documentos anteriores.
+
+---
+
+# 19. Critérios de Aceite
+
+O AI Development Charter será considerado aprovado quando.
+
+✓ Qualquer agente de IA conseguir implementar funcionalidades seguindo apenas a documentação oficial.
+
+✓ O código gerado permanecer consistente entre diferentes agentes.
+
+✓ As decisões técnicas permanecerem alinhadas ao domínio da NEXO.
+
+---
+
+# 20. Princípio Supremo
+
+Nenhuma Inteligência Artificial possui autonomia para definir a arquitetura da NEXO.
+
+A arquitetura pertence à documentação.
+
+A metodologia pertence ao produto.
+
+A IA existe para implementar essas decisões com qualidade, consistência e previsibilidade.
