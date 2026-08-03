@@ -1,0 +1,257 @@
+# Artificial Intelligence
+
+> O framework oficial para desenvolvimento assistido por Inteligência Artificial da plataforma NEXO.
+
+---
+
+# Objetivo
+
+Esta pasta reúne toda a documentação responsável por definir como Inteligências Artificiais deverão participar do desenvolvimento da plataforma NEXO.
+
+Ela estabelece.
+
+- princípios;
+- regras;
+- personas;
+- workflows;
+- playbooks;
+- prompts;
+- contexto.
+
+Seu objetivo é garantir que diferentes agentes produzam código consistente, previsível e alinhado à documentação oficial.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser consultada quando houver necessidade de.
+
+- iniciar uma nova implementação;
+- utilizar IA para desenvolvimento;
+- revisar código gerado por IA;
+- criar novos prompts;
+- definir workflows;
+- configurar múltiplos agentes;
+- preparar contexto para uma tarefa.
+
+Toda utilização de IA deverá seguir esta documentação.
+
+---
+
+# Ordem de Leitura
+
+A leitura recomendada é a seguinte.
+
+```text
+08_AI_DEVELOPMENT_CHARTER.md
+
+↓
+
+08A_AI_PROMPTS.md
+
+↓
+
+08B_AI_PERSONAS.md
+
+↓
+
+08C_AI_WORKFLOWS.md
+
+↓
+
+08D_AI_PLAYBOOK.md
+
+↓
+
+08E_AI_CONTEXT_PACKS.md
+```
+
+Cada documento adiciona uma nova camada de especialização.
+
+---
+
+# Documentos
+
+## 08_AI_DEVELOPMENT_CHARTER.md
+
+Define os princípios obrigatórios para qualquer IA utilizada no projeto.
+
+Responde.
+
+> Quais regras toda IA deve seguir?
+
+---
+
+## 08A_AI_PROMPTS.md
+
+Centraliza os prompts oficiais utilizados durante o desenvolvimento.
+
+Responde.
+
+> Como solicitar corretamente uma tarefa para a IA?
+
+---
+
+## 08B_AI_PERSONAS.md
+
+Define papéis especializados para diferentes agentes.
+
+Inclui.
+
+- Software Architect
+- Frontend Engineer
+- Backend Engineer
+- Data Engineer
+- QA Engineer
+- AI Reviewer
+
+Responde.
+
+> Quem deve executar cada tipo de tarefa?
+
+---
+
+## 08C_AI_WORKFLOWS.md
+
+Documenta os fluxos oficiais entre as personas.
+
+Responde.
+
+> Como uma tarefa percorre o processo de desenvolvimento?
+
+---
+
+## 08D_AI_PLAYBOOK.md
+
+Apresenta procedimentos completos para os cenários mais comuns.
+
+Inclui.
+
+- nova funcionalidade;
+- correção de bug;
+- refatoração;
+- criação de APIs;
+- atualização de documentação;
+- releases.
+
+Responde.
+
+> Como executar uma tarefa do início ao fim?
+
+---
+
+## 08E_AI_CONTEXT_PACKS.md
+
+Define os conjuntos mínimos de documentos necessários para cada atividade.
+
+Responde.
+
+> Qual contexto uma IA deve receber para executar uma tarefa?
+
+---
+
+# Dependências
+
+Esta pasta depende da documentação presente em.
+
+```text
+00-foundation/
+
+↓
+
+01-product/
+
+↓
+
+02-data/
+```
+
+Toda IA deverá compreender essas camadas antes de iniciar qualquer implementação.
+
+---
+
+# Próxima Etapa
+
+Após concluir esta seção, continuar para.
+
+```text
+04-engineering/
+```
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a.
+
+- ChatGPT
+- Claude
+- GitHub Copilot
+- Cursor
+- Windsurf
+- Continue.dev
+- Desenvolvedores
+- Arquitetos
+
+---
+
+# Critérios de Atualização
+
+Alterações nesta pasta deverão ocorrer quando houver mudanças em.
+
+- metodologia de desenvolvimento;
+- fluxos de trabalho;
+- prompts;
+- personas;
+- contexto;
+- processos envolvendo IA.
+
+Toda alteração deverá refletir também em.
+
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md
+
+---
+
+# Regras Gerais
+
+Toda Inteligência Artificial deverá.
+
+✓ Consultar a documentação oficial antes de implementar.
+
+✓ Utilizar os Context Packs apropriados.
+
+✓ Seguir os Workflows definidos.
+
+✓ Respeitar os padrões arquiteturais.
+
+✓ Atualizar a documentação quando necessário.
+
+Nunca.
+
+✖ Criar comportamento não documentado.
+
+✖ Alterar arquitetura.
+
+✖ Ignorar regras de negócio.
+
+✖ Inventar entidades.
+
+✖ Modificar contratos de API.
+
+---
+
+# Resumo
+
+Esta pasta representa a camada de governança para Inteligência Artificial da plataforma NEXO.
+
+Ela responde às perguntas fundamentais.
+
+- Como utilizar IA no projeto?
+- Como padronizar diferentes agentes?
+- Como garantir consistência entre implementações?
+- Como reduzir ambiguidades?
+- Como transformar documentação em código de forma previsível?
+
+Toda implementação assistida por IA deverá seguir obrigatoriamente esta documentação antes de qualquer alteração no projeto.
