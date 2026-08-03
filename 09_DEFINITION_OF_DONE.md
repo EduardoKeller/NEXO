@@ -1,392 +1,415 @@
 # DEFINITION OF DONE
 
-**Projeto:** NEXO Platform
-**Documento:** 09_DEFINITION_OF_DONE.md
-**Versão:** 1.0
-**Status:** Approved
-**Última atualização:** 01/08/2026
+**Projeto:** NEXO Platform  
+**Documento:** 09_DEFINITION_OF_DONE.md  
+**Versão:** 1.0  
+**Status:** Approved  
+**Última atualização:** 03/08/2026
 
 ---
 
 # 1. Objetivo
 
-Este documento define os critérios mínimos para considerar qualquer funcionalidade da plataforma NEXO como concluída.
+Este documento define os critérios oficiais para considerar uma tarefa, funcionalidade ou entrega como concluída na plataforma NEXO.
 
-Nenhuma funcionalidade poderá ser considerada pronta caso qualquer critério deste documento não seja atendido.
+Seu objetivo é garantir que toda entrega possua qualidade consistente, seja verificável e esteja alinhada à arquitetura, metodologia e documentação do projeto.
 
----
-
-# 2. Filosofia
-
-Concluir uma funcionalidade significa entregar valor.
-
-Não significa apenas escrever código.
-
-Uma funcionalidade somente estará concluída quando:
-
-- funcionar corretamente;
-- seguir a arquitetura;
-- respeitar a documentação;
-- possuir qualidade suficiente para produção.
+Nenhuma atividade poderá ser considerada concluída sem atender aos critérios deste documento.
 
 ---
 
-# 3. Critérios Gerais
+# 2. Princípios
 
-Toda funcionalidade deverá atender aos requisitos abaixo.
+Toda entrega deverá ser.
+
+- Completa
+- Testada
+- Documentada
+- Revisada
+- Reproduzível
+- Alinhada à arquitetura
+
+Não existe conceito de "quase pronta".
+
+---
+
+# 3. Definition of Ready (DoR)
+
+Antes de iniciar qualquer tarefa, deverá existir.
+
+✓ Objetivo claro.
+
+✓ Critérios de aceite definidos.
+
+✓ Documentação relacionada disponível.
+
+✓ Dependências concluídas.
+
+✓ Escopo compreendido.
+
+Caso algum item esteja ausente.
+
+A tarefa não deverá iniciar.
+
+---
+
+# 4. Definition of Done (DoD)
+
+Uma tarefa será considerada concluída apenas quando atender TODOS os critérios abaixo.
+
+---
+
+## 4.1 Implementação
+
+✓ Código implementado.
+
+✓ Segue a arquitetura oficial.
+
+✓ Não existe duplicação desnecessária.
+
+✓ Componentes reutilizados sempre que possível.
+
+✓ Tipagem completa (TypeScript Strict).
+
+✓ Nenhum TODO crítico pendente.
+
+---
+
+## 4.2 Qualidade do Código
+
+✓ Código legível.
+
+✓ Responsabilidade única.
+
+✓ Nomes claros.
+
+✓ Funções pequenas.
+
+✓ Componentes desacoplados.
+
+✓ Sem lógica de negócio na interface.
+
+---
+
+## 4.3 Arquitetura
+
+✓ Respeita Clean Architecture.
+
+✓ Respeita DDD.
+
+✓ Respeita SOLID.
+
+✓ Respeita Assessment Engine.
+
+✓ Respeita API Contracts.
+
+✓ Respeita Business Rules.
+
+---
+
+## 4.4 Testes
+
+✓ Testes unitários criados.
+
+✓ Casos de erro testados.
+
+✓ Casos limite testados.
+
+✓ Fluxo principal validado.
+
+✓ Cobertura adequada.
+
+---
+
+## 4.5 Build
+
+✓ Projeto compila.
+
+✓ Lint aprovado.
+
+✓ Type Check aprovado.
+
+✓ Build aprovado.
+
+---
+
+## 4.6 Performance
+
+✓ Não introduziu regressões.
+
+✓ Não adicionou processamento desnecessário.
+
+✓ Componentes renderizam corretamente.
+
+✓ Lighthouse permanece dentro das metas.
+
+---
+
+## 4.7 Segurança
+
+✓ Entradas validadas.
+
+✓ Nenhuma informação sensível exposta.
+
+✓ APIs protegidas.
+
+✓ Dependências verificadas.
+
+✓ Sem vulnerabilidades conhecidas.
+
+---
+
+## 4.8 Documentação
+
+✓ Documentação atualizada.
+
+✓ Changelog atualizado (quando aplicável).
+
+✓ Diagramas revisados (quando aplicável).
+
+✓ Contratos atualizados (quando aplicável).
+
+✓ Comentários relevantes adicionados.
+
+---
+
+## 4.9 Revisão
+
+✓ Revisão técnica concluída.
+
+✓ AI Reviewer aprovou.
+
+✓ Critérios de aceite atendidos.
+
+---
+
+# 5. Checklist Oficial
+
+Antes de concluir qualquer tarefa.
 
 ## Produto
 
-✔ Atende ao PRD.
+- O requisito foi atendido?
+- O comportamento segue o PRD?
+- As Business Rules foram respeitadas?
 
-✔ Resolve o problema proposto.
+---
 
-✔ Não altera regras de negócio.
+## Código
+
+- Existe duplicação?
+- O código pode ser simplificado?
+- Os nomes são claros?
+- A tipagem está completa?
 
 ---
 
 ## Arquitetura
 
-✔ Segue a Architecture.
-
-✔ Respeita a Assessment Engine.
-
-✔ Utiliza o Data Model oficial.
-
-✔ Não cria dependências desnecessárias.
-
----
-
-## Código
-
-✔ Código limpo.
-
-✔ Sem duplicação.
-
-✔ Responsabilidade única.
-
-✔ Tipagem completa.
-
-✔ Sem comentários desnecessários.
-
-✔ Sem código morto.
-
----
-
-## Interface
-
-✔ Responsiva.
-
-✔ Mobile First.
-
-✔ Segue o Design System.
-
-✔ Estados de Loading.
-
-✔ Estados de Erro.
-
-✔ Estados Vazios.
-
-✔ Acessibilidade básica.
-
----
-
-## Conteúdo
-
-✔ Utiliza apenas conteúdos da Content Library.
-
-✔ Não possui textos hardcoded.
-
-✔ Não altera mensagens oficiais.
-
----
-
-## Performance
-
-✔ Sem renderizações desnecessárias.
-
-✔ Componentes reutilizáveis.
-
-✔ Carregamento otimizado.
-
----
-
-## Segurança
-
-✔ Dados validados.
-
-✔ Entradas sanitizadas.
-
-✔ Nenhum dado sensível exposto.
+- Segue a estrutura oficial?
+- Respeita o Domain Model?
+- Respeita os contratos?
 
 ---
 
 ## Testes
 
-✔ Fluxo principal validado.
-
-✔ Casos de erro tratados.
-
-✔ Casos limite considerados.
+- Todos passaram?
+- Os casos críticos estão cobertos?
 
 ---
 
-# 4. Checklist por Funcionalidade
+## Documentação
 
-Antes de finalizar qualquer tarefa verificar.
-
-## Produto
-
-☐ Objetivo atendido.
-
-☐ Fluxo completo.
-
-☐ Sem impacto negativo.
+- Está sincronizada com o código?
+- Existe algum documento que precisa ser atualizado?
 
 ---
 
-## Código
+# 6. Critérios por Tipo de Entrega
 
-☐ Compila sem erros.
+## Nova Funcionalidade
 
-☐ ESLint sem erros.
+Obrigatório.
 
-☐ TypeScript sem erros.
-
-☐ Imports organizados.
-
-☐ Sem código duplicado.
-
----
-
-## Interface
-
-☐ Mobile.
-
-☐ Tablet.
-
-☐ Desktop.
-
-☐ Dark Theme.
+- Código
+- Testes
+- Documentação
+- Review
 
 ---
 
-## Engine
+## Correção de Bug
 
-☐ Assessment Engine preservada.
+Obrigatório.
 
-☐ Business Rules preservadas.
-
-☐ Data Model preservado.
-
----
-
-## Conteúdo
-
-☐ Textos corretos.
-
-☐ Links corretos.
-
-☐ CTAs corretos.
+- Causa raiz identificada.
+- Correção implementada.
+- Teste de regressão.
 
 ---
 
-## Deploy
+## Refatoração
 
-☐ Build funcionando.
+Obrigatório.
 
-☐ Sem erros de produção.
-
----
-
-# 5. Critérios por Tipo
-
-## Landing Page
-
-Deverá possuir.
-
-✔ Hero.
-
-✔ CTA.
-
-✔ Benefícios.
-
-✔ FAQ.
-
-✔ Responsividade.
+- Mesmo comportamento.
+- Melhor estrutura.
+- Todos os testes aprovados.
 
 ---
 
-## Assessment
+## Banco de Dados
 
-✔ Todas as perguntas.
+Obrigatório.
 
-✔ Navegação.
-
-✔ Persistência.
-
-✔ Progresso.
-
-✔ Validação.
+- Migration.
+- Validação.
+- Documentação.
+- Revisão.
 
 ---
 
-## Resultado
+## API
 
-✔ Perfil correto.
+Obrigatório.
 
-✔ Distribuição.
-
-✔ Plano de Evolução.
-
-✔ CTA.
+- Contratos respeitados.
+- Testes.
+- Documentação.
 
 ---
 
-## Relatório
+## Design System
 
-✔ PDF gerado.
+Obrigatório.
 
-✔ Conteúdo correto.
-
-✔ Download funcionando.
-
----
-
-## Evolução
-
-✔ Exercícios.
-
-✔ Checklist.
-
-✔ Recursos.
-
-✔ Próximo passo.
+- Componente reutilizável.
+- Acessibilidade.
+- Responsividade.
 
 ---
 
-# 6. Critérios Técnicos
+# 7. Critérios Automáticos
 
-Toda implementação deverá possuir.
+Antes de qualquer merge deverão ser aprovados automaticamente.
 
-✔ TypeScript.
+✓ Lint
 
-✔ Componentização.
+✓ Type Check
 
-✔ Reutilização.
+✓ Build
 
-✔ Modularidade.
+✓ Testes
 
-✔ Tipagem forte.
+Caso qualquer um falhe.
 
-✔ Tratamento de erros.
-
----
-
-# 7. Critérios Visuais
-
-A interface deverá apresentar.
-
-✔ Hierarquia visual.
-
-✔ Espaçamento consistente.
-
-✔ Contraste adequado.
-
-✔ Tipografia correta.
-
-✔ Componentes padronizados.
-
-✔ Feedback visual.
+O merge deverá ser bloqueado.
 
 ---
 
-# 8. Critérios da IA
+# 8. Critérios Humanos
 
-Toda implementação realizada por IA deverá.
+Antes da aprovação final.
 
-✔ Respeitar a documentação.
+✓ Revisão arquitetural.
 
-✔ Não criar regras novas.
+✓ Revisão funcional.
 
-✔ Não alterar arquitetura.
-
-✔ Informar impactos.
-
-✔ Informar arquivos alterados.
+✓ Revisão documental.
 
 ---
 
-# 9. Critérios de Aprovação
+# 9. Não é considerado "Done"
 
-Uma funcionalidade somente poderá ser aprovada quando.
+Uma tarefa NÃO poderá ser marcada como concluída quando.
 
-✔ O Product Owner validar o comportamento.
+✖ Existem testes falhando.
 
-✔ Não existirem erros críticos.
+✖ Existe documentação desatualizada.
 
-✔ Todos os critérios anteriores forem atendidos.
+✖ Existem regras não documentadas.
 
----
+✖ Existem erros conhecidos sem registro.
 
-# 10. Critérios de Rejeição
+✖ Existe código comentado sem justificativa.
 
-A funcionalidade deverá ser rejeitada quando.
-
-✖ Existirem erros de execução.
-
-✖ Existirem inconsistências com a documentação.
-
-✖ Não seguir o Design System.
-
-✖ Não respeitar Business Rules.
-
-✖ Possuir código duplicado.
-
-✖ Não funcionar em dispositivos móveis.
-
-✖ Possuir regressões.
+✖ Existem decisões arquiteturais pendentes.
 
 ---
 
-# 11. Revisão da Documentação
+# 10. Métricas
 
-Sempre que uma funcionalidade alterar o comportamento oficial da plataforma.
+Toda entrega deverá registrar.
 
-Será obrigatório.
+- Tempo de desenvolvimento.
+- Arquivos alterados.
+- Documentos impactados.
+- Cobertura de testes.
+- Tipo de alteração.
 
-1. Atualizar documentação.
-
-2. Revisar impactos.
-
-3. Atualizar CHANGELOG.
-
----
-
-# 12. Qualidade
-
-Toda entrega deverá priorizar.
-
-- Clareza.
-- Simplicidade.
-- Escalabilidade.
-- Reutilização.
-- Consistência.
-
-Nunca sacrificar qualidade por velocidade.
+Essas métricas servirão para melhoria contínua do processo.
 
 ---
 
-# 13. Definition of Done Oficial
+# 11. Fluxo Oficial
 
-Uma funcionalidade da plataforma NEXO somente será considerada concluída quando:
+```text
+Definition of Ready
 
-- atender aos requisitos do produto;
-- respeitar a arquitetura oficial;
-- seguir o Design System;
-- utilizar o Data Model oficial;
-- obedecer às Business Rules;
-- consumir apenas conteúdos oficiais da Content Library;
-- funcionar corretamente em dispositivos móveis;
-- estar preparada para evolução futura;
-- possuir qualidade suficiente para produção.
+↓
+
+Planejamento
+
+↓
+
+Implementação
+
+↓
+
+Testes
+
+↓
+
+Documentação
+
+↓
+
+Review
+
+↓
+
+Validação
+
+↓
+
+Definition of Done
+
+↓
+
+Merge
+
+↓
+
+Deploy
+```
+
+---
+
+# 12. Critérios de Aceite
+
+Este documento será considerado aprovado quando.
+
+✓ Todos os tipos de entrega possuírem critérios claros.
+
+✓ Não existirem ambiguidades sobre o conceito de "concluído".
+
+✓ O processo puder ser seguido por desenvolvedores e agentes de IA.
+
+---
+
+# 13. Princípio Supremo
+
+Uma funcionalidade só está pronta quando entrega valor ao usuário, atende aos requisitos do produto, respeita a arquitetura da NEXO e pode ser mantida com segurança no futuro.
+
+Código funcionando não significa código concluído.
