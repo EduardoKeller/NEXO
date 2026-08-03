@@ -1,0 +1,349 @@
+# Engineering
+
+> As diretrizes oficiais para desenvolvimento, qualidade e evolução da plataforma NEXO.
+
+---
+
+# Objetivo
+
+Esta pasta reúne toda a documentação responsável por definir os padrões de engenharia da plataforma NEXO.
+
+Ela estabelece.
+
+- governança;
+- qualidade;
+- versionamento;
+- processos de contribuição;
+- padrões arquiteturais;
+- stack tecnológica;
+- evolução do projeto.
+
+Seu objetivo é garantir que a plataforma permaneça consistente, sustentável e de fácil manutenção durante toda sua evolução.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser consultada quando houver necessidade de.
+
+- iniciar uma Sprint;
+- implementar novas funcionalidades;
+- abrir Pull Requests;
+- realizar Code Reviews;
+- atualizar a stack tecnológica;
+- revisar arquitetura;
+- contribuir com o projeto;
+- preparar uma Release.
+
+Toda implementação deverá seguir esta documentação.
+
+---
+
+# Ordem de Leitura
+
+A leitura recomendada é a seguinte.
+
+```text
+09A_DEFINITION_OF_READY.md
+
+↓
+
+09_DEFINITION_OF_DONE.md
+
+↓
+
+10_ROADMAP.md
+
+↓
+
+11_CHANGELOG.md
+
+↓
+
+11A_RELEASE_NOTES.md
+
+↓
+
+12_CONTRIBUTING.md
+
+↓
+
+12A_DEVELOPMENT_STANDARDS.md
+
+↓
+
+12B_ARCHITECTURE_PATTERNS.md
+
+↓
+
+12C_TECH_STACK.md
+```
+
+Cada documento representa uma etapa da governança da plataforma.
+
+---
+
+# Documentos
+
+## 09A_DEFINITION_OF_READY.md
+
+Define quando uma tarefa está pronta para iniciar.
+
+Responde.
+
+> Podemos começar esta implementação?
+
+---
+
+## 09_DEFINITION_OF_DONE.md
+
+Define quando uma tarefa pode ser considerada concluída.
+
+Responde.
+
+> Esta entrega realmente está pronta?
+
+---
+
+## 10_ROADMAP.md
+
+Apresenta o planejamento estratégico da evolução da plataforma.
+
+Responde.
+
+> Para onde a NEXO está evoluindo?
+
+---
+
+## 11_CHANGELOG.md
+
+Registra todas as alterações relevantes do projeto.
+
+Responde.
+
+> O que mudou ao longo do tempo?
+
+---
+
+## 11A_RELEASE_NOTES.md
+
+Comunica oficialmente cada nova versão da plataforma.
+
+Responde.
+
+> O que mudou para os usuários?
+
+---
+
+## 12_CONTRIBUTING.md
+
+Define como contribuir com o projeto.
+
+Inclui.
+
+- fluxo de contribuição;
+- Pull Requests;
+- revisões;
+- boas práticas.
+
+Responde.
+
+> Como colaborar corretamente?
+
+---
+
+## 12A_DEVELOPMENT_STANDARDS.md
+
+Documenta os padrões oficiais de desenvolvimento.
+
+Inclui.
+
+- organização do código;
+- nomenclatura;
+- React;
+- TypeScript;
+- APIs;
+- testes.
+
+Responde.
+
+> Como escrever código na NEXO?
+
+---
+
+## 12B_ARCHITECTURE_PATTERNS.md
+
+Define os padrões arquiteturais utilizados pela plataforma.
+
+Inclui.
+
+- camadas;
+- padrões;
+- anti-patterns;
+- responsabilidades.
+
+Responde.
+
+> Como estruturar soluções?
+
+---
+
+## 12C_TECH_STACK.md
+
+Documenta a stack tecnológica oficial.
+
+Inclui.
+
+- frontend;
+- backend;
+- banco;
+- testes;
+- deploy;
+- observabilidade.
+
+Responde.
+
+> Quais tecnologias utilizamos e por quê?
+
+---
+
+# Dependências
+
+Esta pasta depende da documentação presente em.
+
+```text
+00-foundation/
+
+↓
+
+01-product/
+
+↓
+
+02-data/
+
+↓
+
+03-ai/
+```
+
+Toda decisão técnica deverá respeitar essas camadas.
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a.
+
+- Software Architects
+- Tech Leads
+- Desenvolvedores Frontend
+- Desenvolvedores Backend
+- QA Engineers
+- DevOps Engineers
+- Product Engineers
+- Agentes de Inteligência Artificial
+
+---
+
+# Critérios de Atualização
+
+Alterações nesta pasta deverão ocorrer quando houver mudanças em.
+
+- processo de desenvolvimento;
+- arquitetura;
+- stack tecnológica;
+- governança;
+- padrões de código;
+- estratégia de releases.
+
+Toda alteração deverá refletir também em.
+
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md
+
+---
+
+# Fluxo Oficial de Desenvolvimento
+
+Todo desenvolvimento deverá seguir.
+
+```text
+Definition of Ready
+
+↓
+
+Planejamento
+
+↓
+
+Implementação
+
+↓
+
+Testes
+
+↓
+
+Documentação
+
+↓
+
+Code Review
+
+↓
+
+Definition of Done
+
+↓
+
+Merge
+
+↓
+
+Release
+```
+
+Nenhuma etapa deverá ser ignorada.
+
+---
+
+# Princípios
+
+Toda evolução da plataforma deverá preservar.
+
+✓ Simplicidade
+
+✓ Consistência
+
+✓ Qualidade
+
+✓ Arquitetura
+
+✓ Documentação
+
+✓ Testabilidade
+
+✓ Performance
+
+✓ Segurança
+
+O código deverá evoluir sem comprometer a visão original da plataforma.
+
+---
+
+# Resumo
+
+Esta pasta representa o Engineering Handbook oficial da plataforma NEXO.
+
+Ela responde às perguntas fundamentais.
+
+- Como desenvolver a plataforma?
+- Como manter qualidade?
+- Como contribuir?
+- Como revisar código?
+- Como evoluir a arquitetura?
+- Como garantir consistência ao longo do tempo?
+
+Toda implementação deverá utilizar esta documentação como referência antes de qualquer alteração no projeto.
