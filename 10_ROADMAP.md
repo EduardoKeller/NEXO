@@ -1,141 +1,270 @@
 # ROADMAP
 
-**Projeto:** NEXO Platform
-**Documento:** 10_ROADMAP.md
-**Versão:** 1.0
-**Status:** Approved
-**Última atualização:** 01/08/2026
+**Projeto:** NEXO Platform  
+**Documento:** 10_ROADMAP.md  
+**Versão:** 1.0  
+**Status:** Approved  
+**Última atualização:** 03/08/2026
 
 ---
 
-# Objetivo
+# 1. Objetivo
 
-Este documento apresenta a visão de evolução da plataforma NEXO.
+Este documento define o Roadmap Oficial da plataforma NEXO.
 
-O Roadmap orienta prioridades, permitindo crescimento contínuo sem comprometer a arquitetura.
+Seu objetivo é orientar a evolução do produto de forma incremental, priorizando entregas que gerem valor real ao usuário e mantenham a arquitetura consistente.
 
-O Roadmap representa planejamento e poderá sofrer alterações conforme necessidades do produto.
+O Roadmap é um documento vivo e deverá ser revisado ao final de cada grande entrega.
 
 ---
 
-# MVP (Versão 1.0)
+# 2. Princípios
 
-Objetivo:
+Toda evolução da plataforma deverá seguir os seguintes princípios.
 
-Validar a proposta da plataforma.
+- Evolução incremental.
+- Entregas pequenas e completas.
+- Qualidade acima de velocidade.
+- Arquitetura antes de funcionalidades.
+- Documentação antes da implementação.
+- Feedback do usuário como direcionador de prioridades.
 
-Escopo:
+---
+
+# 3. Estado Atual
+
+## Sprint 0 — Fundação
+
+Objetivo.
+
+Construir toda a documentação oficial da plataforma.
+
+### Entregas
+
+- Vision
+- Methodology
+- PRD
+- Architecture
+- Design System
+- Business Rules
+- Content Library
+- Assessment Engine
+- Data Model
+- AI Framework
+- Governança
+
+### Critério de Conclusão
+
+✓ Documentação aprovada.
+
+---
+
+# 4. Sprint 1 — MVP Funcional
+
+Objetivo.
+
+Entregar uma primeira versão utilizável da plataforma.
+
+### Funcionalidades
 
 - Landing Page
-- Avaliação NEXO
+- Fluxo completo da Assessment
 - Assessment Engine
-- Perfil Comportamental
-- Plano de Evolução
-- Relatório em PDF
+- Resultados
+- Relatório HTML
 - Responsividade
-- Deploy na Vercel
+- Tema claro/escuro
+- Integração com Content Library
 
-Critério de sucesso:
+### Critério de Conclusão
 
-- Usuário conclui a avaliação em menos de 3 minutos.
-- Recebe relatório.
-- Inicia um plano de evolução.
-
----
-
-# Versão 1.1
-
-Objetivo:
-
-Melhorar a experiência.
-
-Funcionalidades:
-
-- Histórico local
-- Compartilhamento do resultado
-- Novos exercícios
-- Melhorias de UX
-- Otimização de performance
+✓ Usuário consegue realizar uma avaliação completa.
 
 ---
 
-# Versão 1.2
+# 5. Sprint 2 — Persistência
 
-Objetivo:
+Objetivo.
 
-Aumentar retenção.
+Adicionar armazenamento de dados.
 
-Funcionalidades:
+### Funcionalidades
 
-- Missões de 7 dias
-- Check-ins diários
-- Histórico de progresso
-- Biblioteca de conteúdos
-
----
-
-# Versão 2.0
-
-Objetivo:
-
-Transformar a NEXO em uma plataforma.
-
-Funcionalidades:
-
-- Cadastro de usuários
-- Login social
-- Dashboard pessoal
+- Prisma
+- PostgreSQL
 - Histórico de avaliações
-- Novas Assessments
+- Sessões
+- Migrações
+- Seeds
+
+### Critério
+
+✓ Resultados persistidos corretamente.
 
 ---
 
-# Versão 2.5
+# 6. Sprint 3 — APIs
 
-Funcionalidades:
+Objetivo.
 
-- IA personalizada
-- Recomendações inteligentes
-- Relatórios dinâmicos
-- Insights avançados
+Expor serviços da plataforma.
+
+### Funcionalidades
+
+- API da Assessment
+- API de Resultados
+- API de Relatórios
+- Health Check
+- Versionamento
+
+### Critério
+
+✓ APIs públicas documentadas e testadas.
 
 ---
 
-# Versão 3.0
+# 7. Sprint 4 — Evolução do Produto
 
-Objetivo:
+Objetivo.
 
-Ecossistema NEXO.
+Melhorar a experiência do usuário.
 
-Funcionalidades:
+### Funcionalidades
+
+- Dashboard
+- Histórico
+- Comparação de resultados
+- Evolução pessoal
+- Novas missões
+- Recursos personalizados
+
+### Critério
+
+✓ Usuário acompanha sua evolução ao longo do tempo.
+
+---
+
+# 8. Sprint 5 — Inteligência
+
+Objetivo.
+
+Adicionar recursos baseados em IA.
+
+### Funcionalidades
+
+- AI Coach
+- Recomendações contextualizadas
+- Explicações dinâmicas
+- Sugestões de evolução
+- Assistente de interpretação
+
+### Critério
+
+✓ IA auxilia o usuário sem substituir a metodologia.
+
+---
+
+# 9. Sprint 6 — Ecossistema
+
+Objetivo.
+
+Expandir a plataforma.
+
+### Funcionalidades
+
+- Área administrativa
+- Gestão de conteúdo
+- Internacionalização
+- Multi Assessment
+- Integrações externas
+
+### Critério
+
+✓ Plataforma preparada para crescimento.
+
+---
+
+# 10. Backlog Estratégico
+
+Itens identificados, mas ainda sem prioridade definida.
 
 - Aplicativo Mobile
 - Gamificação
-- Comunidade
-- Ranking de missões
-- API pública
+- Sistema de notificações
+- Exportação avançada
+- Analytics
+- API Pública
+- Marketplace de conteúdos
+- Integração com calendário
+- Webhooks
+- Plugins
+
+Esses itens serão priorizados conforme feedback dos usuários e objetivos do produto.
 
 ---
 
-# Prioridades
+# 11. Critérios de Priorização
 
-Sempre seguir:
+Toda nova funcionalidade deverá ser avaliada considerando.
 
-1. Valor ao usuário
-2. Simplicidade
-3. Performance
-4. Escalabilidade
-5. Monetização
-
-Monetização nunca deverá comprometer a experiência do usuário.
+1. Valor para o usuário.
+2. Alinhamento com a visão da NEXO.
+3. Complexidade técnica.
+4. Impacto arquitetural.
+5. Esforço de manutenção.
 
 ---
 
-# Critério de Evolução
+# 12. Gestão de Mudanças
 
-Uma nova funcionalidade somente poderá entrar no Roadmap quando:
+Alterações no Roadmap deverão.
 
-- resolver um problema real;
-- possuir objetivo definido;
-- respeitar a arquitetura;
-- preservar a simplicidade do produto.
+- possuir justificativa;
+- ser registradas no Changelog;
+- atualizar a documentação relacionada;
+- preservar a consistência da arquitetura.
+
+---
+
+# 13. Indicadores de Sucesso
+
+Cada Sprint deverá acompanhar.
+
+- Funcionalidades concluídas.
+- Bugs críticos.
+- Cobertura de testes.
+- Performance.
+- Pendências.
+- Feedback dos usuários.
+
+---
+
+# 14. Revisão do Roadmap
+
+O Roadmap deverá ser revisado.
+
+- Ao final de cada Sprint.
+- Antes de cada Release.
+- Quando houver mudança significativa na estratégia do produto.
+
+---
+
+# 15. Critérios de Aceite
+
+Este documento será considerado válido quando.
+
+✓ A evolução do produto estiver claramente definida.
+
+✓ As prioridades forem compreensíveis.
+
+✓ O Roadmap estiver alinhado ao PRD e à arquitetura.
+
+✓ Houver critérios claros para cada Sprint.
+
+---
+
+# 16. Princípio Supremo
+
+O Roadmap representa a direção estratégica da NEXO.
+
+Ele orienta a evolução do produto, mas não substitui a necessidade de validar decisões com usuários, revisar a documentação e preservar a arquitetura oficial.
