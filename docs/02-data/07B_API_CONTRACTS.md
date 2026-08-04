@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07B_API_CONTRACTS.md
-**Versão:** 1.0
+**Versão:** 1.1
 **Status:** Draft (Sprint 0 Review)
-**Última atualização:** 03/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -201,6 +201,8 @@ confidence: number
 
 }
 ```
+
+`confidence` utiliza a faixa oficial 0–100, conforme 07_DATA_MODEL.md, Seção 12.
 
 ---
 

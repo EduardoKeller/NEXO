@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 07_DATA_MODEL.md  
-**Versão:** 2.0  
+**Versão:** 2.1  
 **Status:** Draft (Sprint 0 Review)  
-**Última atualização:** 03/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -317,6 +317,10 @@ matchedIndicators: string[]
 Arquétipos nunca representam personalidade.
 
 Representam tendências comportamentais.
+
+`confidence` utiliza a faixa oficial 0–100, calculada pelo Archetype Resolver (06_ASSESSMENT_ENGINE.md, Seção 9) a partir da Distância Euclidiana Ponderada. Corresponde a `ConfidenceLevel` (Seção 27): 0–20 VeryLow · 21–40 Low · 41–60 Medium · 61–80 High · 81–100 VeryHigh.
+
+`matchedIndicators` lista os Indicadores predominantes, utilizados como critério de desempate (04_BUSINESS_RULES.md, Seção 16).
 
 ---
 

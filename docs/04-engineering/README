@@ -77,6 +77,10 @@ A leitura recomendada é a seguinte.
 ↓
 
 12C_TECH_STACK.md
+
+↓
+
+13_DECISION_LOG.md
 ```
 
 Cada documento representa uma etapa da governança da plataforma.
@@ -204,6 +208,16 @@ Inclui.
 Responde.
 
 > Quais tecnologias utilizamos e por quê?
+
+---
+
+## 13_DECISION_LOG.md
+
+Registra decisões arquiteturais relevantes no formato `DEC-XXXX`.
+
+Responde.
+
+> Por que esta decisão foi tomada e quais alternativas foram consideradas?
 
 ---
 

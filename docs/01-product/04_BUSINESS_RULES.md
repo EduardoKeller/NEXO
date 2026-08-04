@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 04_BUSINESS_RULES.md
-**Versão:** 2.0
+**Versão:** 2.1
 **Status:** Draft (Sprint 0 Review)
-**Última atualização:** 01/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -160,7 +160,9 @@ Nenhuma alternativa deverá parecer "correta".
 
 # 9. Pontuação
 
-Toda alternativa adicionará pontos ao perfil correspondente.
+Toda alternativa adicionará pontos ao Indicador e à Dimensão correspondente.
+
+Nenhuma alternativa adiciona pontos diretamente a um Arquétipo. O Arquétipo é determinado posteriormente, a partir dos Índices Comportamentais (ver Seção 11).
 
 O cálculo seguirá.
 
@@ -208,6 +210,22 @@ No MVP existirão quatro arquétipos.
 O arquétipo representa uma tendência predominante.
 
 Nunca uma definição permanente da pessoa.
+
+---
+
+## Como o Arquétipo é Determinado
+
+O arquétipo predominante é identificado comparando os Índices Comportamentais do usuário com o Perfil de Referência oficial de cada arquétipo, mantido na Content Library (05_CONTENT_LIBRARY.md, Archetype Library).
+
+A comparação utiliza Distância Euclidiana Ponderada, com pesos oficiais por Dimensão (07_DATA_MODEL.md).
+
+O algoritmo completo, incluindo a fórmula de cálculo, está documentado em 06_ASSESSMENT_ENGINE.md, Seção 9 (Archetype Resolver).
+
+Todo resultado é acompanhado por um Confidence Score (0 a 100), representando o quão claramente o perfil do usuário corresponde ao arquétipo identificado em relação aos demais candidatos.
+
+Os Perfis de Referência utilizados no MVP representam uma calibração inicial (v1.0), derivada das descrições oficiais de cada arquétipo. Eles não são constantes imutáveis: deverão ser validados e ajustados conforme dados reais de uso forem coletados, seguindo o processo de governança da Content Library (05_CONTENT_LIBRARY.md, Seção 29).
+
+Esta decisão está registrada em 13_DECISION_LOG.md (DEC-0003).
 
 ---
 
@@ -278,23 +296,27 @@ O relatório nunca deverá repetir apenas respostas.
 
 # 16. Empates
 
-Caso dois ou mais arquétipos obtenham exatamente a mesma pontuação.
+Caso dois ou mais arquétipos apresentem a menor distância (ou distâncias equivalentes) em relação ao perfil do usuário.
 
-Aplicar.
+Aplicar, nesta ordem.
 
-1. Maior pontuação na Dimensão Consistência.
-
-Persistindo.
-
-2. Maior pontuação na Dimensão Planejamento.
+1. Maior Confidence Score.
 
 Persistindo.
 
-3. Maior pontuação na última pergunta respondida.
+2. Maior Índice de Consistência.
 
 Persistindo.
 
-4. Prioridade oficial.
+3. Maior Índice de Planejamento.
+
+Persistindo.
+
+4. Maior quantidade de Indicadores predominantes.
+
+Persistindo (empate matemático absoluto).
+
+5. Prioridade oficial.
 
 Refinador Estratégico
 
@@ -309,6 +331,10 @@ Executor Sob Pressão
 ↓
 
 Acumulador de Prioridades
+
+---
+
+Esta é a regra oficial e única de desempate da plataforma. Qualquer outro documento que trate deste tema (incluindo 06_ASSESSMENT_ENGINE.md) deverá referenciar esta seção, nunca redefini-la de forma divergente.
 
 ---
 

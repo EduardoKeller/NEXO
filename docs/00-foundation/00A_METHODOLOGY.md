@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 00A_METHODOLOGY.md  
-**Versão:** 2.0  
+**Versão:** 2.1  
 **Status:** Draft (Sprint 0 Review)  
-**Última atualização:** 01/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -236,6 +236,8 @@ No MVP existirão quatro arquétipos.
 - Acumulador de Prioridades
 
 Arquiteturalmente, novos arquétipos poderão ser adicionados sem alterar a metodologia.
+
+O algoritmo oficial de classificação (Distância Euclidiana Ponderada) está definido em 06_ASSESSMENT_ENGINE.md, Seção 9.
 
 ---
 

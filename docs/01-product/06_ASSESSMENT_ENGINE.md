@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 06_ASSESSMENT_ENGINE.md
-**Versão:** 2.0
+**Versão:** 2.1
 **Status:** Draft (Sprint 0 Review)
-**Última atualização:** 01/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -253,6 +253,48 @@ Nunca um cálculo direto das respostas.
 
 ---
 
+## Algoritmo Oficial de Classificação
+
+O Archetype Resolver utiliza Distância Euclidiana Ponderada entre o vetor de Índices Comportamentais do usuário e o Perfil de Referência (`reference_profile`) de cada Arquétipo, definido na Content Library (05_CONTENT_LIBRARY.md, Archetype Library).
+
+```
+distancia(arquétipo) = √( Σ peso[d] × (índiceUsuário[d] − referência[d, arquétipo])² )
+
+para d em { Iniciativa, Planejamento, Gestão da Pressão, Gestão da Distração, Consistência }
+```
+
+`peso[d]` corresponde ao peso oficial da Dimensão (`Dimension.weight`, ver 07_DATA_MODEL.md).
+
+O Arquétipo predominante é aquele com a menor distância calculada.
+
+Este cálculo é determinístico: os mesmos Índices Comportamentais sempre produzem o mesmo Arquétipo.
+
+---
+
+## Cálculo do Confidence Score
+
+```
+confidence = round( 100 × (1 − distancia_melhor / (distancia_melhor + distancia_segundo_melhor)) )
+```
+
+Faixa oficial: 0 a 100.
+
+Correspondência com `ConfidenceLevel` (07_DATA_MODEL.md, Seção 27):
+
+0–20 VeryLow · 21–40 Low · 41–60 Medium · 61–80 High · 81–100 VeryHigh
+
+---
+
+## Perfis de Referência
+
+Os valores de `reference_profile` utilizados nesta versão (v1.0) representam uma calibração inicial, derivada das descrições oficiais de cada Arquétipo na Content Library.
+
+Eles não são constantes imutáveis. Deverão ser revisados e recalibrados conforme dados reais de uso da plataforma forem coletados, sem exigir alteração da fórmula ou da arquitetura da Engine.
+
+Esta decisão, incluindo as alternativas consideradas (Score Ponderado, Sistema Baseado em Regras, Cosine Similarity), está registrada em 13_DECISION_LOG.md (DEC-0003).
+
+---
+
 # 10. Insight Engine
 
 Recebe.
@@ -348,37 +390,9 @@ Este objeto representa a resposta oficial da Assessment Engine.
 
 # 14. Tratamento de Empates
 
-Caso dois Arquétipos apresentem pontuação semelhante.
+A regra oficial e única de desempate está definida em 04_BUSINESS_RULES.md, Seção 16.
 
-Aplicar.
-
-1.
-
-Maior Confidence Score.
-
-↓
-
-2.
-
-Maior Índice de Consistência.
-
-↓
-
-3.
-
-Maior Índice de Planejamento.
-
-↓
-
-4.
-
-Maior quantidade de Indicadores predominantes.
-
-↓
-
-5.
-
-Prioridade definida nas Business Rules.
+Este documento nunca deverá redefinir esse critério de forma divergente. Em caso de qualquer discrepância futura, 04_BUSINESS_RULES.md prevalece, conforme a ordem de precedência definida em 08_AI_DEVELOPMENT_CHARTER.md, Seção 3.
 
 ---
 

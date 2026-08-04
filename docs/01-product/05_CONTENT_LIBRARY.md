@@ -3,9 +3,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 05_CONTENT_LIBRARY.md
-**Versão:** 2.0
+**Versão:** 2.1
 **Status:** Draft (Sprint 0 Review)
-**Última atualização:** 01/08/2026
+**Última atualização:** 04/08/2026
 
 ---
 
@@ -908,8 +908,9 @@ id:
 label:
 behavior:
 score:
-profile_mapping:
 ```
+
+O mapeamento entre uma alternativa e um Arquétipo nunca é direto. A pontuação de uma alternativa flui apenas para o Indicador e a Dimensão correspondentes; o Arquétipo é determinado posteriormente pelo Archetype Resolver (06_ASSESSMENT_ENGINE.md, Seção 9).
 
 ---
 
@@ -1282,6 +1283,7 @@ summary:
 description:
 strengths:
 attention_points:
+reference_profile:
 ideal_environment:
 common_challenges:
 first_step:
@@ -1291,6 +1293,18 @@ recommended_resources:
 version:
 status:
 ```
+
+---
+
+## Perfis de Referência (Calibração v1.0)
+
+Cada Arquétipo possui um `reference_profile`, representando o padrão esperado de Índices Comportamentais (0–100) para esse Arquétipo, em cada uma das 5 Dimensões oficiais (initiative, planning, pressure, distraction, consistency).
+
+Os valores abaixo (80 = tendência alta, 50 = neutro / não evidenciado explicitamente na descrição oficial, 20 = tendência baixa) representam uma **calibração inicial (v1.0)**, derivada das descrições, strengths e attention_points já publicados de cada Arquétipo nesta biblioteca.
+
+Estes valores **não são constantes imutáveis**. Deverão ser validados e recalibrados conforme dados reais de uso da plataforma forem coletados, seguindo o processo de Content Governance (Seção 29). Qualquer recalibração deverá incrementar a versão do Arquétipo correspondente, sem exigir alteração da fórmula do Archetype Resolver (06_ASSESSMENT_ENGINE.md, Seção 9).
+
+Ver 13_DECISION_LOG.md (DEC-0003) para a justificativa completa desta decisão.
 
 ---
 
@@ -1318,6 +1332,13 @@ attention_points:
 - Dependência de urgência.
 - Acúmulo de tarefas.
 - Estresse frequente.
+
+reference_profile:
+  initiative: 20
+  planning: 50
+  pressure: 80
+  distraction: 50
+  consistency: 20
 
 first_step:
 Criar prazos intermediários para tarefas importantes.
@@ -1358,6 +1379,13 @@ attention_points:
 - Perfeccionismo.
 - Dificuldade para iniciar.
 
+reference_profile:
+  initiative: 20
+  planning: 80
+  pressure: 50
+  distraction: 50
+  consistency: 50
+
 first_step:
 Definir um limite de tempo para o planejamento antes de começar a execução.
 ```
@@ -1387,6 +1415,13 @@ attention_points:
 - Indecisão.
 - Lentidão para iniciar.
 
+reference_profile:
+  initiative: 20
+  planning: 50
+  pressure: 50
+  distraction: 20
+  consistency: 50
+
 first_step:
 Tomar pequenas decisões com tempo limitado.
 ```
@@ -1415,6 +1450,13 @@ attention_points:
 - Sobrecarga.
 - Falta de priorização.
 - Baixa conclusão.
+
+reference_profile:
+  initiative: 80
+  planning: 20
+  pressure: 50
+  distraction: 20
+  consistency: 20
 
 first_step:
 Eliminar uma prioridade antes de adicionar outra.
