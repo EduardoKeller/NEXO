@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 08_AI_DEVELOPMENT_CHARTER.md
-**Versão:** 1.0
+**Versão:** 1.1
 **Status:** Approved
-**Última atualização:** 03/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -165,31 +165,33 @@ A implementação deverá ser interrompida.
 
 # 6. Organização do Código
 
-Toda implementação deverá respeitar a estrutura oficial do projeto.
+Toda implementação deverá respeitar a estrutura oficial do projeto, definida em 13_DECISION_LOG.md (DEC-0004) e detalhada em 07E_IMPLEMENTATION_GUIDE.md, Seção 5.
 
 ```text
 src/
 
 app/
 
-components/
-
 features/
 
-domain/
+kernel/
 
-engines/
+shared/
 
-services/
+infrastructure/
 
-hooks/
+providers/
 
-lib/
+config/
 
-types/
+styles/
+
+middleware/
 
 tests/
 ```
+
+`kernel/` concentra Domain Model, Business Rules, Engines, Content Access, Contracts e Errors — nunca depende de React, Next.js ou Infrastructure, e nunca é aninhado dentro de uma Feature.
 
 Nenhum arquivo deverá ser criado fora dessa estrutura sem justificativa.
 

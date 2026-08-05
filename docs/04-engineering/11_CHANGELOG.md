@@ -154,6 +154,31 @@ Cada versão deverá seguir o modelo.
 
 # 6. Histórico
 
+## [0.1.2] - 05/08/2026
+
+### Changed
+
+- Consolidada a arquitetura oficial da aplicação em uma única estrutura de pastas (`app/ features/ kernel/ shared/ infrastructure/ providers/ config/ styles/ middleware/`), eliminando três variações divergentes que existiam entre `09A_IMPLEMENTATION_GUIDELINES.md`, `07E_IMPLEMENTATION_GUIDE.md`/`12A_DEVELOPMENT_STANDARDS.md` e `08_AI_DEVELOPMENT_CHARTER.md`.
+- Engines reposicionadas conceitualmente da Application Layer para a Domain Layer em `02_ARCHITECTURE.md` (Seções 5 e 6), alinhando o documento a `12B_ARCHITECTURE_PATTERNS.md`, que já as descrevia corretamente.
+- Definido o fluxo técnico oficial da Sprint 1: React Component → Server Action → Feature Service → Kernel → Infrastructure → Database, com Route Handlers reservados para APIs públicas e Webhooks a partir da Sprint 3.
+- Repositories deixam de pertencer à Feature e passam a viver em `infrastructure/repositories/`, implementando contratos definidos em `kernel/contracts/` (Dependency Inversion).
+
+### Added
+
+- DEC-0004 em 13_DECISION_LOG.md, documentando a arquitetura híbrida Feature-First + Domain Kernel, as alternativas consideradas e o fluxo oficial de dependências.
+
+### Documentation
+
+- 02_ARCHITECTURE.md atualizado (Seções 3, 5, 6, 7, 13).
+- 07E_IMPLEMENTATION_GUIDE.md atualizado (Seção 5).
+- 09A_IMPLEMENTATION_GUIDELINES.md atualizado (Estrutura do Projeto, Organização das Features, Shared, Repositories, API, Imports; novas seções Kernel e Infrastructure).
+- 09B_CODE_STYLE.md atualizado (Imports, Barrel Files, Repositories).
+- 12A_DEVELOPMENT_STANDARDS.md atualizado (Seção 3).
+- 08_AI_DEVELOPMENT_CHARTER.md atualizado (Seção 6).
+- 13_DECISION_LOG.md atualizado com DEC-0004.
+
+---
+
 ## [0.1.1] - 04/08/2026
 
 ### Added

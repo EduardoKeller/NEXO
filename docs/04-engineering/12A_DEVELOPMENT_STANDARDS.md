@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 12A_DEVELOPMENT_STANDARDS.md
-**Versão:** 1.0
+**Versão:** 1.1
 **Status:** Approved
-**Última atualização:** 03/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -41,35 +41,48 @@ Sempre escolher a solução mais simples que atenda corretamente ao problema.
 
 # 3. Estrutura Oficial
 
+Estrutura definida em 13_DECISION_LOG.md (DEC-0004). Detalhamento completo em 07E_IMPLEMENTATION_GUIDE.md, Seção 5.
+
 ```text
 src/
 
 app/
 
-components/
-    ui/
-    assessment/
-    result/
-    layout/
-
 features/
 
-domain/
+kernel/
+    domain/
+    engines/
+    content/
+    contracts/
+    errors/
+    types/
 
-engines/
+shared/
+    ui/
+    hooks/
+    lib/
+    utils/
+    validators/
+    constants/
 
-services/
+infrastructure/
+    database/
+    repositories/
+    external/
 
-hooks/
+providers/
 
-lib/
-
-types/
+config/
 
 styles/
 
+middleware/
+
 tests/
 ```
+
+Componentes de interface reutilizáveis (Button, Card, ProgressBar...) vivem em `shared/ui/`. Componentes específicos de uma funcionalidade vivem dentro da própria Feature (`features/assessment/components/`).
 
 Nenhum código deverá ser criado fora desta estrutura sem justificativa.
 

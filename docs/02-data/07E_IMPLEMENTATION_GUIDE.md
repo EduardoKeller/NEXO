@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07E_IMPLEMENTATION_GUIDE.md
-**Versão:** 1.0
+**Versão:** 1.1
 **Status:** Approved
-**Última atualização:** 03/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -207,53 +207,91 @@ Nenhum módulo poderá ser iniciado antes de suas dependências.
 
 # 5. Estrutura Oficial de Pastas
 
+Esta é a arquitetura oficial da plataforma, registrada em 13_DECISION_LOG.md (DEC-0004).
+
 ```text
 src/
 
 app/
-
-components/
-  ui/
-  assessment/
-  result/
-  layout/
+  (marketing)/
+  (application)/
+  api/
 
 features/
   assessment/
-  insights/
-  evolution/
+    components/
+    hooks/
+    actions/
+    services/
+    api/
+    schemas/
+    types/
+    utils/
+    constants/
+    store/
+    index.ts
+  auth/
+  dashboard/
+  onboarding/
+  profile/
   reports/
 
-domain/
-  assessment/
-  behavior/
-  insights/
-  evolution/
-
-engines/
-  validation/
-  scoring/
-  behavior/
-  archetype/
-  insight/
-  evolution/
-  report/
-
-lib/
+kernel/
+  domain/
+  engines/
+    validation/
+    scoring/
+    behavior/
+    archetype/
+    insight/
+    evolution/
+    report/
   content/
+  contracts/
+  errors/
+  types/
+
+shared/
+  ui/
+  hooks/
+  lib/
   utils/
+  validators/
   constants/
 
-services/
+infrastructure/
+  database/
+  repositories/
+  external/
 
-hooks/
+providers/
 
-types/
+config/
 
 styles/
 
+middleware/
+
 tests/
 ```
+
+Cada Feature segue a mesma estrutura interna de `features/assessment/` acima.
+
+## Escopo por Sprint
+
+Esta é a árvore completa da plataforma, preparada para toda a evolução prevista em 10_ROADMAP.md — não o escopo da Sprint 1.
+
+Durante a Sprint 1 (MVP Funcional), apenas os seguintes diretórios recebem implementação real:
+
+- `app/(marketing)/` — Landing Page.
+- `app/(application)/assessment/` — fluxo da Avaliação e Resultado.
+- `features/assessment/` — única Feature implementada.
+- `kernel/` — completo (Engines, Domain, Content, Contracts, Errors).
+- `shared/`, `providers/`, `config/`, `styles/` — conforme necessário para o Design System.
+
+`features/auth/`, `features/dashboard/`, `features/onboarding/`, `features/profile/` e `infrastructure/` permanecem sem implementação até as Sprints correspondentes (10_ROADMAP.md — Persistência na Sprint 2, APIs na Sprint 3, Dashboard na Sprint 4), pois login, cadastro, histórico e dashboard estão explicitamente fora do escopo do MVP (01_PRD.md, Seção 8). Nenhum destes diretórios deverá ser criado com conteúdo antes de sua Sprint correspondente.
+
+`features/reports/` só recebe conteúdo próprio caso o time decida separar a apresentação do relatório da Feature `assessment`; caso contrário, o Report Engine (`kernel/engines/report/`) é consumido diretamente por `features/assessment/`.
 
 ---
 

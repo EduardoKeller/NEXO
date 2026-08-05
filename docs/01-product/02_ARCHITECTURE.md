@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 02_ARCHITECTURE.md  
-**Versão:** 2.0  
+**Versão:** 2.1  
 **Status:** Draft (Sprint 0 Review)  
-**Última atualização:** 01/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -84,6 +84,8 @@ Infrastructure Layer
 
 Cada camada possui responsabilidades específicas.
 
+O mapeamento físico destas camadas para a estrutura de pastas de `src/` está definido em 07E_IMPLEMENTATION_GUIDE.md, Seção 5, e formalizado em 13_DECISION_LOG.md (DEC-0004).
+
 ---
 
 # 4. Presentation Layer
@@ -107,26 +109,27 @@ Esta camada nunca deverá realizar cálculos.
 
 Responsável pela orquestração da plataforma.
 
-Ela contém o **NEXO Core**.
+Fisicamente representada pela pasta `features/`.
 
-O NEXO Core é composto pelos seguintes módulos.
+Contém.
 
-- Assessment Engine
-- Validation Engine
-- Score Engine
-- Behavior Engine
-- Insight Engine
-- Evolution Engine
-- Report Engine
-- Result Builder
+- Casos de uso (Feature Services).
+- Server Actions.
+- Orquestração das chamadas ao Domain Layer.
+- Coordenação entre módulos.
+- Estado e componentes específicos de cada funcionalidade.
 
-Cada módulo possui responsabilidade única.
+A Application Layer nunca implementa regras de domínio.
+
+Ela apenas invoca as Engines na ordem correta e adapta o resultado para a Presentation Layer.
 
 ---
 
 # 6. Domain Layer
 
 Representa as regras centrais da plataforma.
+
+Fisicamente representada pela pasta `kernel/`.
 
 Contém:
 
@@ -135,6 +138,13 @@ Contém:
 - Algoritmos
 - Critérios de Pontuação
 - Regras de Evolução
+- **NEXO Core** — os módulos que executam a Assessment: Assessment Engine, Validation Engine, Score Engine, Behavior Engine, Insight Engine, Evolution Engine, Report Engine, Result Builder.
+
+Cada Engine possui responsabilidade única.
+
+As Engines pertencem ao Domain Layer, não à Application Layer: são consumidas por múltiplas Features (assessment, insights, evolution, reports) e por isso nunca podem pertencer a uma Feature específica (ver 13_DECISION_LOG.md, DEC-0004).
+
+O Domain Layer nunca depende de React, Next.js, Tailwind ou de qualquer Feature.
 
 Nenhum componente visual poderá depender diretamente desta camada.
 
@@ -143,6 +153,8 @@ Nenhum componente visual poderá depender diretamente desta camada.
 # 7. Content Layer
 
 Representa o conhecimento oficial da plataforma.
+
+Fisicamente representada pela pasta `kernel/content/`.
 
 Contém:
 
@@ -387,6 +399,77 @@ Nunca deverão depender de:
 - Next.js
 - Tailwind
 - Componentes Visuais
+- Infrastructure
+- Features
+
+---
+
+## Mapeamento Físico e Fluxo Técnico
+
+Esta seção resume, em nível de sistema, a decisão registrada em 13_DECISION_LOG.md (DEC-0004). A estrutura completa de pastas está em 07E_IMPLEMENTATION_GUIDE.md, Seção 5.
+
+### Mapeamento de camadas
+
+| Camada Conceitual | Pasta Física |
+|---|---|
+| Presentation Layer | `app/`, `features/*/components/` |
+| Application Layer | `features/` |
+| Domain Layer | `kernel/domain/`, `kernel/engines/` |
+| Content Layer | `kernel/content/` |
+| Infrastructure Layer | `infrastructure/` |
+
+### Dois fluxos distintos
+
+Os dois diagramas abaixo representam conceitos independentes e não deverão ser sobrepostos ou lidos como um único fluxo.
+
+- **Fluxo de Dependências** — direção permitida de `import` entre pastas. Verificável em tempo de compilação/lint. Responde: "quem pode importar quem?".
+- **Fluxo de Execução** — ordem em que o código é chamado durante uma requisição real, em tempo de execução. Responde: "o que acontece quando o usuário interage?".
+
+Uma seta no Fluxo de Execução significa "chama em runtime". Nunca significa "importa".
+
+### Fluxo de Dependências (imports — compile-time)
+
+```text
+App
+  ↓ importa
+Features
+  ↓ importa
+Kernel
+```
+
+```text
+Infrastructure
+  ↓ importa e implementa
+Kernel (kernel/contracts/)
+```
+
+O Kernel nunca importa Features. O Kernel nunca importa Infrastructure. Não existe nenhuma seta de import partindo do Kernel em direção à Infrastructure em nenhum diagrama deste documento.
+
+A única relação entre Kernel e Infrastructure é a Infrastructure implementando uma interface (`kernel/contracts/`) definida pelo Kernel — por isso o import aponta de Infrastructure para Kernel, nunca o inverso (Dependency Inversion, ver 12B_ARCHITECTURE_PATTERNS.md, Seção 8).
+
+A composição entre um contrato do Kernel e sua implementação concreta em Infrastructure acontece na Application Layer (Feature Service ou Server Action) — o único ponto do sistema que conhece ambos simultaneamente. O Kernel em si nunca conhece Infrastructure.
+
+### Fluxo de Execução (runtime — uma requisição real)
+
+```text
+React Component (Client)
+  chama →
+Server Action
+  chama →
+Feature Service
+  chama →
+Kernel (Engines / Contracts)
+  chama →
+Infrastructure (Repository, já resolvida via contrato)
+  chama →
+Database
+```
+
+Este diagrama descreve chamadas em tempo de execução, não imports. A seta entre Kernel e Infrastructure representa a Feature Service invocando, através do contrato do Kernel, uma implementação de Infrastructure que ela mesma compôs — o Kernel não invoca Infrastructure diretamente nem a importa.
+
+Durante a Sprint 1, sem persistência, o fluxo termina no Kernel: a Server Action invoca as Engines em processo e devolve o `AssessmentResult` diretamente para a Presentation Layer.
+
+Route Handlers (`app/api/`) ficam reservados para APIs públicas, Webhooks e integrações externas, a partir da Sprint 3 (10_ROADMAP.md).
 
 ---
 

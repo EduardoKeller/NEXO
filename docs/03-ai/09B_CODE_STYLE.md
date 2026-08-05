@@ -4,9 +4,9 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 09B_CODE_STYLE.md  
-**Versão:** 1.0  
+**Versão:** 1.1  
 **Status:** Approved  
-**Última atualização:** 04/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -186,7 +186,11 @@ Utilizar aliases.
 ```ts
 @/features
 
+@/kernel
+
 @/shared
+
+@/infrastructure
 
 @/config
 
@@ -338,6 +342,8 @@ Nunca acessar componentes.
 ---
 
 # Repositories
+
+Vivem em `infrastructure/repositories/`.
 
 Devem acessar:
 
@@ -507,6 +513,7 @@ Todo acesso externo deverá ocorrer pelo barrel file.
 Permitidos apenas:
 
 - Feature
+- Kernel
 - Shared
 
 Nunca criar barrel file em toda pasta.
