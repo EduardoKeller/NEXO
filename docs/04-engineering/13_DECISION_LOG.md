@@ -237,7 +237,7 @@ Arquitetura Oficial da Aplicação — Estrutura de Pastas, Domain Kernel e Flux
 
 ### Status
 
-Approved
+Approved — nomenclatura do diretório de domínio (`kernel/`) parcialmente superseded por DEC-0005 (renomeado para `core/`). Todo o restante desta decisão (responsabilidades de camada, Dependency Inversion, Fluxo de Dependências e Fluxo de Execução) permanece integralmente válido.
 
 ### Contexto
 
@@ -415,15 +415,139 @@ Negativas:
 - 01_PRD.md
 - 10_ROADMAP.md
 
+### Nota de Superseding (2026-08-05)
+
+O nome do diretório `kernel/` referenciado em toda esta decisão foi renomeado para `core/` por DEC-0005. Esta seção é mantida sem alteração de texto, incluindo os trechos que argumentavam a favor de `kernel/` sobre `core/`, para preservar o registro histórico exato do que foi decidido e por quê em 2026-08-05. A partir de DEC-0005, toda a documentação viva (não histórica) do projeto usa `core/`. Nenhuma responsabilidade de camada, regra de Dependency Inversion ou fluxo definido nesta decisão foi alterado — apenas o nome do diretório.
+
+---
+
+## DEC-0005
+
+### Título
+
+Renomeação do Domain Kernel — `kernel/` para `core/`.
+
+### Data
+
+2026-08-05
+
+### Status
+
+Approved
+
+### Contexto
+
+Após DEC-0004 ter sido aprovada em princípio, a equipe reavaliou o nome oficial do diretório de domínio antes do início da implementação (nenhuma linha de código havia sido escrita). DEC-0004 já havia identificado `core/` como alternativa e a rejeitado explicitamente, adotando `kernel/` com a justificativa de evitar confusão com bibliotecas externas de mesmo nome.
+
+A reavaliação concluiu que esse risco é secundário frente ao ganho de familiaridade: `core/` é o nome convencionalmente usado em Clean Architecture, DDD e Onion Architecture para o mesmo conceito (o núcleo de domínio, livre de frameworks), e é mais reconhecível para novos desenvolvedores que ingressarem no projeto.
+
+### Alternativas consideradas
+
+- **Manter `kernel/`** (decisão original de DEC-0004). Rejeitada nesta reavaliação: nome menos convencional no ecossistema de Clean Architecture/DDD, aumenta a curva de familiarização de novos desenvolvedores sem benefício compensatório, já que o risco de colisão com bibliotecas externas chamadas "core" é baixo dentro de `src/core/` (namespace do projeto, não um pacote publicado).
+- **Renomear para `core/`** (adotada). Mantém exatamente o mesmo conceito arquitetural do Domain Kernel definido em DEC-0004.
+
+### Decisão
+
+O diretório oficial do domínio passa de `kernel/` para `core/`.
+
+Nenhuma responsabilidade de camada é alterada. Todas as regras estabelecidas em DEC-0004 permanecem idênticas, apenas com o nome do diretório trocado:
+
+- `core/` (nunca `kernel/`) concentra Domain Model, Business Rules, Engines, Value Objects, Content Access, Contracts e Errors.
+- `core/` nunca depende de React, Next.js, Tailwind, Infrastructure ou de qualquer Feature.
+- Features importam `core/`; `core/` nunca importa Features.
+- A ligação entre `core/` e `infrastructure/` continua ocorrendo exclusivamente por Dependency Inversion via `core/contracts/`, conforme o padrão já descrito em `12B_ARCHITECTURE_PATTERNS.md`, Seção 8 — inalterado por esta decisão.
+- O Fluxo de Dependências (`App → Features → Core`, `Infrastructure → Core`) e o Fluxo de Execução (`React Component → Server Action → Feature Service → Core → Infrastructure → Database`) permanecem exatamente os mesmos definidos em DEC-0004, apenas com "Kernel" substituído por "Core" em toda a nomenclatura.
+
+Esta renomeação foi propagada integralmente para toda a documentação viva do projeto: `02_ARCHITECTURE.md`, `07E_IMPLEMENTATION_GUIDE.md`, `08_AI_DEVELOPMENT_CHARTER.md`, `09A_IMPLEMENTATION_GUIDELINES.md`, `09B_CODE_STYLE.md`, `12A_DEVELOPMENT_STANDARDS.md`. O texto de DEC-0004 no Decision Log não foi alterado, apenas marcado como parcialmente superseded (ver Nota de Superseding acima), preservando o histórico de por que `kernel/` havia sido escolhido originalmente.
+
+### Justificativa
+
+"Core" é o termo amplamente utilizado em Clean Architecture, DDD e Onion Architecture para o mesmo conceito de núcleo de domínio independente de frameworks — a mudança reduz a fricção de onboarding sem exigir nenhuma alteração estrutural, de responsabilidade ou de regra arquitetural, já que nenhuma implementação existente precisa ser migrada (Sprint 1 ainda não iniciada).
+
+### Consequências
+
+Positivas:
+
+- Nome mais reconhecível para desenvolvedores familiarizados com Clean Architecture/DDD/Onion Architecture.
+- Custo de migração é zero: a renomeação ocorre inteiramente em documentação, antes de qualquer scaffold de código.
+- Toda a arquitetura, contratos e fluxos aprovados em DEC-0004 permanecem intactos — risco de regressão arquitetural nulo.
+
+Negativas:
+
+- Reintroduz o risco que DEC-0004 havia identificado e rejeitado (confusão com bibliotecas/pacotes externos chamados "core"); aceito conscientemente nesta decisão.
+- Caso o projeto já tivesse código implementado sob `kernel/`, este seria um rename de maior custo — não é o caso aqui.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0004, parcialmente superseded)
+- 02_ARCHITECTURE.md
+- 07E_IMPLEMENTATION_GUIDE.md
+- 08_AI_DEVELOPMENT_CHARTER.md
+- 09A_IMPLEMENTATION_GUIDELINES.md
+- 09B_CODE_STYLE.md
+- 12A_DEVELOPMENT_STANDARDS.md
+
+---
+
+## DEC-0006
+
+### Título
+
+Adoção de Next.js 16 (e React 19.2) como versão oficial, substituindo Next.js 15 em `12C_TECH_STACK.md`.
+
+### Data
+
+2026-08-05
+
+### Status
+
+Approved
+
+### Contexto
+
+O início do bootstrap da Sprint 1 (PR 1) exigia criar o projeto Next.js "utilizando a versão estável mais recente". Ao rodar `create-next-app@latest`, a versão resolvida foi Next.js 16.3.0 com React 19.2.8, enquanto `12C_TECH_STACK.md` (Approved) especifica explicitamente "Next.js 15" como versão oficial. Next.js 15 já não é a versão estável mais recente da série ativa no momento do bootstrap.
+
+A questão foi levada ao responsável pelo produto antes de mesclar o scaffold no repositório, dado que `12C_TECH_STACK.md` §17 exige que toda nova tecnologia (e, por extensão, mudança de versão principal já documentada) seja registrada no Decision Log antes de ser adotada.
+
+### Alternativas consideradas
+
+- **Fixar em Next.js 15.x**, mantendo consistência estrita com o texto atual de `12C_TECH_STACK.md` sem atualizá-lo. Rejeitada: instalaria uma versão que não é mais a mais recente estável, contrariando a instrução explícita desta tarefa e adiando uma atualização que seria necessária de qualquer forma.
+- **Usar Next.js 16.3.0 e atualizar `12C_TECH_STACK.md`** (adotada). Mantém o princípio do próprio Tech Stack (Seção 2: "priorizar... performance... manutenção de longo prazo"; Seção 18: "sempre utilizar versões LTS ou estáveis") usando a versão estável real mais recente, com o documento normativo corrigido para refletir a realidade instalada.
+
+### Decisão
+
+Adotar Next.js 16.3.0 e React 19.2.8 como versões oficiais da plataforma, substituindo a referência a "Next.js 15" em `12C_TECH_STACK.md`, Seção 4. Nenhuma outra tecnologia da Seção 4 (TypeScript, Tailwind, shadcn/ui, Lucide React, React Hook Form, Zod) é afetada por esta decisão.
+
+### Justificativa
+
+Next.js 16 mantém integralmente as razões documentadas para a escolha do framework (App Router, Server Components, Performance, Ecossistema, Longo suporte) e é a versão estável recomendada pelo próprio time do Next.js no momento da criação do projeto. Adiar a adoção fixando a versão 15 criaria dívida técnica imediata — o projeto nasceria em uma versão que a comunidade já considera anterior, incorrendo em custo de upgrade futuro sem benefício correspondente, contrariando `12C_TECH_STACK.md`, Seção 2 ("manutenção de longo prazo").
+
+### Consequências
+
+Positivas:
+
+- Projeto inicia na versão estável mais recente, com Turbopack já como bundler padrão de build (`12C_TECH_STACK.md`, Seção 9, que já previa "Turbopack quando estável para produção").
+- `12C_TECH_STACK.md` deixa de divergir do que foi efetivamente instalado.
+
+Negativas:
+
+- Nenhuma decisão anterior do Decision Log referenciava uma versão específica do Next.js além do Tech Stack, portanto não há outras decisões a reconciliar.
+- Diferenças de comportamento entre Next.js 15 e 16 (ainda não auditadas em detalhe) poderão exigir ajustes ao longo da Sprint 1 caso a documentação de Engines/Server Actions tenha sido escrita com Next 15 em mente; nenhuma incompatibilidade foi identificada durante o bootstrap (build, lint e type-check passaram sem erros).
+
+### Documentos relacionados
+
+- 12C_TECH_STACK.md
+- 02_ARCHITECTURE.md
+
 ---
 
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0005
-- DEC-0006
 - DEC-0007
+- DEC-0008
+- DEC-0009
 - ...
 ## Regras
 

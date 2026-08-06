@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 08_AI_DEVELOPMENT_CHARTER.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
 **Última atualização:** 05/08/2026
 
@@ -174,7 +174,7 @@ app/
 
 features/
 
-kernel/
+core/
 
 shared/
 
@@ -191,7 +191,7 @@ middleware/
 tests/
 ```
 
-`kernel/` concentra Domain Model, Business Rules, Engines, Content Access, Contracts e Errors — nunca depende de React, Next.js ou Infrastructure, e nunca é aninhado dentro de uma Feature.
+`core/` concentra Domain Model, Business Rules, Engines, Content Access, Contracts e Errors — nunca depende de React, Next.js ou Infrastructure, e nunca é aninhado dentro de uma Feature.
 
 Nenhum arquivo deverá ser criado fora dessa estrutura sem justificativa.
 

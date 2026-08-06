@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 12A_DEVELOPMENT_STANDARDS.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
 **Última atualização:** 05/08/2026
 
@@ -50,7 +50,7 @@ app/
 
 features/
 
-kernel/
+core/
     domain/
     engines/
     content/

@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07E_IMPLEMENTATION_GUIDE.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
 **Última atualização:** 05/08/2026
 
@@ -236,7 +236,7 @@ features/
   profile/
   reports/
 
-kernel/
+core/
   domain/
   engines/
     validation/
@@ -277,6 +277,10 @@ tests/
 
 Cada Feature segue a mesma estrutura interna de `features/assessment/` acima.
 
+### Nota técnica sobre `middleware/`
+
+`middleware/` guarda módulos auxiliares (ex.: `middleware/auth.ts`, `middleware/rateLimiter.ts`), não o middleware em si. O Next.js só reconhece middleware de rotas em um arquivo `middleware.ts` na raiz de `src/` (`src/middleware.ts`) — nunca dentro de uma subpasta. Esse arquivo raiz deverá importar e compor os módulos de `middleware/`. Sem `src/middleware.ts`, nenhum código dentro de `middleware/` é executado pelo framework, ainda que a pasta exista.
+
 ## Escopo por Sprint
 
 Esta é a árvore completa da plataforma, preparada para toda a evolução prevista em 10_ROADMAP.md — não o escopo da Sprint 1.
@@ -286,12 +290,12 @@ Durante a Sprint 1 (MVP Funcional), apenas os seguintes diretórios recebem impl
 - `app/(marketing)/` — Landing Page.
 - `app/(application)/assessment/` — fluxo da Avaliação e Resultado.
 - `features/assessment/` — única Feature implementada.
-- `kernel/` — completo (Engines, Domain, Content, Contracts, Errors).
+- `core/` — completo (Engines, Domain, Content, Contracts, Errors).
 - `shared/`, `providers/`, `config/`, `styles/` — conforme necessário para o Design System.
 
 `features/auth/`, `features/dashboard/`, `features/onboarding/`, `features/profile/` e `infrastructure/` permanecem sem implementação até as Sprints correspondentes (10_ROADMAP.md — Persistência na Sprint 2, APIs na Sprint 3, Dashboard na Sprint 4), pois login, cadastro, histórico e dashboard estão explicitamente fora do escopo do MVP (01_PRD.md, Seção 8). Nenhum destes diretórios deverá ser criado com conteúdo antes de sua Sprint correspondente.
 
-`features/reports/` só recebe conteúdo próprio caso o time decida separar a apresentação do relatório da Feature `assessment`; caso contrário, o Report Engine (`kernel/engines/report/`) é consumido diretamente por `features/assessment/`.
+`features/reports/` só recebe conteúdo próprio caso o time decida separar a apresentação do relatório da Feature `assessment`; caso contrário, o Report Engine (`core/engines/report/`) é consumido diretamente por `features/assessment/`.
 
 ---
 

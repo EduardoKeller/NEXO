@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 02_ARCHITECTURE.md  
-**Versão:** 2.1  
+**Versão:** 2.2  
 **Status:** Draft (Sprint 0 Review)  
 **Última atualização:** 05/08/2026
 
@@ -84,7 +84,7 @@ Infrastructure Layer
 
 Cada camada possui responsabilidades específicas.
 
-O mapeamento físico destas camadas para a estrutura de pastas de `src/` está definido em 07E_IMPLEMENTATION_GUIDE.md, Seção 5, e formalizado em 13_DECISION_LOG.md (DEC-0004).
+O mapeamento físico destas camadas para a estrutura de pastas de `src/` está definido em 07E_IMPLEMENTATION_GUIDE.md, Seção 5, e formalizado em 13_DECISION_LOG.md (DEC-0004, renomeado de `core/` para `core/` em DEC-0005).
 
 ---
 
@@ -129,7 +129,7 @@ Ela apenas invoca as Engines na ordem correta e adapta o resultado para a Presen
 
 Representa as regras centrais da plataforma.
 
-Fisicamente representada pela pasta `kernel/`.
+Fisicamente representada pela pasta `core/`.
 
 Contém:
 
@@ -154,7 +154,7 @@ Nenhum componente visual poderá depender diretamente desta camada.
 
 Representa o conhecimento oficial da plataforma.
 
-Fisicamente representada pela pasta `kernel/content/`.
+Fisicamente representada pela pasta `core/content/`.
 
 Contém:
 
@@ -414,8 +414,8 @@ Esta seção resume, em nível de sistema, a decisão registrada em 13_DECISION_
 |---|---|
 | Presentation Layer | `app/`, `features/*/components/` |
 | Application Layer | `features/` |
-| Domain Layer | `kernel/domain/`, `kernel/engines/` |
-| Content Layer | `kernel/content/` |
+| Domain Layer | `core/domain/`, `core/engines/` |
+| Content Layer | `core/content/` |
 | Infrastructure Layer | `infrastructure/` |
 
 ### Dois fluxos distintos
@@ -434,20 +434,20 @@ App
   ↓ importa
 Features
   ↓ importa
-Kernel
+Core
 ```
 
 ```text
 Infrastructure
   ↓ importa e implementa
-Kernel (kernel/contracts/)
+Core (core/contracts/)
 ```
 
-O Kernel nunca importa Features. O Kernel nunca importa Infrastructure. Não existe nenhuma seta de import partindo do Kernel em direção à Infrastructure em nenhum diagrama deste documento.
+O Core nunca importa Features. O Core nunca importa Infrastructure. Não existe nenhuma seta de import partindo do Core em direção à Infrastructure em nenhum diagrama deste documento.
 
-A única relação entre Kernel e Infrastructure é a Infrastructure implementando uma interface (`kernel/contracts/`) definida pelo Kernel — por isso o import aponta de Infrastructure para Kernel, nunca o inverso (Dependency Inversion, ver 12B_ARCHITECTURE_PATTERNS.md, Seção 8).
+A única relação entre Core e Infrastructure é a Infrastructure implementando uma interface (`core/contracts/`) definida pelo Core — por isso o import aponta de Infrastructure para Core, nunca o inverso (Dependency Inversion, ver 12B_ARCHITECTURE_PATTERNS.md, Seção 8).
 
-A composição entre um contrato do Kernel e sua implementação concreta em Infrastructure acontece na Application Layer (Feature Service ou Server Action) — o único ponto do sistema que conhece ambos simultaneamente. O Kernel em si nunca conhece Infrastructure.
+A composição entre um contrato do Core e sua implementação concreta em Infrastructure acontece na Application Layer (Feature Service ou Server Action) — o único ponto do sistema que conhece ambos simultaneamente. O Core em si nunca conhece Infrastructure.
 
 ### Fluxo de Execução (runtime — uma requisição real)
 
@@ -458,16 +458,16 @@ Server Action
   chama →
 Feature Service
   chama →
-Kernel (Engines / Contracts)
+Core (Engines / Contracts)
   chama →
 Infrastructure (Repository, já resolvida via contrato)
   chama →
 Database
 ```
 
-Este diagrama descreve chamadas em tempo de execução, não imports. A seta entre Kernel e Infrastructure representa a Feature Service invocando, através do contrato do Kernel, uma implementação de Infrastructure que ela mesma compôs — o Kernel não invoca Infrastructure diretamente nem a importa.
+Este diagrama descreve chamadas em tempo de execução, não imports. A seta entre Core e Infrastructure representa a Feature Service invocando, através do contrato do Core, uma implementação de Infrastructure que ela mesma compôs — o Core não invoca Infrastructure diretamente nem a importa.
 
-Durante a Sprint 1, sem persistência, o fluxo termina no Kernel: a Server Action invoca as Engines em processo e devolve o `AssessmentResult` diretamente para a Presentation Layer.
+Durante a Sprint 1, sem persistência, o fluxo termina no Core: a Server Action invoca as Engines em processo e devolve o `AssessmentResult` diretamente para a Presentation Layer.
 
 Route Handlers (`app/api/`) ficam reservados para APIs públicas, Webhooks e integrações externas, a partir da Sprint 3 (10_ROADMAP.md).
 

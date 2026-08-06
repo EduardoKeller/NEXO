@@ -154,6 +154,61 @@ Cada versão deverá seguir o modelo.
 
 # 6. Histórico
 
+## [0.1.5] - 06/08/2026
+
+### Added
+
+- Sprint 1, PR 2: concluída a Fase 1 (Fundação) de 07E_IMPLEMENTATION_GUIDE.md — Husky + lint-staged (pre-commit executa `eslint --fix` + `prettier --write` nos arquivos staged), `.env.example` (sem variáveis ainda; Sprint 1 não depende de nenhuma), Vitest configurado (`vitest.config.mts`, ambiente jsdom, cobertura via `@vitest/coverage-v8`, aliases `@/*` resolvidos nativamente pelo Vite) e Playwright configurado (`playwright.config.ts`, `tests/e2e/`, projeto Chromium, `webServer` apontando para `npm run dev`).
+- `src/smoke.test.ts`: smoke test mínimo validando a infraestrutura do Vitest (execução de asserções e disponibilidade do ambiente jsdom). Não testa nenhuma regra de negócio, Feature ou Engine — nenhuma existe ainda. Mantém `npm test` verde sem alterar o comportamento padrão do Vitest (`--passWithNoTests` não foi usado).
+- Scripts adicionados a `package.json`: `test`, `test:watch`, `test:coverage`, `test:e2e`.
+
+### Changed
+
+- `.gitignore` atualizado com artefatos do Playwright (`playwright-report/`, `test-results/`, `blob-report/`).
+
+---
+
+## [0.1.4] - 05/08/2026
+
+### Added
+
+- Sprint 1, PR 1: fundação do projeto Next.js criada (`create-next-app`, App Router, TypeScript strict, ESLint, Prettier, aliases `@/*`, estrutura oficial `app/ features/ core/ shared/ infrastructure/ styles/ middleware/`). Nenhuma Feature, componente, hook, Engine, regra de negócio ou persistência foi implementada nesta entrega.
+- DEC-0006 em 13_DECISION_LOG.md, documentando a adoção de Next.js 16.3.0 (React 19.2.8) como versão estável mais recente, em substituição a "Next.js 15".
+
+### Changed
+
+- 12C_TECH_STACK.md atualizado: Framework passa de "Next.js" (implicitamente 15) para "Next.js 16", com referência a DEC-0006.
+
+### Documentation
+
+- 13_DECISION_LOG.md atualizado com DEC-0006.
+- 12C_TECH_STACK.md atualizado (Seções 3 e 4).
+- 07E_IMPLEMENTATION_GUIDE.md e 09A_IMPLEMENTATION_GUIDELINES.md: adicionada nota técnica esclarecendo que `middleware/` guarda módulos auxiliares e que o entrypoint reconhecido pelo Next.js é `src/middleware.ts` na raiz, nunca dentro da subpasta — a pasta sozinha não é executada pelo framework.
+
+---
+
+## [0.1.3] - 05/08/2026
+
+### Changed
+
+- Renomeado o diretório oficial do Domain Kernel de `kernel/` para `core/` em toda a documentação viva do projeto, mantendo integralmente as responsabilidades de camada, o padrão de Dependency Inversion e os fluxos de Dependências/Execução definidos em DEC-0004.
+
+### Added
+
+- DEC-0005 em 13_DECISION_LOG.md, documentando a renomeação, a reavaliação da alternativa `core/` (originalmente rejeitada em DEC-0004) e a justificativa de alinhamento com a nomenclatura usual de Clean Architecture/DDD/Onion Architecture.
+
+### Documentation
+
+- 02_ARCHITECTURE.md atualizado (todas as referências a `kernel/`).
+- 07E_IMPLEMENTATION_GUIDE.md atualizado (Seção 5 e escopo por Sprint).
+- 08_AI_DEVELOPMENT_CHARTER.md atualizado (Seção 6).
+- 09A_IMPLEMENTATION_GUIDELINES.md atualizado (Estrutura do Projeto, seção Kernel → Core, Imports).
+- 09B_CODE_STYLE.md atualizado (Imports, Barrel Files).
+- 12A_DEVELOPMENT_STANDARDS.md atualizado (Seção 3).
+- 13_DECISION_LOG.md atualizado: DEC-0004 marcado como parcialmente superseded (nomenclatura) com Nota de Superseding; DEC-0005 adicionado. Nenhum texto histórico de DEC-0004 foi alterado.
+
+---
+
 ## [0.1.2] - 05/08/2026
 
 ### Changed

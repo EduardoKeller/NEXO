@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 12C_TECH_STACK.md
-**Versão:** 1.0
+**Versão:** 1.1
 **Status:** Approved
-**Última atualização:** 03/08/2026
+**Última atualização:** 05/08/2026
 
 ---
 
@@ -42,7 +42,7 @@ Novidade não é critério de adoção.
 
                    ▼
 
-              Next.js 15
+              Next.js 16
 
                    │
 
@@ -75,7 +75,7 @@ Novidade não é critério de adoção.
 
 ## Framework
 
-Next.js
+Next.js 16 (versão estável mais recente — ver 13_DECISION_LOG.md, DEC-0006)
 
 Motivo.
 

@@ -4,7 +4,7 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 09B_CODE_STYLE.md  
-**Versão:** 1.1  
+**Versão:** 1.2  
 **Status:** Approved  
 **Última atualização:** 05/08/2026
 
@@ -186,7 +186,7 @@ Utilizar aliases.
 ```ts
 @/features
 
-@/kernel
+@/core
 
 @/shared
 
@@ -513,7 +513,7 @@ Todo acesso externo deverá ocorrer pelo barrel file.
 Permitidos apenas:
 
 - Feature
-- Kernel
+- Core
 - Shared
 
 Nunca criar barrel file em toda pasta.

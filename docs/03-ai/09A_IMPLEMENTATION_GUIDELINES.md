@@ -4,7 +4,7 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 09A_IMPLEMENTATION_GUIDELINES.md  
-**Versão:** 1.1  
+**Versão:** 1.2  
 **Status:** Approved  
 **Última atualização:** 05/08/2026
 
@@ -57,7 +57,7 @@ app/
 
 features/
 
-kernel/
+core/
 
 shared/
 
@@ -71,6 +71,8 @@ styles/
 
 middleware/
 ```
+
+`middleware/` guarda módulos auxiliares — o entrypoint reconhecido pelo Next.js é `src/middleware.ts`, na raiz de `src/`, nunca dentro de uma subpasta. Ver nota técnica em 07E_IMPLEMENTATION_GUIDE.md, Seção 5.
 
 Jamais criar novas estruturas sem justificativa arquitetural.
 
@@ -104,12 +106,12 @@ Uma Feature nunca contém Repositories. Acesso a dados vive em `infrastructure/r
 
 ---
 
-# Kernel
+# Core
 
-O Kernel representa o domínio da plataforma: Business Rules, Data Model, Value Objects, Engines, Content Access, Contracts e Errors.
+O Core representa o domínio da plataforma: Business Rules, Data Model, Value Objects, Engines, Content Access, Contracts e Errors.
 
 ```text
-kernel/
+core/
 
 domain/
 engines/
@@ -119,7 +121,7 @@ errors/
 types/
 ```
 
-O Kernel:
+O Core:
 
 - nunca depende de React;
 - nunca depende de Next.js;
@@ -127,11 +129,11 @@ O Kernel:
 - nunca depende de Infrastructure;
 - nunca depende de nenhuma Feature.
 
-Features podem importar o Kernel livremente. O Kernel nunca importa Features.
+Features podem importar o Core livremente. O Core nunca importa Features.
 
-As Engines (Validation, Score, Behavior, Archetype, Insight, Evolution, Report) vivem em `kernel/engines/` porque são consumidas por mais de uma Feature — nunca pertencem a uma Feature específica.
+As Engines (Validation, Score, Behavior, Archetype, Insight, Evolution, Report) vivem em `core/engines/` porque são consumidas por mais de uma Feature — nunca pertencem a uma Feature específica.
 
-Quando uma Engine precisar de acesso a dados persistidos, ela dependerá apenas de uma interface definida em `kernel/contracts/`. A implementação concreta dessa interface fica em `infrastructure/`, nunca dentro do Kernel (Dependency Inversion — ver 12B_ARCHITECTURE_PATTERNS.md, Seção 8).
+Quando uma Engine precisar de acesso a dados persistidos, ela dependerá apenas de uma interface definida em `core/contracts/`. A implementação concreta dessa interface fica em `infrastructure/`, nunca dentro do Core (Dependency Inversion — ver 12B_ARCHITECTURE_PATTERNS.md, Seção 8).
 
 ---
 
@@ -149,7 +151,7 @@ external/
 
 Nunca conter regra de negócio.
 
-Toda Repository implementa um contrato definido em `kernel/contracts/` — o import segue de Infrastructure para Kernel, nunca o inverso. O Kernel nunca importa Infrastructure.
+Toda Repository implementa um contrato definido em `core/contracts/` — o import segue de Infrastructure para Core, nunca o inverso. O Core nunca importa Infrastructure.
 
 Durante a Sprint 1 esta pasta permanece sem implementação: persistência só é introduzida na Sprint 2 (10_ROADMAP.md).
 
@@ -225,7 +227,7 @@ Não devem conhecer detalhes da interface.
 
 Repositories isolam acesso a dados.
 
-Vivem em `infrastructure/repositories/`, nunca dentro de uma Feature ou do Kernel.
+Vivem em `infrastructure/repositories/`, nunca dentro de uma Feature ou do Core.
 
 Nunca acessar Prisma diretamente fora deles.
 
@@ -234,7 +236,7 @@ Fluxo de Execução em runtime, a partir da Sprint 2, quando a persistência for
 ```text
 Feature Service
   chama →
-Kernel (Contract)
+Core (Contract)
   chama →
 Repository (Infrastructure)
   chama →
@@ -243,7 +245,7 @@ Prisma
 Database
 ```
 
-O import segue direção inversa entre Kernel e Infrastructure: a Repository (Infrastructure) importa e implementa o contrato definido em `kernel/contracts/`. O Kernel nunca importa Infrastructure.
+O import segue direção inversa entre Core e Infrastructure: a Repository (Infrastructure) importa e implementa o contrato definido em `core/contracts/`. O Core nunca importa Infrastructure.
 
 ---
 
@@ -295,7 +297,7 @@ Utilizar aliases.
 
 ```ts
 @/features
-@/kernel
+@/core
 @/shared
 @/infrastructure
 @/config
