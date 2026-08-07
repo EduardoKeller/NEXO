@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 12C_TECH_STACK.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
-**Última atualização:** 05/08/2026
+**Última atualização:** 07/08/2026
 
 ---
 
@@ -105,13 +105,13 @@ React
 
 ## Estilização
 
-Tailwind CSS
+Tailwind CSS v4
 
 ---
 
 ## Componentes
 
-shadcn/ui
+shadcn/ui (style `base-nova`, sobre `@base-ui/react`)
 
 ---
 
@@ -323,6 +323,9 @@ ASCII (quando apropriado)
 - Tailwind CSS
 - shadcn/ui
 - Lucide React
+- @base-ui/react (primitivos headless do style `base-nova` de shadcn/ui)
+- next-themes (alternância de tema)
+- sonner (notificações Toast, componente shadcn/ui)
 
 ---
 
@@ -331,6 +334,8 @@ ASCII (quando apropriado)
 - clsx
 - class-variance-authority
 - date-fns
+- tailwind-merge (usado por `cn()`)
+- tw-animate-css (utilitários de animação compatíveis com Tailwind v4)
 
 ---
 

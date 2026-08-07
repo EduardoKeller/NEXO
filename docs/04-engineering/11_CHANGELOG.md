@@ -154,6 +154,30 @@ Cada versão deverá seguir o modelo.
 
 # 6. Histórico
 
+## [0.1.6] - 07/08/2026
+
+### Added
+
+- Sprint 1, PR 3: concluída a Fase de Design System de `07E_IMPLEMENTATION_GUIDE.md` — Tailwind CSS v4 (config CSS-first via `@theme inline`, sem `tailwind.config.js`) e shadcn/ui (style `base-nova`, `baseColor: "neutral"`) instalados e configurados via `components.json`, com aliases apontando para `src/shared/ui`, `src/shared/lib` e `src/shared/hooks`, conforme DEC-0004/DEC-0005.
+- Theme Provider (`src/providers/theme-provider.tsx`), wrapper sobre `next-themes`, plugado em `src/app/layout.tsx` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`, `suppressHydrationWarning`).
+- Tokens de cor do tema escuro em `src/styles/globals.css` fiéis a `00D_BRAND_GUIDELINES.md` §15 (Paleta Oficial). Tema claro mantido com a paleta padrão gerada pelo shadcn/ui, explicitamente marcada como provisória/não documentada, a reavaliar quando o tema claro for priorizado no produto.
+- Tipografia oficial (`Manrope` como fonte principal, `Inter` como secundária) aplicada via `next/font/google` em `src/app/layout.tsx`, conforme `00D_BRAND_GUIDELINES.md` §16.
+- 11 componentes base do shadcn/ui instalados em `src/shared/ui/`: `badge`, `button`, `card`, `dialog`, `input`, `label`, `progress`, `select`, `separator`, `sonner`, `textarea` — cobrindo `Button`, `Card`, `Input`, `Progress Bar`, `Modal` e `Toast` da lista oficial de componentes de `07E_IMPLEMENTATION_GUIDE.md`, Fase 2.
+- 4 componentes próprios, compostos sobre os primitivos do shadcn/ui, completando a lista oficial de `07E_IMPLEMENTATION_GUIDE.md`, Fase 2: `Container` (`src/shared/ui/container.tsx`, wrapper responsivo centralizado), `Loading` (`src/shared/ui/loading.tsx`, spinner indeterminado com `Loader2Icon` — nunca barra de progresso falsa, conforme `03_DESIGN_SYSTEM.md` §21.3), `QuestionCard` e `ResultCard` (`src/shared/ui/question-card.tsx`, `src/shared/ui/result-card.tsx`, composições sobre `Card` — puramente apresentacionais, sem lógica de negócio ou dados de Assessment, que só existirão a partir da Fase 3/4).
+- `Toaster` (`src/shared/ui/sonner.tsx`) plugado em `src/app/layout.tsx`, dentro do `ThemeProvider`, para refletir o tema ativo nas notificações.
+- `src/shared/lib/utils.ts`: utilitário `cn()` (`clsx` + `tailwind-merge`), padrão gerado pelo shadcn/ui.
+
+### Changed
+
+- `next.config.ts`: `agentRules: false`, desativando a geração/gestão automática de `AGENTS.md` pelo Next.js 16 para preservar o `AGENTS.md` próprio do projeto.
+- `12C_TECH_STACK.md` atualizado (Seções 4 e 13) para refletir as dependências efetivamente instaladas pelo ecossistema oficial do shadcn/ui (`next-themes`, `@base-ui/react`, `tailwind-merge`, `tw-animate-css`, `sonner`) — atualização de inventário, sem decisão arquitetural associada.
+
+### Documentation
+
+- `12C_TECH_STACK.md` atualizado (versão 1.2).
+
+---
+
 ## [0.1.5] - 06/08/2026
 
 ### Added
