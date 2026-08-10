@@ -541,13 +541,89 @@ Negativas:
 
 ---
 
+## DEC-0007
+
+### Título
+
+Calibração provisória v0.1 de `Alternative.score`, `Question.weight` (Q002–Q010) e `Indicator.weight` — não representa calibração definitiva de negócio.
+
+### Data
+
+2026-08-10
+
+### Status
+
+Approved — a *adoção do mecanismo* de calibração provisória está aprovada; os *valores numéricos* específicos abaixo são explicitamente provisórios e não representam uma decisão de negócio definitiva (ver Contexto e Consequências).
+
+### Contexto
+
+A Fase 4 de `07E_IMPLEMENTATION_GUIDE.md` (Assessment Engine — Validation, Score, Behavior, Archetype Resolver, Insight, Evolution Engines e Result Builder) depende de dados numéricos da Content Library que nunca foram oficialmente definidos: `05_CONTENT_LIBRARY.md` documenta a fórmula de score (`04_BUSINESS_RULES.md`, Seção 9: `Pontuação da Alternativa × Peso da Pergunta × Peso da Dimensão`), mas nenhuma das 40 alternativas (10 perguntas × 4 alternativas) possui um valor de `score` preenchido, apenas 1 das 10 perguntas (Q001) possui `weight` explícito, e nenhum dos 10 Indicadores possui `weight` preenchido. `Dimension.weight` é a única das quatro grandezas de peso já 100% documentada (5/5 dimensões).
+
+Sem esses valores, o Score Engine e o Behavior Engine não têm o que calcular — a Fase 4 fica bloqueada. Aguardar validação comercial/de produto antes de atribuir esses valores adiaria indefinidamente o desenvolvimento, sem necessidade real: a arquitetura já isola completamente dado (Content Library / `core/content/`) de lógica (Engines), então valores provisórios podem ser substituídos depois sem qualquer alteração de código nas Engines.
+
+### Alternativas consideradas
+
+- **Aguardar validação de produto antes de iniciar a Fase 4.** Rejeitada: bloqueia indefinidamente o desenvolvimento por uma dependência (validação comercial) que não existe ainda e não tem previsão.
+- **Atribuir valores arbitrários sem documentar a origem ou a natureza provisória.** Rejeitada: esconderia a suposição, arriscando que os valores fossem tratados como oficiais por engano em decisões futuras (produto, conteúdo, ou uma eventual auditoria).
+- **Calibração provisória v0.1, documentada, versionada e explicitamente não-definitiva** (adotada). Destrava a Fase 4 imediatamente, mantém rastreabilidade total da suposição adotada e da regra usada para derivá-la, e deixa o caminho de substituição trivial (apenas dado, nunca lógica).
+
+### Decisão
+
+Adotar a seguinte calibração provisória v0.1, aplicada apenas onde a Content Library não possuía valor oficial:
+
+**`Alternative.score`** (as 40 alternativas de Q001–Q010) — regra: a ordem de autoria das alternativas (A→D) já reflete, em todas as 10 perguntas, intensidade decrescente de expressão do Indicador Principal (A = expressão mais proativa/adaptativa, D = mais evitativa/problemática, confirmado por leitura de todas as 10 perguntas). Aplicada uma escala Likert uniforme de 4 pontos, igualmente espaçada, para todas as perguntas:
+
+| Alternativa | Score |
+|---|---|
+| A | 100 |
+| B | 67 |
+| C | 33 |
+| D | 0 |
+
+**`Question.weight`** — Q001 mantém `1.0`, valor já oficialmente documentado antes desta decisão (não é calibração v0.1). Para Q002–Q010, na ausência de qualquer sinal de peso diferenciado entre perguntas de uma mesma dimensão, adotado `1.0` uniforme (calibração v0.1) para não introduzir hierarquia não documentada.
+
+**`Indicator.weight`** — os 10 indicadores (2 por dimensão) recebem `1.0` uniforme (calibração v0.1), pela mesma ausência de sinal de diferenciação entre os 2 indicadores de uma mesma dimensão.
+
+**`Dimension.weight`** — inalterado, permanece 100% oficial (initiative 1.0 · planning 1.0 · pressure 1.0 · distraction 1.0 · consistency 1.2), não faz parte desta calibração.
+
+Todos os valores desta calibração são marcados com o metadado `calibrationVersion: "v0.1"` exclusivamente nos dados de `core/content/` (nunca em `core/engines/`), e anotados inline em `05_CONTENT_LIBRARY.md` com a marca "Calibração v0.1 (provisória) — DEC-0007", distinguindo-os dos valores já oficialmente documentados (`Dimension.weight` e `Q001.weight`).
+
+### Justificativa
+
+A escala uniforme 100/67/33/0 é a opção menos arbitrária disponível: qualquer distribuição não-uniforme exigiria uma justificativa qualitativa por pergunta que a documentação nunca forneceu, enquanto uma escala igualmente espaçada não introduz nenhum viés além da ordenação A→D já presente na redação original das perguntas. O mesmo raciocínio se aplica aos pesos uniformes de Pergunta e Indicador: no MVP, a única diferenciação de peso já documentada e intencional é entre Dimensões (Consistência = 1.2), não dentro delas.
+
+### Consequências
+
+Positivas:
+
+- Destrava integralmente a Fase 4 (`07E_IMPLEMENTATION_GUIDE.md`) sem esperar por um processo de validação de produto que ainda não existe.
+- Rastreabilidade total: todo valor provisório é identificável (`calibrationVersion: "v0.1"` no dado, anotação inline na documentação, referência a esta decisão).
+- Substituição futura é apenas uma alteração de dado em `core/content/` — nenhuma Engine precisa ser alterada.
+
+Negativas:
+
+- **Os valores numéricos adotados aqui não são uma calibração definitiva de negócio.** Eles não foram validados com usuários reais, especialistas de produto, ou dados de uso, e não deverão ser citados como tal em nenhum contexto (relatório, documentação de produto, comunicação externa).
+- Resultados de Assessment gerados enquanto a calibração v0.1 estiver em vigor (Behavior Indexes, Arquétipo, Confidence Score) refletem essa suposição provisória, não um modelo de negócio validado — qualquer uso desses resultados fora do desenvolvimento/QA interno deve deixar isso explícito.
+- Esta calibração deverá ser revisada e provavelmente substituída (nova versão, ex. v1.0) assim que houver dados reais de uso ou validação comercial, seguindo o processo de Content Governance (`05_CONTENT_LIBRARY.md`, Seção 29). Essa substituição futura não é, por si só, uma nova decisão arquitetural — é a continuação natural desta.
+
+### Documentos relacionados
+
+- 05_CONTENT_LIBRARY.md (Indicator Library, Question Library)
+- 07_DATA_MODEL.md (Alternative, Question, Indicator, Dimension)
+- 04_BUSINESS_RULES.md (Seção 9 — Pontuação)
+- 06_ASSESSMENT_ENGINE.md (Seção 6 — Score Engine, Seção 7 — Behavior Engine)
+- 07E_IMPLEMENTATION_GUIDE.md (Fase 4 — Assessment Engine)
+- 13_DECISION_LOG.md (DEC-0003 — mesmo padrão de calibração provisória, já aplicado ao `reference_profile` dos Arquétipos)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0007
 - DEC-0008
 - DEC-0009
+- DEC-0010
 - ...
 ## Regras
 

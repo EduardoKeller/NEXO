@@ -628,6 +628,12 @@ Indicadores permanecem.
 
 ---
 
+> **Nota sobre `weight` (Calibração v0.1 — Provisória)**
+>
+> Os valores de `weight` listados abaixo para os 10 indicadores são uma **calibração provisória v0.1**, adotada exclusivamente para destravar a implementação da Assessment Engine (Fase 4, `07E_IMPLEMENTATION_GUIDE.md`). Eles **não representam uma decisão de negócio definitiva** e deverão ser revisados após validação de produto. Ver `13_DECISION_LOG.md` (DEC-0007) para a justificativa completa e a regra de derivação.
+
+---
+
 ## Estrutura Oficial
 
 ```yaml
@@ -652,6 +658,8 @@ status:
 
   description:
   Mede a facilidade para iniciar tarefas sem pressão externa.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ```yaml
@@ -661,6 +669,8 @@ status:
 
   description:
   Mede a velocidade para decidir iniciar uma atividade.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ---
@@ -674,6 +684,8 @@ status:
 
   description:
   Mede capacidade de organizar prioridades.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ```yaml
@@ -683,6 +695,8 @@ status:
 
   description:
   Mede planejamento antes da execução.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ---
@@ -696,6 +710,8 @@ status:
 
   description:
   Mede comportamento diante de urgências.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ```yaml
@@ -705,6 +721,8 @@ status:
 
   description:
   Mede estabilidade durante pressão.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ---
@@ -718,6 +736,8 @@ status:
 
   description:
   Mede capacidade de permanecer concentrado.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ```yaml
@@ -727,6 +747,8 @@ status:
 
   description:
   Mede facilidade para retornar à tarefa principal.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ---
@@ -740,6 +762,8 @@ status:
 
   description:
   Mede capacidade de manter hábitos.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ```yaml
@@ -749,6 +773,8 @@ status:
 
   description:
   Mede frequência de finalização das tarefas iniciadas.
+
+  weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 ```
 
 ---
@@ -914,6 +940,14 @@ O mapeamento entre uma alternativa e um Arquétipo nunca é direto. A pontuaçã
 
 ---
 
+> **Nota sobre `score` e `weight` (Calibração v0.1 — Provisória)**
+>
+> Cada Pergunta abaixo passa a exibir um bloco `Calibração v0.1 (provisória)` com o `score` das 4 alternativas (A/B/C/D). Essa é uma calibração provisória, adotada exclusivamente para destravar a implementação da Assessment Engine (Fase 4, `07E_IMPLEMENTATION_GUIDE.md`) — **não representa uma decisão de negócio definitiva**. A regra de derivação (ordem de autoria A→D como intensidade decrescente do Indicador Principal, escala 100/67/33/0) e a justificativa completa estão em `13_DECISION_LOG.md` (DEC-0007).
+>
+> O campo `weight: 1.0` de Q001 já era oficialmente documentado antes desta calibração e permanece inalterado. Os `weight: 1.0` adicionados a Q002–Q010 fazem parte da mesma calibração v0.1.
+
+---
+
 # Pergunta 01
 
 ```yaml
@@ -944,6 +978,9 @@ Espero sentir mais urgência.
 
 D:
 Acabo iniciando outras tarefas antes.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -956,6 +993,8 @@ id: Q002
 dimension: Planning
 
 primary_indicator: planning_prioritization
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Quando possui várias tarefas, normalmente você...
@@ -971,6 +1010,9 @@ Começo pela mais simples.
 
 D:
 Tenho dificuldade para decidir por onde começar.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -983,6 +1025,8 @@ id: Q003
 dimension: Pressure
 
 primary_indicator: pressure_deadlines
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Como você reage quando o prazo está próximo?
@@ -998,6 +1042,9 @@ Procuro reorganizar tudo.
 
 D:
 Acabo adiando ainda mais.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1010,6 +1057,8 @@ id: Q004
 dimension: Distraction
 
 primary_indicator: distraction_focus
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Enquanto trabalha ou estuda...
@@ -1025,6 +1074,9 @@ Alterno frequentemente entre tarefas.
 
 D:
 Preciso de muito esforço para voltar ao foco.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1037,6 +1089,8 @@ id: Q005
 dimension: Consistency
 
 primary_indicator: consistency_routine
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Quando cria um novo hábito...
@@ -1052,6 +1106,9 @@ Esqueço rapidamente.
 
 D:
 Dependo muito da motivação.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1064,6 +1121,8 @@ id: Q006
 dimension: Initiative
 
 primary_indicator: initiative_decision
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Ao enfrentar uma tarefa desconhecida...
@@ -1079,6 +1138,9 @@ Espero mais informações.
 
 D:
 Evito iniciar.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1091,6 +1153,8 @@ id: Q007
 dimension: Planning
 
 primary_indicator: planning_preparation
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Antes de executar uma atividade importante...
@@ -1106,6 +1170,9 @@ Improviso durante a execução.
 
 D:
 Inicio sem planejamento.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1118,6 +1185,8 @@ id: Q008
 dimension: Pressure
 
 primary_indicator: pressure_stress
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Quando surgem mudanças inesperadas...
@@ -1133,6 +1202,9 @@ Fico sobrecarregado.
 
 D:
 Demoro para reagir.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1145,6 +1217,8 @@ id: Q009
 dimension: Distraction
 
 primary_indicator: distraction_interruptions
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Ao ser interrompido...
@@ -1160,6 +1234,9 @@ Acabo iniciando outra atividade.
 
 D:
 Perco completamente o ritmo.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
@@ -1172,6 +1249,8 @@ id: Q010
 dimension: Consistency
 
 primary_indicator: consistency_completion
+
+weight: 1.0  # Calibração v0.1 (provisória) — DEC-0007
 
 title:
 Quando inicia um projeto...
@@ -1187,6 +1266,9 @@ Abandono alguns projetos.
 
 D:
 Começo muitos ao mesmo tempo.
+
+Calibração v0.1 (provisória) — DEC-0007:
+score A: 100 · score B: 67 · score C: 33 · score D: 0
 ```
 
 ---
