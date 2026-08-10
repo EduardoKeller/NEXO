@@ -154,6 +154,23 @@ Cada versão deverá seguir o modelo.
 
 # 6. Histórico
 
+## [0.1.7] - 10/08/2026
+
+### Added
+
+- Sprint 1, PR 4: concluída a Fase 3 (Assessment) de `07E_IMPLEMENTATION_GUIDE.md` — Assessment Loader, Question Flow, Navigation, Progress, Validation e Local State, com dados 100% mockados e sem cálculo de resultado real, conforme escopo da fase ("ainda não calcular resultados").
+- Feature `features/assessment/` criada (primeira Feature implementada, conforme DEC-0004/DEC-0005): `types/assessment.ts` (`Question`, `Answer`, `AssessmentResult`, `BehaviorIndex`), `constants/mockQuestions.ts` (as 10 perguntas oficiais Q001–Q010 de `05_CONTENT_LIBRARY.md`, Question Library) e `constants/mockResult.ts` (resultado mockado baseado no Arquétipo "Executor Sob Pressão", Archetype Library).
+- `hooks/useAssessmentFlow.ts`: hook de estado local (React state) controlando os estágios `start → question → result`, progresso e resposta selecionada, sem Zustand e sem chamada a Engine, banco ou API — nenhuma dessas camadas existe ainda (Fases 4, 7 e 8 de `07E_IMPLEMENTATION_GUIDE.md`).
+- Componentes da feature em `components/`: `AssessmentStart`, `QuestionStep`, `ResultStep` e `AssessmentFlow` (orquestrador), reutilizando integralmente os componentes já existentes do Design System (`QuestionCard`, `ResultCard`, `Progress`, `Button`, `Badge`, `Card`), exportados via `features/assessment/index.ts` (barrel file único, conforme `09B_CODE_STYLE.md`).
+- Rota `app/(application)/assessment/page.tsx`, renderizando `AssessmentFlow` via Server Component.
+- `hooks/useAssessmentFlow.test.tsx`: 8 testes unitários cobrindo início, seleção de alternativa, avanço entre perguntas, progresso, conclusão com resultado mockado e reinício. Harness próprio de `renderHook` (React + `react-dom/client`, sem `@testing-library/react`, indisponível no projeto).
+
+### Changed
+
+- `src/app/page.tsx`: adicionado CTA "Iniciar Avaliação" linkando para `/assessment`, permitindo acessar o fluxo. Não é a Landing Page completa prevista em `01_PRD.md` (Seção 7) — fora do escopo desta PR, focada exclusivamente no Assessment Flow.
+
+---
+
 ## [0.1.6] - 07/08/2026
 
 ### Added
