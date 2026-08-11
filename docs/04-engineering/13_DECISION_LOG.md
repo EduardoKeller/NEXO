@@ -765,13 +765,90 @@ Negativas:
 
 ---
 
+## DEC-0010
+
+### Título
+
+Definição oficial de "Indicador Predominante" (para a Insight Engine) e escopo da Insight Engine sobre conteúdo incompleto da Insight Library.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *fórmula* de "Indicador Predominante" é adotada como algoritmo oficial (mesma natureza de DEC-0008). O *threshold* numérico (T=20) é uma calibração provisória, sujeita a revisão (mesmo espírito de DEC-0007).
+
+### Contexto
+
+Ao auditar a Insight Engine (`06_ASSESSMENT_ENGINE.md`, Seção 10), "Indicadores predominantes" apareceu como **input formal** do processo de seleção de Insights (também confirmado em `05_CONTENT_LIBRARY.md`, Seção 18) — a mesma lacuna que DEC-0009 havia pausado para a Archetype Resolver, mas lá o conceito só afetava uma saída secundária (`matchedIndicators`) e um critério de desempate raro. Na Insight Engine, sem essa definição, não há como selecionar Insight nenhum. Adicionalmente, a Insight Library (`05_CONTENT_LIBRARY.md`, Seção 18) só documenta 3 dos 10 Insights necessários para cobrir todos os indicadores oficiais (`insight_starting`/`initiative_start`, `insight_focus`/`distraction_focus`, `insight_consistency`/`consistency_completion`) — os outros 7 indicadores não têm nenhum Insight escrito. Diferente de um valor numérico ausente, isso é conteúdo editorial (título, descrição, recomendação), que não deve ser inventado por esta implementação.
+
+### Alternativas consideradas
+
+**Fórmula de "Indicador Predominante":**
+- **Normalizar por Dimension.weight (mesma lógica de DEC-0008) e usar desvio do ponto neutro (50)** (adotada): `normalizedIndicatorScore = IndicatorScore.score / Dimension.weight`; indicador é predominante quando `|normalizedIndicatorScore − 50| ≥ T`. Trata desvios altos e baixos simetricamente (ambos representam sinal comportamental forte, seja como força ou como ponto de atenção), é comparável entre indicadores de Dimensões com pesos diferentes, e reaproveita a normalização já aprovada, sem introduzir um conceito novo.
+- Considerar só desvios altos (ex.: normalizedIndicatorScore ≥ T). Rejeitada: descartaria indicadores muito baixos, que são exatamente o tipo de sinal que a Insight Library usa para "Pontos de Atenção" (ex.: `insight_consistency`, sobre abandonar tarefas).
+
+**Threshold T:**
+- **T = 20** (adotada). Espelha a largura das faixas já oficiais de `ConfidenceLevel` (0–20, 21–40, …), mantendo consistência de escala com o restante do produto.
+- T = 30. Rejeitada nesta calibração: mais restritivo, deixaria de considerar "predominante" qualquer resposta que não seja a alternativa mais extrema (A ou D) na calibração v0.1 atual — nenhuma justificativa documental favorece esse corte sobre o de 20.
+
+**Escopo retroativo (Archetype Resolver):**
+- **Manter restrito à Insight Engine agora** (adotada). A Archetype Resolver já está commitada e publicada (`56d0a0a`); `matchedIndicators` e o critério de desempate 4 continuam pendentes lá, tratados como follow-up separado se/quando necessário — não reabre uma decisão já fechada (DEC-0009) sem necessidade concreta.
+- Completar `matchedIndicators` na Archetype Resolver nesta mesma etapa. Rejeitada: escopo desta etapa é a Insight Engine; misturar as duas ampliaria o commit sem necessidade imediata.
+
+**Conteúdo incompleto da Insight Library:**
+- **Implementar a Engine para funcionar corretamente sobre qualquer subconjunto de conteúdo disponível** (adotada). A seleção é a interseção entre os indicadores predominantes do usuário e os Insights existentes na Library — indicadores sem Insight correspondente simplesmente não geram um Insight, resultado vazio é um caso válido e esperado, não um erro. Nenhum texto é inventado.
+- Aguardar a Insight Library ficar completa (10/10) antes de implementar. Rejeitada por instrução explícita: não bloquear o desenvolvimento por conteúdo editorial pendente.
+
+**`strengths`/`attentionPoints` do resultado final:**
+- **Vêm do conteúdo do Arquétipo vencedor** (`05_CONTENT_LIBRARY.md`, Seção 17 — `strengths`/`attention_points`, já presentes por Arquétipo), não computados pela Insight Engine (adotada). `Insight` (`07_DATA_MODEL.md`, Seção 13) não tem campo de polaridade (força vs. atenção), então não há como a Insight Engine derivar essas duas listas a partir dos Insights selecionados sem inventar uma regra de classificação. A composição final de `AssessmentResult.strengths`/`attentionPoints` a partir do conteúdo do Arquétipo é responsabilidade do Result Builder (etapa futura), não da Insight Engine.
+- Insight Engine deriva `strengths`/`attentionPoints` a partir dos Insights selecionados. Rejeitada: exigiria inventar uma regra de polaridade não documentada.
+
+### Decisão
+
+```
+normalizedIndicatorScore(indicador) = IndicatorScore.score / Dimension.weight
+
+Indicador Predominante ⟺ |normalizedIndicatorScore − 50| ≥ 20
+```
+
+A Insight Engine (`core/engines/insight/`) seleciona, dentre os Insights de `core/content/insights.ts` (espelhando os 3 já documentados em `05_CONTENT_LIBRARY.md`), aqueles cujo `indicatorId` está entre os indicadores predominantes do usuário, ordenados por `priority` (Critical > High > Medium > Low). `Arquétipo` é recebido como input (fiel ao contrato documentado em `06_ASSESSMENT_ENGINE.md`, Seção 10) mas não filtra a seleção nesta versão — nenhuma regra operacional de uso do Arquétipo na seleção está documentada em lugar nenhum. `strengths`/`attentionPoints` não são produzidos por esta Engine.
+
+### Justificativa
+
+A fórmula mantém consistência total com o padrão já aprovado em DEC-0008 (mesma normalização, mesma escala 0–100), evita duplicar lógica de agregação, e é simétrica o suficiente para servir tanto força quanto atenção sem precisar de duas regras separadas. Implementar sobre o conteúdo real (por menor que seja) evita bloquear a Fase 4 por uma dependência editorial que está fora do escopo desta implementação.
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia a Insight Engine sem inventar texto editorial nem uma regra de negócio isolada — a fórmula deriva diretamente do padrão de DEC-0008.
+- Resultado vazio (nenhum Insight selecionado) é um estado válido e testável, não uma condição de erro.
+
+Negativas:
+
+- **O threshold T=20 é provisório**, como toda calibração desta fase (mesma ressalva de DEC-0007/DEC-0008) — não validado com dados reais de uso.
+- Com apenas 3/10 indicadores cobertos na Insight Library, a maioria das combinações de resposta do usuário vai produzir 0, 1 ou 2 Insights — a experiência final de produto depende de completar a Insight Library, fora do escopo desta implementação.
+- `matchedIndicators` na Archetype Resolver continua sem uso desta definição — pendência técnica que persiste até um follow-up explícito.
+- `strengths`/`attentionPoints` do resultado final dependem do Result Builder (ainda não implementado) para agregar o conteúdo do Arquétipo — até lá, não há como visualizar esse dado de ponta a ponta.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 10 — Insight Engine)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library, strengths/attention_points; Seção 18 — Insight Library)
+- 07_DATA_MODEL.md (Seção 13 — Insight)
+- 13_DECISION_LOG.md (DEC-0008 — mesmo padrão de normalização; DEC-0009 — mesma lacuna, escopo diferente, ainda pendente lá)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0010
 - DEC-0011
 - DEC-0012
+- DEC-0013
 - ...
 ## Regras
 
