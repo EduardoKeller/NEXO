@@ -617,13 +617,86 @@ Negativas:
 
 ---
 
+## DEC-0008
+
+### Título
+
+Algoritmo oficial do Behavior Engine — agregação de indicadores em Dimensão, normalização 0–100 e placeholder provisório de `BehaviorIndex.confidence`.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *fórmula de agregação e normalização* é adotada como algoritmo oficial (mesma natureza de DEC-0003). O valor constante de `BehaviorIndex.confidence` é explicitamente um *placeholder provisório*, não uma fórmula de negócio definitiva (ver Consequências).
+
+### Contexto
+
+A Fase 4 (`07E_IMPLEMENTATION_GUIDE.md`) exigia implementar o Behavior Engine (`06_ASSESSMENT_ENGINE.md`, Seção 7–8), mas nenhuma fórmula estava documentada para: (1) combinar os 2 `IndicatorScore` de uma Dimensão em um score bruto único; (2) normalizar esse score bruto — que já carrega `Dimension.weight` embutido desde a Score Engine (`04_BUSINESS_RULES.md`, Seção 9), podendo chegar a 120 para Consistência — para a faixa oficial 0–100; (3) calcular `BehaviorIndex.confidence` (`07_DATA_MODEL.md`, Seção 11), campo que nunca foi definido em nenhum documento, diferente de `BehaviorArchetype.confidence`, já formulado via DEC-0003. Adicionalmente, `07B_API_CONTRACTS.md` (Seção 8) define `BehaviorIndex` com campos `score`/sem `id`, divergindo de `07_DATA_MODEL.md` (Seção 11), que usa `rawScore`/com `id` — resolvido a favor de `07_DATA_MODEL.md`, por ser o documento normativo do domínio (não é decisão de negócio, é correção de nomenclatura, mesmo tratamento dado a `AssessmentStatus`).
+
+### Alternativas consideradas
+
+**Agregação indicador → Dimensão:**
+- **Média ponderada por `Indicator.weight`** (adotada): `rawScore = Σ(indicatorScore × weight) / Σ(weight)`. Consistente com a decisão já tomada na Score Engine de que `Indicator.weight` é de uso exclusivo do Behavior Engine.
+- Soma ponderada sem dividir. Rejeitada: dobra a escala sem referência de máximo clara, dificultando a normalização seguinte.
+
+**Normalização 0–100:**
+- **Dividir por `Dimension.weight`** (adotada): `normalizedScore = rawScore / Dimension.weight`. Cancela o efeito de `Dimension.weight` nesta etapa (já aplicado no score por pergunta), produzindo um Índice comparável entre as 5 Dimensões independentemente do peso. `Dimension.weight` volta a ser usado no Archetype Resolver (DEC-0003), em uma etapa distinta do pipeline.
+- Clamp simples em 100. Rejeitada: comprime artificialmente toda a faixa 100–120 de Consistência em um único valor (100), perdendo capacidade de diferenciação dentro dessa Dimensão.
+
+**`BehaviorIndex.confidence`:**
+- **Constante 100, documentada como placeholder** (adotada): a Validation Engine já garante que as 10 perguntas foram respondidas antes de qualquer cálculo (`04_BUSINESS_RULES.md`, Seção 18) — não existe cenário de dado parcial no MVP, tornando uma constante honesta sobre a ausência de fórmula oficial, sem inventar uma métrica.
+- Omitir o campo. Rejeitada: `BehaviorIndex.confidence` é campo não-opcional em `07_DATA_MODEL.md`, Seção 11.
+
+### Decisão
+
+O Behavior Engine (`core/engines/behavior/`) calcula, para cada uma das 5 Dimensões:
+
+```
+rawScore(dimensão) = Σ(IndicatorScore × Indicator.weight) / Σ(Indicator.weight)
+                      para os indicadores dessa Dimensão
+
+normalizedScore(dimensão) = rawScore(dimensão) / Dimension.weight
+
+confidence(dimensão) = 100  (placeholder provisório)
+```
+
+`BehaviorIndex` usa exatamente os campos de `07_DATA_MODEL.md`, Seção 11 (`id`, `dimensionId`, `rawScore`, `normalizedScore`, `confidence`), não os de `07B_API_CONTRACTS.md`, Seção 8.
+
+### Justificativa
+
+A média ponderada e a normalização por `Dimension.weight` são as únicas fórmulas consistentes com decisões já aprovadas (Score Engine, DEC-0003) sem introduzir dupla contagem do peso de Dimensão nem comprimir informação. O placeholder de `confidence` evita inventar uma métrica sem base documental, seguindo o mesmo espírito de transparência de DEC-0007.
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia o Behavior Engine sem inventar regras de negócio ocultas — toda a fórmula está documentada e é publicamente rastreável a esta decisão.
+- `BehaviorIndex.confidence = 100` é trivialmente substituível por uma fórmula real no futuro (constante isolada, nenhuma Engine downstream depende do seu valor específico ainda).
+
+Negativas:
+
+- **`BehaviorIndex.confidence` não representa uma métrica de confiança real.** É um placeholder até que uma fórmula oficial seja definida (ex.: baseada em variância entre indicadores de uma Dimensão, ou outro critério a determinar pelo time de produto).
+- A fórmula de agregação/normalização, embora consistente com o restante do pipeline, nunca foi validada com dados reais de uso — mesma ressalva já aplicada à calibração v0.1 (DEC-0007).
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 7 — Behavior Engine, Seção 8 — Behavior Indexes)
+- 04_BUSINESS_RULES.md (Seção 9 — Pontuação)
+- 07_DATA_MODEL.md (Seção 11 — BehaviorIndex)
+- 07B_API_CONTRACTS.md (Seção 8 — Behavior Index, divergência de nomenclatura resolvida)
+- 13_DECISION_LOG.md (DEC-0003 — mesmo padrão de decisão algorítmica; DEC-0007 — mesmo padrão de placeholder provisório)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0008
 - DEC-0009
 - DEC-0010
+- DEC-0011
 - ...
 ## Regras
 
