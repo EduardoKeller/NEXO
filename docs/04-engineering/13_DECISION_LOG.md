@@ -690,13 +690,88 @@ Negativas:
 
 ---
 
+## DEC-0009
+
+### Título
+
+Implementação parcial do Archetype Resolver — interpretação dos critérios de desempate 1–3 de `04_BUSINESS_RULES.md` §16, e adiamento formal de `matchedIndicators`/"Indicador predominante".
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *interpretação* dos critérios 1–3 e o *adiamento* de `matchedIndicators` são aprovados como forma de destravar o pipeline. Nenhum dos dois representa uma decisão de negócio definitiva (ver Consequências).
+
+### Contexto
+
+Ao implementar a Archetype Resolver (`06_ASSESSMENT_ENGINE.md`, Seção 9), a distância euclidiana ponderada e o Confidence Score (DEC-0003) estavam completamente especificados. Dois problemas reais impediram uma implementação completa:
+
+1. **Critérios de desempate 1–3 (`04_BUSINESS_RULES.md`, Seção 16) são ambíguos ou matematicamente inoperantes como escritos.** O critério 1 ("Maior Confidence Score") não pode discriminar entre arquétipos empatados: em qualquer empate real na menor distância, a segunda menor distância *é* a distância do outro arquétipo empatado, o que sempre produz o mesmo `confidence = 50` (a razão `distancia_melhor / (distancia_melhor + distancia_segundo_melhor)` é sempre 0,5 quando as duas distâncias são iguais) **para qualquer candidato escolhido** — o critério nunca desempata nada, apenas repete o mesmo valor constante. Os critérios 2–3 ("Maior Índice de Consistência/Planejamento") não especificam se comparam o Índice do **usuário** (idêntico para todos os candidatos empatados — também inoperante) ou o `reference_profile` de **cada arquétipo candidato** (única leitura que diferencia).
+
+2. **"Indicador predominante"** (usado por `matchedIndicators`, `07_DATA_MODEL.md` §12, e pelo critério de desempate 4) nunca foi definido em nenhum documento, incluindo o Glossário Oficial. Ao ser consultado, o responsável pelo produto optou explicitamente por **não** aceitar uma fórmula provisória e adiar essa parte até definição oficial, em vez de estabelecer um placeholder (diferente do tratamento dado a `BehaviorIndex.confidence` em DEC-0008).
+
+### Alternativas consideradas
+
+**Critérios de desempate 1–3:**
+- **Critério 1 tratado como no-op documentado; 2–3 comparam `reference_profile` do arquétipo candidato** (adotada). É a única leitura que torna os critérios 2–3 operantes, e reconhece formalmente que o critério 1 nunca decide nada em um empate real.
+- Implementar os 3 critérios literalmente, usando o Índice do usuário para 2–3. Rejeitada: produz os mesmos 3 critérios sempre inoperantes, tornando o desempate real apenas os critérios 4–5.
+- Reescrever os critérios 1–3 do zero. Rejeitada: seria alterar uma regra de negócio já aprovada (`04_BUSINESS_RULES.md`) sem mandato para tanto.
+
+**`matchedIndicators` / Indicador predominante:**
+- **Adiar completamente, sem placeholder** (adotada, por decisão explícita do responsável pelo produto). A Archetype Resolver retorna um tipo de saída próprio (`ArchetypeResolverOutput`, `core/contracts/archetypeResolver.ts`) que não inclui `matchedIndicators` nem os demais campos de `BehaviorArchetype` que dependem de conteúdo ainda não carregado (`summary`). O critério de desempate 4 é pulado explicitamente na cadeia (nunca "aplicado com resultado sempre vazio").
+- Placeholder provisório (ex.: indicadores acima da média). Rejeitada nesta etapa — oferecida e recusada explicitamente.
+
+### Decisão
+
+Cadeia de desempate implementada (`core/engines/archetype/resolveArchetype.ts`), aplicada somente quando 2+ arquétipos empatam (dentro de uma tolerância de ponto flutuante) na menor distância:
+
+```
+1. Confidence Score          → no-op documentado, nunca decide (sempre seguem empatados)
+2. reference_profile.consistency do arquétipo candidato → maior valor vence
+3. reference_profile.planning do arquétipo candidato    → maior valor vence
+4. Indicadores predominantes  → PULADO (pendente de definição oficial)
+5. Prioridade oficial fixa    → Refinador Estratégico → Explorador Analítico →
+                                 Executor Sob Pressão → Acumulador de Prioridades
+```
+
+`ArchetypeResolverOutput` não é o `BehaviorArchetype` de `07_DATA_MODEL.md` §12 — não inclui `matchedIndicators`, `summary` nem `slug`/`name`. É um tipo de fronteira desta Engine (mesma categoria de `ScoreEngineOutput`/`BehaviorEngineOutput`), a ser reconciliado com o `BehaviorArchetype` completo quando o Result Builder existir e "Indicador predominante" for definido.
+
+### Justificativa
+
+Interpretar os critérios 2–3 como comparação do `reference_profile` do arquétipo é a única leitura logicamente consistente com o próprio propósito de um critério de desempate (diferenciar candidatos), e não exige reescrever nenhuma regra aprovada — apenas resolve uma ambiguidade de redação. Adiar `matchedIndicators` sem placeholder, por instrução explícita do responsável pelo produto, evita que uma fórmula inventada sem base documental seja tratada como definitiva mais adiante.
+
+### Consequências
+
+Positivas:
+
+- A Archetype Resolver produz distância, Confidence Score e desempate corretos para o cenário mais provável (nenhum empate) e para o caso de empate real, sem inventar critérios de negócio.
+- `ArchetypeResolverOutput` deixa claro, pelo próprio tipo, o que ainda não está pronto — impossível confundir com o `BehaviorArchetype` oficial completo.
+
+Negativas:
+
+- **O critério de desempate 4 (`04_BUSINESS_RULES.md`, Seção 16) permanece não implementado.** Em um empate que só seria resolvido por esse critério (raro, mas possível com 4 arquétipos), o resultado cai direto para a prioridade fixa (critério 5), que sempre favorece "Refinador Estratégico" sobre os demais em qualquer empate residual.
+- `BehaviorArchetype.matchedIndicators` continua sem implementação — bloqueia a criação completa desse tipo de domínio e do Result Builder até definição oficial de "Indicador predominante".
+- A reinterpretação dos critérios 1–3 não foi validada pelo autor original de `04_BUSINESS_RULES.md` além desta sessão — deve ser revisada se o documento for atualizado por outra via.
+
+### Documentos relacionados
+
+- 04_BUSINESS_RULES.md (Seção 16 — Empates)
+- 06_ASSESSMENT_ENGINE.md (Seção 9 — Archetype Resolver, Seção 14 — Tratamento de Empates)
+- 07_DATA_MODEL.md (Seção 12 — BehaviorArchetype)
+- 05_CONTENT_LIBRARY.md (Archetype Library — reference_profile)
+- 13_DECISION_LOG.md (DEC-0003 — algoritmo original; DEC-0008 — mesmo padrão de placeholder provisório, não aplicado aqui por decisão explícita)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0009
 - DEC-0010
 - DEC-0011
+- DEC-0012
 - ...
 ## Regras
 
