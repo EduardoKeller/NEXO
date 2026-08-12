@@ -842,13 +842,79 @@ Negativas:
 
 ---
 
+## DEC-0011
+
+### Título
+
+Escopo da Evolution Engine — campos do `EvolutionPlan`, fonte única de recomendações (Arquétipo) e tratamento de referências quebradas/conteúdo incompleto.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved.
+
+### Contexto
+
+Ao auditar a Evolution Engine (`06_ASSESSMENT_ENGINE.md`, Seção 11), três problemas reais foram identificados. Primeiro, três documentos divergem sobre os campos do Plano de Evolução: `06_ASSESSMENT_ENGINE.md` §11 exige Primeiro Passo/Hábito/**Exercício**/Missão/Recursos; `04_BUSINESS_RULES.md` §13 exige os mesmos mais **checklist**; `07_DATA_MODEL.md` §14 (`EvolutionPlan`) não tem `exercise` nem `checklist` — e, na prática, nenhum dos 4 Arquétipos tem conteúdo de exercício documentado em lugar nenhum, tornando o impacto atual da divergência nulo. Segundo, o conteúdo de evolução (`first_step`, `recommended_habits`, `recommended_missions`, `recommended_resources`) está embutido em cada entrada de Arquétipo (`05_CONTENT_LIBRARY.md` §17), não em instâncias reais de "Evolution Library" (§19, que só define o schema abstrato) — e só o Arquétipo 01 (Executor Sob Pressão) tem os 4 campos preenchidos; os Arquétipos 02–04 só têm `first_step`. Terceiro, o próprio Arquétipo 01 referencia `mission_deadline` e `article_deadlines`, nenhum dos quais existe na Mission Library (§20: só `mission_first_step`, `mission_focus`, `mission_priority`) ou na Resource Library (§21: só `article_small_steps`) — referências quebradas, não apenas cobertura incompleta.
+
+### Alternativas consideradas
+
+**Campos do `EvolutionPlan`:**
+- **Seguir `07_DATA_MODEL.md` estritamente** (adotada): `id, firstStep, habits, missions, resources, estimatedDuration, difficulty`. Mesmo padrão já aplicado a `AssessmentStatus` (DEC-0003→correção similar) e `BehaviorIndex` (DEC-0008) — o Data Model prevalece como fonte do contrato de código.
+- Estender para incluir `exercise`/`checklist`. Rejeitada nesta etapa: sem conteúdo disponível para nenhum arquétipo, a extensão não teria efeito prático agora; pode ser revisitada quando houver conteúdo real.
+
+**Fonte de recomendações (Missões/Recursos):**
+- **Somente `recommended_habits`/`recommended_missions`/`recommended_resources` do Arquétipo vencedor** (adotada). Alinhado a `04_BUSINESS_RULES.md` §13: "O plano deverá respeitar o arquétipo predominante."
+- Unir com `related_missions`/`related_resources` dos Insights selecionados. Rejeitada nesta etapa: nenhum documento define a regra de composição entre as duas fontes: ficaria em aberto para decisão futura, se necessário.
+
+**Conteúdo quebrado/incompleto:**
+- **Filtrar silenciosamente, sem inventar** (adotada). IDs de missão/recurso que não existem na respectiva Library são removidos do resultado sem erro; Arquétipos sem `recommended_habits`/`recommended_missions`/`recommended_resources` produzem arrays vazios, mantendo apenas `firstStep`. Mesmo padrão já aprovado para a Insight Engine (DEC-0010).
+- Pausar até o conteúdo ser corrigido/completado. Rejeitada por instrução explícita: não bloquear o desenvolvimento por conteúdo editorial pendente.
+
+**`Índices`/`Insights` como input:**
+- Mantidos no contrato (`EvolutionEngineInput`), fiéis ao que `06_ASSESSMENT_ENGINE.md` §11 documenta como entrada ("Recebe: Arquétipo; Índices; Insights"), mas sem nenhuma regra de filtragem aplicada — mesmo padrão já usado para `archetypeId` na Insight Engine (DEC-0010).
+
+### Decisão
+
+`EvolutionPlan` implementado exatamente como `07_DATA_MODEL.md` §14 define. `Difficulty.Easy` e `estimatedDuration = 7` são constantes fixas do MVP (`05_CONTENT_LIBRARY.md` §19 — "O MVP utilizará apenas planos Easy" / "No MVP. 7 dias.", já oficiais, não calibração). A Evolution Engine (`core/engines/evolution/`) monta o plano exclusivamente a partir do conteúdo de evolução do Arquétipo vencedor, filtrando toda referência de missão/recurso que não exista nas respectivas Libraries.
+
+### Justificativa
+
+Mantém consistência com todas as decisões anteriores desta Sprint (Data Model como fonte de contrato de código; filtragem silenciosa como padrão já validado; nenhuma regra de negócio inventada sem necessidade documental).
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia a Evolution Engine sem inventar conteúdo editorial (hábitos, missões, recursos, ou exercícios).
+- Resultado parcial (arrays vazios) é um estado válido e testável para 3 dos 4 Arquétipos, e também para as referências quebradas do Arquétipo 01.
+
+Negativas:
+
+- **Na prática, hoje só 1 dos 4 Arquétipos produz um plano com qualquer hábito**, e nenhum produz um plano com missão ou recurso resolvido (ambas as referências do único Arquétipo com conteúdo estão quebradas) — a experiência de produto depende de completar/corrigir a Content Library, fora do escopo desta implementação.
+- `exercise`/`checklist` continuam ausentes do contrato de código, divergindo de dois documentos aprovados — decisão a revisitar se/quando houver conteúdo real.
+- A fonte única (Arquétipo) deixa `related_missions`/`related_resources` dos Insights sem uso nesta etapa, mesmo já existindo na Content Library.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 11 — Evolution Engine)
+- 04_BUSINESS_RULES.md (Seção 13 — Plano de Evolução, Seção 14 — Missões)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library; Seção 19 — Evolution Library; Seção 20 — Mission Library; Seção 21 — Resource Library)
+- 07_DATA_MODEL.md (Seção 14 — EvolutionPlan, Seção 15 — Mission, Seção 16 — Resource)
+- 13_DECISION_LOG.md (DEC-0010 — mesmo padrão de filtragem silenciosa e input não-filtrante)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0011
 - DEC-0012
 - DEC-0013
+- DEC-0014
 - ...
 ## Regras
 
