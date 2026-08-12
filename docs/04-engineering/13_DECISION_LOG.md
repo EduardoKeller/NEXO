@@ -908,13 +908,89 @@ Negativas:
 
 ---
 
+## DEC-0012
+
+### Título
+
+Escopo do Result Builder — conteúdo de perfil do Arquétipo, resolução de `matchedIndicators`, `Report.template` stub, e não-adoção de `confidenceScore` no topo do `AssessmentResult`.
+
+### Data
+
+2026-08-12
+
+### Status
+
+Approved.
+
+### Contexto
+
+Ao auditar o Result Builder (`06_ASSESSMENT_ENGINE.md` §13, `07_DATA_MODEL.md` §18), quatro pontos precisavam de decisão antes da implementação. Primeiro, `summary`, `description`, `strengths` e `attention_points` de cada Arquétipo (`05_CONTENT_LIBRARY.md` §17) nunca haviam sido carregados em `core/content/` — só `reference_profile` (Archetype Resolver, DEC-0009) e o conteúdo de evolução (Evolution Engine, DEC-0011) existiam. Segundo, `BehaviorArchetype.matchedIndicators` (`07_DATA_MODEL.md` §12) permanecia pendente desde DEC-0009, que previu reconciliação "quando o Result Builder existir e 'Indicador predominante' for definido" — condição já satisfeita por DEC-0010. Terceiro, `Report.template` (`07_DATA_MODEL.md` §17) é campo obrigatório sem nenhum valor documentado — a "Report Library" em `05_CONTENT_LIBRARY.md` é apenas um título de uma linha, sem estrutura. Quarto, `confidenceScore` aparece como campo de topo na "Estrutura oficial" informal de `06_ASSESSMENT_ENGINE.md` §13, mas não existe em `07_DATA_MODEL.md` nem em `07B_API_CONTRACTS.md` — redundante com `behaviorArchetype.confidence`, já presente.
+
+### Alternativas consideradas
+
+**Conteúdo de perfil do Arquétipo:**
+- **Novo tipo de conteúdo dedicado (`ArchetypeProfile`), separado de `ArchetypeReferenceProfile` e `ArchetypeEvolutionContent`** (adotada). Mesma responsabilidade única já aplicada às duas divisões anteriores do conteúdo de Arquétipo — cada tipo cobre exatamente um aspecto (distância/matching, evolução, perfil textual), sem introduzir um "Arquétipo" monolítico.
+- Estender `ArchetypeReferenceProfile` com os novos campos. Rejeitada: misturaria dado numérico (usado pela fórmula de distância) com conteúdo textual (usado só para exibição), violando a separação já estabelecida nas duas decisões anteriores.
+
+**`matchedIndicators`:**
+- **Reutilizar `predominantIndicatorIds` (Insight Engine, DEC-0010) diretamente** (adotada). Resolve a pendência de DEC-0009 sem recalcular nada — o Result Builder é um agregador, nunca deve reimplementar a fórmula de "Indicador Predominante". Trata os dois conceitos ("indicador predominante" para seleção de Insights e `matchedIndicators` do Arquétipo) como equivalentes nesta versão, documentado explicitamente aqui.
+- Recalcular "indicador predominante" dentro do Result Builder. Rejeitada: duplicaria lógica que já pertence à Insight Engine, violando o princípio de que o Result Builder só agrega.
+
+**`Report.template`:**
+- **`"assessment-default-v1"`** (adotada). Valor determinístico e versionado (sufixo `v1`), sinalizando que é o único template do MVP e que futuras alterações de template devem incrementar essa versão — sem depender de nenhum conteúdo de Report Library, que não existe.
+- Deixar vazio ou usar `assessment.slug`. Rejeitada: um valor fixo e explicitamente nomeado como "default" comunica melhor que é um placeholder, não um valor derivado de alguma regra.
+
+**`confidenceScore` no topo do `AssessmentResult`:**
+- **Não adicionar** (adotada). `07_DATA_MODEL.md` é o contrato autoritativo de código (mesmo padrão já aplicado a `AssessmentStatus`, `BehaviorIndex.rawScore`, `EvolutionPlan` sem `exercise`/`checklist`); a menção em `06_ASSESSMENT_ENGINE.md` §13 é tratada como imprecisão de uma lista informal, redundante com `behaviorArchetype.confidence`.
+- Adicionar `confidenceScore` como espelho de `behaviorArchetype.confidence`. Rejeitada: duplicaria o mesmo valor em dois lugares do mesmo objeto, sem necessidade documentada.
+
+### Decisão
+
+`core/content/archetypeProfiles.ts` (tipo `ArchetypeProfile`) materializa exclusivamente `summary`/`description`/`strengths`/`attention_points` já documentados em `05_CONTENT_LIBRARY.md` §17, para os 4 Arquétipos oficiais — nenhum conteúdo editorial novo.
+
+`BehaviorArchetype.matchedIndicators` = `predominantIndicatorIds` (saída já calculada pela Insight Engine), sem recálculo.
+
+`AssessmentResult.report` é um stub: `{id, template: "assessment-default-v1", language, generatedAt}`, sem `downloadUrl` (campo opcional). Report Engine, HTML e PDF permanecem fora de escopo (Fase 5).
+
+`AssessmentResult` não tem `confidenceScore` de topo — segue `07_DATA_MODEL.md` §18 exatamente como documentado.
+
+O Result Builder (`core/engines/resultBuilder/`) é estritamente um Factory/aggregator (`12B_ARCHITECTURE_PATTERNS.md` §9): monta `AssessmentResult` a partir dos outputs já calculados por Validation, Score, Behavior, Archetype, Insight e Evolution, sem recriar nenhuma fórmula ou regra de negócio dessas Engines.
+
+### Justificativa
+
+Todas as quatro decisões seguem o mesmo princípio já aplicado consistentemente desde DEC-0007: preferir reutilização e transparência de placeholders explícitos a inventar regras de negócio ou duplicar lógica. Reutilizar `predominantIndicatorIds` em particular fecha uma pendência de duas decisões atrás (DEC-0009) sem introduzir uma segunda fórmula concorrente para o mesmo conceito.
+
+### Consequências
+
+Positivas:
+
+- Fecha a pendência de `matchedIndicators`, aberta desde DEC-0009, sem duplicar lógica.
+- `strengths`/`attentionPoints` do resultado final ficam visíveis de ponta a ponta pela primeira vez.
+- `Report.template` versionado facilita evolução futura sem ambiguidade.
+
+Negativas:
+
+- **A equivalência entre "Indicador Predominante" (Insight Engine) e `matchedIndicators` (Archetype) é uma decisão desta versão, não uma prova formal de que os dois conceitos são idênticos** — se o Archetype Resolver ganhar sua própria noção de indicadores de suporte no futuro, esta equivalência deverá ser revisitada.
+- `Report.template = "assessment-default-v1"` não tem nenhuma correspondência com conteúdo real de Report Library — só existe para satisfazer o tipo até a Fase 5.
+- A divergência de `confidenceScore` em `06_ASSESSMENT_ENGINE.md` §13 permanece sem correção no próprio documento — só resolvida no código.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 13 — Result Builder)
+- 07_DATA_MODEL.md (Seção 12 — BehaviorArchetype, Seção 17 — Report, Seção 18 — AssessmentResult)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library)
+- 12B_ARCHITECTURE_PATTERNS.md (Seção 9 — Factory Pattern)
+- 13_DECISION_LOG.md (DEC-0009 — pendência de matchedIndicators, resolvida aqui; DEC-0010 — predominantIndicatorIds, DEC-0011 — mesmo padrão de agregador puro)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0012
 - DEC-0013
 - DEC-0014
+- DEC-0015
 - ...
 ## Regras
 
