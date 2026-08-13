@@ -32,3 +32,11 @@ export interface AssessmentResult {
   attentionPoints: string[];
   firstStep: string;
 }
+
+export interface AssessmentSubmissionError {
+  code: string;
+  message: string;
+}
+
+export type SubmitAssessmentOutput =
+  { valid: true; result: AssessmentResult } | { valid: false; errors: AssessmentSubmissionError[] };

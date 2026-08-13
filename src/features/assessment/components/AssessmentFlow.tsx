@@ -4,6 +4,7 @@ import { AssessmentStart } from "@/features/assessment/components/AssessmentStar
 import { QuestionStep } from "@/features/assessment/components/QuestionStep";
 import { ResultStep } from "@/features/assessment/components/ResultStep";
 import { useAssessmentFlow } from "@/features/assessment/hooks/useAssessmentFlow";
+import { Loading } from "@/shared/ui/loading";
 
 export function AssessmentFlow() {
   const {
@@ -36,6 +37,10 @@ export function AssessmentFlow() {
         onNext={goToNextQuestion}
       />
     );
+  }
+
+  if (stage === "submitting") {
+    return <Loading label="Calculando seu resultado..." />;
   }
 
   if (stage === "result" && result) {
