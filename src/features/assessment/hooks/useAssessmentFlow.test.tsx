@@ -24,7 +24,15 @@ const FAKE_RESULT: AssessmentResult = {
   behaviorIndexes: [{ dimension: "initiative", label: "Iniciativa", value: 20 }],
   strengths: ["Agilidade."],
   attentionPoints: ["Estresse frequente."],
-  firstStep: "Criar prazos intermediários.",
+  insights: [],
+  evolutionPlan: {
+    firstStep: "Criar prazos intermediários.",
+    habits: [],
+    missions: [],
+    resources: [],
+    difficulty: "Easy",
+    estimatedDuration: 7,
+  },
 };
 
 /**

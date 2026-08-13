@@ -21,7 +21,7 @@ describe("submitAssessment", () => {
     expect(output.result.behaviorIndexes).toHaveLength(assessment.dimensions.length);
     expect(output.result.confidenceScore).toBeGreaterThanOrEqual(0);
     expect(output.result.confidenceScore).toBeLessThanOrEqual(100);
-    expect(output.result.firstStep.length).toBeGreaterThan(0);
+    expect(output.result.evolutionPlan.firstStep.length).toBeGreaterThan(0);
   });
 
   it("fills answeredAt on every answer before running Validation, so a fully answered submission never fails on completeness", async () => {
@@ -63,13 +63,43 @@ describe("submitAssessment", () => {
     expect(output.errors.some((error) => error.code === "UNKNOWN_QUESTION")).toBe(true);
   });
 
-  it("never leaks Core domain objects (Assessment, DomainError instances) into the returned output", async () => {
+  it("never leaks Core domain objects (Assessment, DomainError instances, Core-only technical fields) into the returned output", async () => {
     const output = await submitAssessment(allAnswered("C"));
 
     if (output.valid) {
       expect(output.result).not.toHaveProperty("assessment");
       expect(output.result).not.toHaveProperty("behaviorArchetype");
-      expect(output.result).not.toHaveProperty("evolutionPlan");
+      expect(output.result).not.toHaveProperty("report");
+      expect(output.result).not.toHaveProperty("generatedAt");
+      expect(output.result).not.toHaveProperty("matchedIndicators");
+      expect(output.result.evolutionPlan).not.toHaveProperty("id");
     }
+  });
+
+  it("preserves the real Insights selected by the Insight Engine for a fully-answered assessment", async () => {
+    const output = await submitAssessment(allAnswered("A"));
+    if (!output.valid) throw new Error("expected a valid output");
+
+    expect(output.result.insights.length).toBeGreaterThan(0);
+    for (const insight of output.result.insights) {
+      expect(typeof insight.id).toBe("string");
+      expect(typeof insight.indicatorId).toBe("string");
+      expect(["Critical", "High", "Medium", "Low"]).toContain(insight.priority);
+      expect(insight.title.length).toBeGreaterThan(0);
+      expect(insight.description.length).toBeGreaterThan(0);
+      expect(insight.recommendation.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("preserves the full evolutionPlan shape, including empty habits/missions/resources as valid non-error states", async () => {
+    const output = await submitAssessment(allAnswered("A"));
+    if (!output.valid) throw new Error("expected a valid output");
+
+    expect(output.result.evolutionPlan.firstStep.length).toBeGreaterThan(0);
+    expect(Array.isArray(output.result.evolutionPlan.habits)).toBe(true);
+    expect(Array.isArray(output.result.evolutionPlan.missions)).toBe(true);
+    expect(Array.isArray(output.result.evolutionPlan.resources)).toBe(true);
+    expect(["Easy", "Medium", "Hard"]).toContain(output.result.evolutionPlan.difficulty);
+    expect(output.result.evolutionPlan.estimatedDuration).toBeGreaterThan(0);
   });
 });

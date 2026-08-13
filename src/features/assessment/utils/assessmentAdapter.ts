@@ -10,6 +10,10 @@ import type {
   AssessmentSubmissionError,
   BehaviorIndex as FeatureBehaviorIndex,
   DimensionId,
+  EvolutionMission as FeatureEvolutionMission,
+  EvolutionPlan as FeatureEvolutionPlan,
+  EvolutionResource as FeatureEvolutionResource,
+  Insight as FeatureInsight,
   Question as FeatureQuestion,
   QuestionAlternative,
 } from "@/features/assessment/types/assessment";
@@ -57,6 +61,50 @@ function toFeatureBehaviorIndexes(
   }));
 }
 
+function toFeatureInsights(insights: CoreAssessmentResult["insights"]): FeatureInsight[] {
+  return insights.map((insight) => ({
+    id: insight.id,
+    indicatorId: insight.indicatorId,
+    priority: insight.priority,
+    title: insight.title,
+    description: insight.description,
+    recommendation: insight.recommendation,
+  }));
+}
+
+function toFeatureMissions(missions: CoreAssessmentResult["missions"]): FeatureEvolutionMission[] {
+  return missions.map((mission) => ({
+    id: mission.id,
+    title: mission.title,
+    goal: mission.goal,
+    difficulty: mission.difficulty,
+    estimatedTime: mission.estimatedTime,
+  }));
+}
+
+function toFeatureResources(
+  resources: CoreAssessmentResult["resources"],
+): FeatureEvolutionResource[] {
+  return resources.map((resource) => ({
+    id: resource.id,
+    type: resource.type,
+    title: resource.title,
+    estimatedTime: resource.estimatedTime,
+    ...(resource.url !== undefined ? { url: resource.url } : {}),
+  }));
+}
+
+function toFeatureEvolutionPlan(result: CoreAssessmentResult): FeatureEvolutionPlan {
+  return {
+    firstStep: result.evolutionPlan.firstStep,
+    habits: result.evolutionPlan.habits,
+    missions: toFeatureMissions(result.missions),
+    resources: toFeatureResources(result.resources),
+    difficulty: result.evolutionPlan.difficulty,
+    estimatedDuration: result.evolutionPlan.estimatedDuration,
+  };
+}
+
 export function toFeatureResult(result: CoreAssessmentResult): FeatureAssessmentResult {
   return {
     archetypeName: result.behaviorArchetype.name,
@@ -65,7 +113,8 @@ export function toFeatureResult(result: CoreAssessmentResult): FeatureAssessment
     behaviorIndexes: toFeatureBehaviorIndexes(result.behaviorIndexes),
     strengths: result.strengths,
     attentionPoints: result.attentionPoints,
-    firstStep: result.evolutionPlan.firstStep,
+    insights: toFeatureInsights(result.insights),
+    evolutionPlan: toFeatureEvolutionPlan(result),
   };
 }
 
