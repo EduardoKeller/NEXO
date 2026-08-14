@@ -195,7 +195,7 @@ Objetivos.
 - Landing Page.
 - Assessment.
 - Assessment Engine.
-- Relatório HTML.
+- ~~Relatório HTML~~ — adiado para fase futura (ver 13_DECISION_LOG.md, DEC-0012).
 - Primeira versão funcional.
 
 ---
