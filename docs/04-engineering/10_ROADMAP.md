@@ -71,9 +71,9 @@ Entregar uma primeira versão utilizável da plataforma.
 - Fluxo completo da Assessment
 - Assessment Engine
 - Resultados
-- Relatório HTML
+- ~~Relatório HTML~~ — adiado para fase futura (ver 13_DECISION_LOG.md, DEC-0012)
 - Responsividade
-- Tema claro/escuro
+- ~~Tema claro/escuro~~ — adiado para fase futura (ver 11_CHANGELOG.md, [0.1.6])
 - Integração com Content Library
 
 ### Critério de Conclusão

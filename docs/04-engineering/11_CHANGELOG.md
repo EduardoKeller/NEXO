@@ -154,6 +154,16 @@ Cada versão deverá seguir o modelo.
 
 # 6. Histórico
 
+## [0.1.8] - 14/08/2026
+
+### Documentation
+
+- `10_ROADMAP.md` (Sprint 1, Funcionalidades): "Relatório HTML" marcado como adiado, sincronizando o Roadmap com DEC-0012 (`13_DECISION_LOG.md`).
+- `10_ROADMAP.md` (Sprint 1, Funcionalidades): "Tema claro/escuro" marcado como adiado, com referência ao registro já existente em `[0.1.6] - 07/08/2026`.
+- Nenhuma alteração de código.
+
+---
+
 ## [0.1.7] - 10/08/2026
 
 ### Added
