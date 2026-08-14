@@ -121,6 +121,7 @@ UTC
 | Assessment | assessment | Assessment |
 | Question | question | Question |
 | Alternative | alternative | Alternative |
+| AssessmentSession | assessment_session | AssessmentSession |
 | Answer | assessment_answer | AssessmentAnswer |
 | Dimension | dimension | Dimension |
 | Indicator | indicator | Indicator |
@@ -141,6 +142,8 @@ UTC
 
 Possui muitas Questions.
 
+Possui muitas AssessmentSessions.
+
 ```text
 Assessment
 
@@ -149,11 +152,23 @@ Assessment
 Question[]
 ```
 
+```text
+Assessment
+
+↓
+
+AssessmentSession[]
+```
+
 ---
 
 ## Question
 
 Possui muitas Alternatives.
+
+Pertence a uma Dimension.
+
+Referencia um Indicator primário, via `primaryIndicatorId`.
 
 ```text
 Question
@@ -161,6 +176,22 @@ Question
 ↓
 
 Alternative[]
+```
+
+```text
+Question
+
+↓ (N:1)
+
+Dimension
+```
+
+```text
+Question
+
+↓ (N:1, via primaryIndicatorId)
+
+Indicator
 ```
 
 ---
@@ -197,12 +228,22 @@ Insight[]
 
 Possui muitas Answers.
 
+Possui um AssessmentResult (1:1).
+
 ```text
 AssessmentSession
 
 ↓
 
 AssessmentAnswer[]
+```
+
+```text
+AssessmentSession
+
+↓
+
+AssessmentResult
 ```
 
 ---
@@ -223,11 +264,21 @@ BehaviorIndex[]
 
 ## EvolutionPlan
 
+Pertence a um Archetype.
+
 Possui.
 
 Mission[]
 
 Resource[]
+
+```text
+EvolutionPlan
+
+↓ (N:1)
+
+Archetype
+```
 
 ---
 
@@ -244,6 +295,20 @@ Language deverá ser obrigatória.
 Status deverá ser obrigatório.
 
 Nenhuma Foreign Key poderá aceitar registros inexistentes.
+
+---
+
+## Identidade Anônima e Snapshot (DEC-0013 / DEC-0014)
+
+`AssessmentSession.anonymousId` é um identificador opaco (UUID), gerado no servidor. Não possui nenhuma relação com User, Account ou Login, e não representa autenticação.
+
+`AssessmentResult.sessionId` deverá ser único (`@unique`), representando a cardinalidade 1:1 com `AssessmentSession`.
+
+`AssessmentResult.archetypeConfidence` é campo escalar.
+
+`AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` são snapshots imutáveis, gravados uma única vez no momento da geração do resultado, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses quatro campos deverá possuir Foreign Key ou `@relation()` para `Indicator`, `Archetype` ou qualquer outra tabela de conteúdo.
+
+`BehaviorIndex.confidence` (por Dimensão) e `AssessmentResult.archetypeConfidence` (por resultado) são campos distintos, em Models distintos, e não deverão ser confundidos.
 
 ---
 
@@ -264,6 +329,8 @@ BehaviorIndex.resultId
 AssessmentAnswer.sessionId
 
 AssessmentResult.sessionId
+
+AssessmentSession.anonymousId
 
 ---
 
@@ -296,6 +363,12 @@ Relacionamentos deverão utilizar.
 ```
 
 Enums deverão ser compartilhados.
+
+---
+
+## Tipos Estruturados (Json)
+
+Uso restrito. Aprovado exclusivamente para `AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` (13_DECISION_LOG.md, DEC-0014). Nenhum outro Model deverá adotar `Json` sem uma decisão própria registrada no Decision Log.
 
 ---
 
