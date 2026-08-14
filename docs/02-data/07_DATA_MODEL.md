@@ -107,6 +107,7 @@ O MVP utilizará as seguintes entidades.
 | Question | Representa uma pergunta |
 | Alternative | Representa uma alternativa |
 | Answer | Resposta do usuário |
+| AssessmentSession | Execução anônima de uma Avaliação |
 | Dimension | Área comportamental |
 | Indicator | Comportamento observado |
 | BehaviorIndex | Resultado normalizado |
@@ -209,6 +210,10 @@ Representa a resposta escolhida pelo usuário.
 ```typescript
 interface Answer {
 
+id: string
+
+sessionId: string
+
 questionId: string
 
 alternativeId: string
@@ -217,6 +222,32 @@ answeredAt: Date
 
 }
 ```
+
+`id` e `sessionId` foram adicionados para permitir persistência (13_DECISION_LOG.md, DEC-0013). `sessionId` referencia a AssessmentSession (Seção 8A) à qual esta resposta pertence.
+
+---
+
+# 8A. AssessmentSession
+
+Representa uma execução de uma Avaliação, de forma anônima.
+
+```typescript
+interface AssessmentSession {
+
+id: string
+
+assessmentId: string
+
+anonymousId: string
+
+startedAt: Date
+
+finishedAt?: Date
+
+}
+```
+
+Não representa uma sessão de autenticação nem exige uma entidade de usuário. `anonymousId` identifica a execução de forma anônima e opaca (13_DECISION_LOG.md, DEC-0013), sem vínculo com conta de usuário nesta fase. Uma futura associação com User/Auth não deverá exigir alteração desta interface.
 
 ---
 
@@ -457,6 +488,10 @@ Representa o objeto final retornado pela Assessment Engine.
 ```typescript
 interface AssessmentResult {
 
+id: string
+
+sessionId: string
+
 assessment: Assessment
 
 behaviorIndexes: BehaviorIndex[]
@@ -483,6 +518,8 @@ generatedAt: Date
 ```
 
 Este objeto representa a saída oficial da plataforma.
+
+`id` e `sessionId` foram adicionados para permitir persistência (13_DECISION_LOG.md, DEC-0013). `sessionId` referencia a AssessmentSession (Seção 8A) que produziu este resultado.
 
 ---
 
@@ -710,6 +747,9 @@ O relacionamento conceitual é apresentado abaixo.
 | AssessmentResult | Insight | 1:N |
 | AssessmentResult | BehaviorIndex | 1:N |
 | AssessmentResult | Report | 1:1 |
+| AssessmentSession | Assessment | N:1 |
+| AssessmentSession | Answer | 1:N |
+| AssessmentSession | AssessmentResult | 1:1 |
 
 O relacionamento acima representa o domínio da plataforma.
 

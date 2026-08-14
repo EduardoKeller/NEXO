@@ -197,6 +197,8 @@ O MVP não deverá conter.
 - IA conversacional;
 - notificações.
 
+Nota: "histórico", neste contexto, refere-se ao histórico de produto associado a conta de usuário e dashboard (10_ROADMAP.md, Sprint 4). A persistência técnica e anônima de avaliações introduzida na Sprint 2 (10_ROADMAP.md, Sprint 2; 13_DECISION_LOG.md, DEC-0013) não é abrangida por esta exclusão.
+
 Esses recursos poderão ser considerados em versões futuras.
 
 ---

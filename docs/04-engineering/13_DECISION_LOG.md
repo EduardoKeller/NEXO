@@ -984,13 +984,92 @@ Negativas:
 
 ---
 
+## DEC-0013
+
+### Título
+
+Escopo de identidade para persistência da Sprint 2 — ausência de User/Account, `AssessmentSession` como execução anônima, e mecanismo de identidade por cookie HttpOnly.
+
+### Data
+
+14/08/2026
+
+### Status
+
+Approved.
+
+### Contexto
+
+A Sprint 2 (10_ROADMAP.md, Seção 5) introduz persistência (Prisma + PostgreSQL) e lista "Sessões" e "Histórico de avaliações" como funcionalidades. Uma auditoria da documentação existente (07_DATA_MODEL.md, 07C_STORAGE_MODEL.md, 07D_PRISMA_MAPPING.md, 01_PRD.md, 12C_TECH_STACK.md) identificou que nenhum documento define uma entidade de usuário, e que 01_PRD.md (Seção 8) exclui explicitamente "login" e "cadastro" do MVP, enquanto 12C_TECH_STACK.md (Seção 5) reserva Autenticação para "futura implementação". Sem uma decisão explícita, "Sessões" e "Histórico de avaliações" não poderiam ser implementados de forma coerente com o restante da documentação.
+
+### Alternativas consideradas
+
+**Identidade do usuário:**
+- **Persistência 100% anônima, sem entidade User/Account, usando um identificador opaco por execução** (adotada). Não introduz login, cadastro nem autenticação provisória — mantém total conformidade com 01_PRD.md, Seção 8, e 12C_TECH_STACK.md, Seção 5.
+- Criar uma entidade User mínima "só para resolver o problema" (ex.: sem senha, sem login real). Rejeitada explicitamente: introduziria uma entidade de domínio não solicitada por nenhum documento, e violaria 01_PRD.md, Seção 8 ("O MVP não deverá conter... login; cadastro").
+- Adiar toda a Sprint 2 até que autenticação exista. Rejeitada: 10_ROADMAP.md já define a Sprint 2 como persistência, não como autenticação; adiar bloquearia entregas já aprovadas sem necessidade.
+
+**Mecanismo de identidade anônima:**
+- **Cookie `httpOnly`, com um UUID opaco gerado no servidor na primeira execução de uma avaliação, lido/escrito via `next/headers` dentro da Server Action/Feature Service** (adotada). É o único mecanismo compatível com o Fluxo de Execução já documentado (`React Component → Server Action → Feature Service → Core → Repository → Database`, 02_ARCHITECTURE.md, Seção 13) sem introduzir uma nova convenção de transporte cliente→servidor. Não exige nenhuma biblioteca nova.
+- `localStorage`. Rejeitada: não é acessível no servidor (Server Actions/Server Components), exigindo que o identificador fosse lido no cliente e passado explicitamente em toda chamada de Server Action — uma convenção de transporte que hoje não existe no projeto.
+
+**Natureza de `assessment_session` / `AssessmentSession`:**
+- **Representa exclusivamente a execução de uma Avaliação (início/fim), nunca uma sessão de autenticação** (adotada). Mantém a nomenclatura já usada em 07C_STORAGE_MODEL.md, Seção 5, sem sobrecarregá-la com semântica de login.
+
+**"Histórico de avaliações" (Sprint 2):**
+- **Histórico técnico, anônimo, por identificador de sessão — não uma feature de produto vinculada a conta** (adotada). `10_ROADMAP.md` menciona "Histórico" tanto na Sprint 2 quanto na Sprint 4 (junto de "Dashboard" e "Comparação de resultados"); a leitura adotada é que a Sprint 2 apenas persiste e permite recuperar avaliações por sessão anônima, e a Sprint 4 é que entrega a feature de produto (conta, dashboard, comparação) sobre essa base.
+
+### Decisão
+
+A Sprint 2 não introduzirá nenhuma entidade `User`, `Account`, fluxo de login ou cadastro.
+
+`AssessmentSession` (nova entidade de domínio, 07_DATA_MODEL.md, Seção 8A) representa exclusivamente a execução de uma Avaliação — nunca uma sessão de autenticação.
+
+A identidade da sessão é um `anonymousId` opaco (UUID), gerado no servidor na primeira execução e transportado via cookie `httpOnly`, sem vínculo com nenhuma conta de usuário nesta fase.
+
+`Answer` e `AssessmentResult` (07_DATA_MODEL.md, Seções 8 e 18) passam a referenciar sua `AssessmentSession` através de `sessionId`.
+
+"Histórico de avaliações" (10_ROADMAP.md, Sprint 2) significa a capacidade técnica de recuperar todas as `AssessmentSession` que compartilham o mesmo `anonymousId` — não uma feature de produto vinculada a conta (essa permanece prevista para a Sprint 4, 10_ROADMAP.md).
+
+Uma futura associação entre `anonymousId` e uma conta de usuário real (quando Autenticação for implementada) não deverá exigir alteração estrutural em `AssessmentSession`, `Answer` ou `AssessmentResult`.
+
+Nenhuma integração com redes sociais (ex.: Instagram, TikTok) é criada, decidida ou pressuposta por esta decisão. Uma eventual frente futura de "Social Conversion" não deverá depender de nenhuma estrutura introduzida aqui, nem esta decisão cria dependência dela.
+
+### Justificativa
+
+Mantém a Sprint 2 estritamente dentro do que 10_ROADMAP.md e 12C_TECH_STACK.md já autorizam (persistência, não autenticação), evita duplicar ou antecipar decisões de produto (Sprint 4) e preserva a Application Layer e o Fluxo de Execução já documentados em 02_ARCHITECTURE.md sem introduzir uma camada de transporte cliente→servidor nova.
+
+### Consequências
+
+Positivas:
+
+- Resolve, sem ambiguidade, os conflitos entre 01_PRD.md (Seção 8), 12C_TECH_STACK.md (Seção 5) e 10_ROADMAP.md (Sprint 2) identificados em auditoria.
+- `anonymousId` é trivialmente associável a uma conta real no futuro, sem redesenho de `AssessmentSession`.
+
+Negativas:
+
+- Histórico anônimo por cookie não sobrevive à troca de dispositivo ou navegador, nem à limpeza de cookies — limitação aceita conscientemente para esta fase.
+- `AssessmentSession`, ao introduzir um identificador persistente (mesmo anônimo) associado a respostas comportamentais, aproxima-se de dado pseudonimizado — merece atenção de privacidade/LGPD antes de produção, ainda não formalmente endereçada em nenhum documento.
+
+### Documentos relacionados
+
+- 10_ROADMAP.md (Seção 5 — Sprint 2; Seção 7 — Sprint 4)
+- 01_PRD.md (Seção 8 — Fora do Escopo)
+- 12C_TECH_STACK.md (Seção 5 — Autenticação)
+- 02_ARCHITECTURE.md (Seção 13 — Fluxo de Execução)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession; Seção 18 — AssessmentResult; Seção 26 — ERM)
+- 07C_STORAGE_MODEL.md (Seção 5 — Tabelas Operacionais) — pendente de atualização em etapa futura
+- 07D_PRISMA_MAPPING.md — pendente de atualização em etapa futura
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0013
 - DEC-0014
 - DEC-0015
+- DEC-0016
 - ...
 ## Regras
 
