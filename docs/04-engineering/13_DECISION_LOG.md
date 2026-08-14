@@ -1063,13 +1063,82 @@ Negativas:
 
 ---
 
+## DEC-0014
+
+### Título
+
+Persistência dos campos calculados de `AssessmentResult` como snapshot imutável — modelo híbrido (coluna escalar + JSONB) em `assessment_result`, sem tabelas filhas e sem Foreign Key para a Content Library.
+
+### Data
+
+14/08/2026
+
+### Status
+
+Approved.
+
+### Contexto
+
+A auditoria de `07C_STORAGE_MODEL.md` contra `07_DATA_MODEL.md` e DEC-0013 identificou que cinco campos calculados de `AssessmentResult` — `behaviorArchetype.confidence`, `behaviorArchetype.matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits` — não tinham nenhuma representação na Storage Model. DEC-0013 havia decidido apenas identidade/sessão, deixando essa lacuna explicitamente fora de escopo ("pendente de atualização em etapa futura"). Uma análise comparando três alternativas (A: JSON/estruturado em `assessment_result`; B: tabelas filhas normalizadas; C: híbrido) foi apresentada antes desta decisão.
+
+### Alternativas consideradas
+
+- **A) JSON/estruturado em `assessment_result` para todos os campos.** Compatível, mas trata `confidence` (um valor escalar único, sem coleção) da mesma forma que as quatro coleções, perdendo a oportunidade de um tipo nativo mais simples e consultável para esse campo específico.
+- **B) Tabelas filhas normalizadas para cada coleção.** Rejeitada: para ter sentido relacional, exigiria Foreign Keys entre o snapshot e a Content Library viva (ex.: `matched_indicators` → `indicator.id`), o que contradiz diretamente a natureza de snapshot decidida aqui — um resultado histórico não pode depender de um indicador que pode ser renomeado ou removido no futuro. Também aumenta a complexidade transacional da Sprint 2 (múltiplas tabelas, escrita em N linhas por resultado) sem necessidade comprovada — consultas analíticas item-a-item não são exigidas antes da Sprint 4/5.
+- **C) Modelo híbrido — `confidence` como coluna escalar; `matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits` como JSONB, todos em `assessment_result`** (adotada). `confidence` é um Value Object sem coleção (`07_DATA_MODEL.md`, Seção 19) e já tem precedente direto no próprio Storage Model (`behavior_index.confidence`, coluna escalar). As quatro coleções são snapshots de valores já embutidos por valor no Domain Model (não entidades com identidade própria), então JSONB — sem Foreign Key para a Content Library — preserva exatamente esse contrato sem introduzir uma granularidade de tabela que o domínio não modela.
+
+### Decisão
+
+`assessment_result` (`07C_STORAGE_MODEL.md`, Seção 5) passa a incluir:
+- `archetype_confidence` — coluna escalar.
+- `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits` — colunas JSONB.
+
+Nenhuma dessas colunas possui Foreign Key para `indicator`, `archetype` ou qualquer outra tabela de conteúdo. Os valores são gravados uma única vez, no momento em que o `AssessmentResult` é produzido pelo Result Builder, e nunca são recalculados nem resolvidos novamente a partir da Content Library para reconstruir um resultado histórico — mesmo que o conteúdo referenciado (ex.: texto de um Insight, `strengths` de um Arquétipo) seja alterado posteriormente.
+
+`assessment_session` (`07C_STORAGE_MODEL.md`, Seção 5) recebe a coluna `anonymous_id`, conforme já decidido em DEC-0013.
+
+`assessment_answer` (`07C_STORAGE_MODEL.md`, Seção 5) recebe a coluna `answered_at`, refletindo o campo já existente em `Answer.answeredAt` (`07_DATA_MODEL.md`, Seção 8), previamente ausente da Storage Model.
+
+`assessment_result.session_id` passa a ser documentado como único (`UNIQUE`), representando explicitamente a cardinalidade 1:1 com `assessment_session` já definida em `07_DATA_MODEL.md`, Seção 26.
+
+JSON/JSONB é aprovado como técnica de persistência exclusivamente para os quatro campos de coleção listados acima — não é uma convenção geral do projeto, e nenhuma outra tabela do Storage Model deverá adotar JSON sem uma decisão própria.
+
+O Domain Model (`07_DATA_MODEL.md`) não é alterado por esta decisão — ele permanece a fonte do contrato; esta decisão define apenas a representação de armazenamento desse contrato.
+
+### Justificativa
+
+`confidence` e `matchedIndicators` são saídas computadas pelo Archetype Resolver e pela Insight Engine, específicas de cada execução — não existem como conteúdo estático em nenhum lugar, então não há "referência dinâmica" possível para eles além do já decidido (nunca recalcular). `strengths`, `attentionPoints` e `evolutionPlan.habits` são, no código real (`buildAssessmentResult.ts`, `buildEvolutionPlan.ts`), cópias diretas de conteúdo estático no momento da geração; tratá-los como referência dinâmica faria um resultado já entregue ao usuário mudar retroativamente se o conteúdo editorial for revisado depois — inconsistente com `AssessmentResult.generatedAt` já existir como timestamp imutável no Domain Model aprovado. O modelo híbrido evita tanto o acoplamento de uma Foreign Key viva (Alternativa B) quanto a complexidade transacional de múltiplas tabelas novas, mantendo a Sprint 2 dentro do escopo de persistência (não analytics).
+
+### Consequências
+
+Positivas:
+
+- Fecha a lacuna identificada na auditoria de `07C_STORAGE_MODEL.md` sem introduzir acoplamento entre resultados históricos e a Content Library viva.
+- `archetype_confidence` fica nativamente consultável/agregável (ex.: futura análise de distribuição de confiança), sem precisar extrair de JSON.
+- Nenhuma migration de tabelas novas é necessária para estes campos.
+
+Negativas:
+
+- Consultas futuras que precisem filtrar ou agregar por item individual dentro de `matched_indicators`, `strengths`, `attention_points` ou `evolution_plan_habits` (ex.: "quantos usuários tiveram X como ponto forte") exigirão extrair de JSONB, mais custoso que uma tabela normalizada — aceito conscientemente porque essa necessidade não está em escopo antes da Sprint 4/5.
+- JSON/JSONB é uma técnica sem precedente em qualquer outra tabela de `07C_STORAGE_MODEL.md` antes desta decisão — qualquer uso futuro de JSON fora deste caso específico exige nova decisão própria, não pode se apoiar nesta.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0013 — identidade anônima e AssessmentSession, mesma natureza de decisão)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession; Seção 18 — AssessmentResult; Seção 19 — Value Objects; Seção 26 — ERM) — não alterado por esta decisão, permanece a fonte do contrato
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções; Seção 5 — Tabelas Operacionais; Seção 7 — Índices)
+- 07D_PRISMA_MAPPING.md — pendente de atualização em etapa futura
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0014
 - DEC-0015
 - DEC-0016
+- DEC-0017
+- DEC-0018
 - ...
 ## Regras
 

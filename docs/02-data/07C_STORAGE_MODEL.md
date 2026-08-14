@@ -80,6 +80,14 @@ Não utilizar durante o MVP.
 
 ---
 
+## Tipos Estruturados (JSON/JSONB)
+
+Uso restrito. Aprovado exclusivamente para os campos de snapshot calculado de `assessment_result` (13_DECISION_LOG.md, DEC-0014): `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits`.
+
+Nenhuma outra tabela deste documento deverá adotar JSON/JSONB sem uma decisão própria registrada no Decision Log.
+
+---
+
 # 4. Tabelas
 
 ## assessment
@@ -214,12 +222,13 @@ Durante o MVP existirão poucas tabelas operacionais.
 
 ## assessment_session
 
-Representa uma execução da Avaliação.
+Representa uma execução da Avaliação, de forma anônima (13_DECISION_LOG.md, DEC-0013). Não representa uma sessão de autenticação; não possui nenhuma relação com usuário, conta ou login.
 
 Campos.
 
 - id
 - assessment_id
+- anonymous_id
 - started_at
 - finished_at
 
@@ -231,14 +240,24 @@ Campos.
 - session_id
 - question_id
 - alternative_id
+- answered_at
 
 ---
 
 ## assessment_result
 
+Representa o resultado calculado para uma `assessment_session` — snapshot imutável da execução (13_DECISION_LOG.md, DEC-0014). `archetype_confidence`, `matched_indicators`, `strengths`, `attention_points` e `evolution_plan_habits` são gravados uma única vez, no momento da geração, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses campos possui Foreign Key para `indicator`, `archetype` ou qualquer outra tabela de conteúdo.
+
+Campos.
+
 - id
-- session_id
+- session_id (único — cardinalidade 1:1 com `assessment_session`)
 - archetype_id
+- archetype_confidence
+- matched_indicators (JSONB — snapshot, sem Foreign Key)
+- strengths (JSONB — snapshot, sem Foreign Key)
+- attention_points (JSONB — snapshot, sem Foreign Key)
+- evolution_plan_habits (JSONB — snapshot, sem Foreign Key)
 - report_id
 - generated_at
 
@@ -303,6 +322,8 @@ behavior_index.result_id
 assessment_answer.session_id
 
 assessment_result.session_id
+
+assessment_session.anonymous_id
 
 ---
 
