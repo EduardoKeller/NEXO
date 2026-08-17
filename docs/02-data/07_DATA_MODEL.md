@@ -3,8 +3,8 @@
 **Projeto:** NEXO Platform  
 **Documento:** 07_DATA_MODEL.md  
 **Versão:** 2.1  
-**Status:** Draft (Sprint 0 Review)  
-**Última atualização:** 04/08/2026
+**Status:** Approved  
+**Última atualização:** 17/08/2026
 
 ---
 

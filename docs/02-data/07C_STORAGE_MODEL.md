@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07C_STORAGE_MODEL.md
-**Versão:** 1.0
-**Status:** Draft (Sprint 0 Review)
-**Última atualização:** 03/08/2026
+**Versão:** 1.1
+**Status:** Approved
+**Última atualização:** 17/08/2026
 
 ---
 
@@ -222,7 +222,7 @@ Durante o MVP existirão poucas tabelas operacionais.
 
 ## assessment_session
 
-Representa uma execução da Avaliação, de forma anônima (13_DECISION_LOG.md, DEC-0013). Não representa uma sessão de autenticação; não possui nenhuma relação com usuário, conta ou login.
+Representa uma execução da Avaliação, de forma anônima (13_DECISION_LOG.md, DEC-0013). Não representa uma sessão de autenticação; não possui nenhuma relação com usuário, conta ou login. `started_at` e `finished_at` recebem o mesmo timestamp em toda execução da Sprint 2, por decisão de persistência em lote (13_DECISION_LOG.md, DEC-0015) — não é um erro de preenchimento.
 
 Campos.
 
@@ -231,6 +231,8 @@ Campos.
 - anonymous_id
 - started_at
 - finished_at
+- created_at (13_DECISION_LOG.md, DEC-0016)
+- updated_at (13_DECISION_LOG.md, DEC-0016)
 
 ---
 
@@ -241,12 +243,16 @@ Campos.
 - question_id
 - alternative_id
 - answered_at
+- created_at (13_DECISION_LOG.md, DEC-0016)
+- updated_at (13_DECISION_LOG.md, DEC-0016)
+
+`answered_at` é idêntico entre todas as respostas de uma mesma sessão na Sprint 2, por decisão de persistência em lote (13_DECISION_LOG.md, DEC-0015) — não é um erro de preenchimento.
 
 ---
 
 ## assessment_result
 
-Representa o resultado calculado para uma `assessment_session` — snapshot imutável da execução (13_DECISION_LOG.md, DEC-0014). `archetype_confidence`, `matched_indicators`, `strengths`, `attention_points` e `evolution_plan_habits` são gravados uma única vez, no momento da geração, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses campos possui Foreign Key para `indicator`, `archetype` ou qualquer outra tabela de conteúdo.
+Representa o resultado calculado para uma `assessment_session` — snapshot imutável da execução (13_DECISION_LOG.md, DEC-0014). `archetype_confidence`, `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits`, `report_template`, `report_language` e `report_download_url` são gravados uma única vez, no momento da geração, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses campos possui Foreign Key para `indicator`, `archetype`, `report_template` ou qualquer outra tabela de conteúdo (13_DECISION_LOG.md, DEC-0018). `generated_at` também representa `Report.generatedAt` — os dois valores são sempre idênticos, não existe coluna separada para o timestamp do Report.
 
 Campos.
 
@@ -258,8 +264,12 @@ Campos.
 - strengths (JSONB — snapshot, sem Foreign Key)
 - attention_points (JSONB — snapshot, sem Foreign Key)
 - evolution_plan_habits (JSONB — snapshot, sem Foreign Key)
-- report_id
+- report_template (escalar, snapshot, sem Foreign Key — DEC-0018; sempre "assessment-default-v1" nesta Sprint)
+- report_language (escalar, snapshot, sem Foreign Key — DEC-0018)
+- report_download_url (escalar, nullable, snapshot, sem Foreign Key — DEC-0018; sempre null nesta Sprint)
 - generated_at
+- created_at (13_DECISION_LOG.md, DEC-0016)
+- updated_at (13_DECISION_LOG.md, DEC-0016)
 
 ---
 
@@ -271,6 +281,8 @@ Campos.
 - raw_score
 - normalized_score
 - confidence
+- created_at (13_DECISION_LOG.md, DEC-0016)
+- updated_at (13_DECISION_LOG.md, DEC-0016)
 
 ---
 

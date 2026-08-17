@@ -2,9 +2,9 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07D_PRISMA_MAPPING.md
-**Versão:** 1.0
-**Status:** Draft (Sprint 0 Review)
-**Última atualização:** 03/08/2026
+**Versão:** 1.1
+**Status:** Approved
+**Última atualização:** 17/08/2026
 
 ---
 
@@ -131,7 +131,7 @@ UTC
 | EvolutionPlan | evolution_plan | EvolutionPlan |
 | Mission | mission | Mission |
 | Resource | resource | Resource |
-| Report | report_template | ReportTemplate |
+| Report | assessment_result (campos inline: reportTemplate, reportLanguage, reportDownloadUrl) | — (sem Model dedicado nesta Sprint — 13_DECISION_LOG.md, DEC-0018) |
 | AssessmentResult | assessment_result | AssessmentResult |
 
 ---
@@ -260,6 +260,8 @@ AssessmentResult
 BehaviorIndex[]
 ```
 
+`reportTemplate`, `reportLanguage` e `reportDownloadUrl` são snapshots escalares diretamente em `AssessmentResult`, sem `@relation()` para `ReportTemplate` — mesmo padrão de `matchedIndicators`/`strengths`/`attentionPoints`/`evolutionPlanHabits` (DEC-0014), estendido por DEC-0018. `Report.generatedAt` (07_DATA_MODEL.md, Seção 17) é sempre idêntico a `AssessmentResult.generatedAt` — não é persistido em campo separado.
+
 ---
 
 ## EvolutionPlan
@@ -312,6 +314,14 @@ Nenhuma Foreign Key poderá aceitar registros inexistentes.
 
 ---
 
+## Persistência em Lote e Report Snapshot (DEC-0015 / DEC-0018)
+
+`AssessmentSession.startedAt`/`finishedAt` e todo `AssessmentAnswer.answeredAt` de uma mesma sessão recebem o mesmo timestamp de servidor na Sprint 2 — consequência documentada da persistência em lote no submit final (13_DECISION_LOG.md, DEC-0015), não um erro de mapeamento.
+
+`AssessmentResult.reportTemplate`, `AssessmentResult.reportLanguage` e `AssessmentResult.reportDownloadUrl` são snapshots escalares, sem `@relation()` para `ReportTemplate` (13_DECISION_LOG.md, DEC-0018). `ReportTemplate` permanece fora do schema desta Sprint, reservado para uma futura Fase 5 (Report Engine).
+
+---
+
 # 7. Índices
 
 Criar índices para.
@@ -331,6 +341,8 @@ AssessmentAnswer.sessionId
 AssessmentResult.sessionId
 
 AssessmentSession.anonymousId
+
+`createdAt`/`updatedAt` (DEC-0016) não recebem índice dedicado nesta Sprint — sem consulta documentada que os exija.
 
 ---
 

@@ -1131,14 +1131,251 @@ Negativas:
 
 ---
 
+## DEC-0015
+
+### Título
+
+Persistência em lote da Sprint 2 — Session, Answers e Result gravados no submit final; granularidade de timestamps como simplificação deliberada.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+DEC-0013 introduziu `AssessmentSession` e DEC-0014 o modelo de snapshot de `AssessmentResult`, mas nenhuma das duas decidiu se a persistência da Sprint 2 seria incremental (por pergunta, exigindo uma nova Server Action `startAssessment`) ou em lote (no `submitAssessment` já existente). O código da Sprint 1 (`features/assessment/hooks/useAssessmentFlow.ts`, `features/assessment/utils/assessmentAdapter.ts`) já coleta todas as respostas em memória no cliente e chama `submitAssessment` uma única vez, no final; `toCoreAnswers` aplica um único `answeredAt` compartilhado a todas as respostas do lote, pois o tipo `Answer` da Feature nunca carregou timestamp por pergunta.
+
+### Alternativas consideradas
+
+- **Persistência incremental** (nova Server Action `startAssessment`, grava resposta por resposta). Rejeitada: exigiria uma nova convenção de fluxo cliente-servidor e granularidade real de timestamps que o código atual não coleta — além do mínimo necessário para "resultados persistidos corretamente" (10_ROADMAP.md, Sprint 2).
+- **Persistência em lote no submit final, mantendo o fluxo atual** (adotada). Reaproveita a Server Action e o estado em memória já implementados na Sprint 1, sem nova superfície de API.
+- Quanto à granularidade dos timestamps: **documentar explicitamente a coincidência de valores** (adotada) vs. capturar timestamp real por pergunta no cliente (rejeitada nesta decisão — exigiria alterar o tipo `Answer` da Feature e o hook `useAssessmentFlow`, fora do escopo desta etapa).
+
+### Decisão
+
+A Sprint 2 persiste `AssessmentSession`, `Answer[]` e `AssessmentResult` em uma única operação, disparada pelo `submitAssessment` já existente. Nenhuma Server Action `startAssessment` é criada nesta Sprint.
+
+`AssessmentSession.startedAt` e `AssessmentSession.finishedAt` recebem o mesmo timestamp de servidor, gerado no momento do submit. Todo `Answer.answeredAt` de uma mesma sessão recebe esse mesmo timestamp. Esta é uma simplificação deliberada da Sprint 2, registrada explicitamente para não ser lida como defeito em revisões futuras.
+
+Esta decisão não altera `07_DATA_MODEL.md` — `Answer.answeredAt` e `AssessmentSession.startedAt`/`finishedAt` continuam representando, no domínio, "quando a resposta foi dada" e "quando a execução começou/terminou"; a coincidência de valores é uma característica da estratégia de persistência escolhida, não uma redefinição do domínio (07_DATA_MODEL.md, Seção 2 — independência de estratégia de persistência).
+
+### Justificativa
+
+Mantém a Sprint 2 no menor incremento necessário para atender ao critério de conclusão do Roadmap, sem introduzir uma segunda Server Action ou uma convenção de granularidade de timestamp que nenhum documento hoje exige. Documentar a simplificação evita que ela seja confundida com um bug em uma auditoria futura.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma mudança na Presentation/Application Layer além do estritamente necessário para persistência.
+- Comportamento previsível e testável: toda sessão terá exatamente um timestamp de execução.
+
+Negativas:
+
+- Não há distinção real entre "início" e "fim" da Assessment nos dados persistidos da Sprint 2 — análises futuras de tempo de preenchimento não serão possíveis com estes dados.
+- Se a granularidade real de `answeredAt` for necessária no futuro (ex.: analytics de abandono por pergunta), esta decisão precisará ser revisitada junto com o tipo `Answer` da Feature.
+
+### Documentos relacionados
+
+- 10_ROADMAP.md (Seção 5 — Sprint 2)
+- 13_DECISION_LOG.md (DEC-0013 — AssessmentSession; DEC-0014 — mesmo princípio de não alterar o domínio por decisão de persistência)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession) — não alterado por esta decisão
+
+---
+
+## DEC-0016
+
+### Título
+
+Auditoria — `createdAt`/`updatedAt` nas quatro tabelas operacionais da Sprint 2.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+`07C_STORAGE_MODEL.md`, Seção 8 ("Auditoria"), já declarava como regra geral que "toda tabela deverá possuir `created_at` [e] `updated_at`". A auditoria da Sprint 2 identificou que as quatro tabelas operacionais definidas por DEC-0013/DEC-0014 (`assessment_session`, `assessment_answer`, `assessment_result`, `behavior_index`) não listavam essas colunas em sua Seção 5, contradizendo a própria regra geral do documento.
+
+### Alternativas consideradas
+
+- Omitir `created_at`/`updated_at` das tabelas operacionais, tratando a regra da Seção 8 como aplicável só ao conteúdo estático (Seção 4). Rejeitada: a Seção 8 não faz essa distinção, e omitir auditoria justamente nas tabelas que registram execuções reais de usuário reduz a rastreabilidade operacional.
+- Adicionar `created_at`/`updated_at` às quatro tabelas operacionais, alinhando Seção 5 à Seção 8 (adotada).
+
+### Decisão
+
+`assessment_session`, `assessment_answer`, `assessment_result` e `behavior_index` (07C_STORAGE_MODEL.md, Seção 5) passam a incluir `created_at` e `updated_at`, seguindo a convenção já definida na Seção 3 (`TIMESTAMP WITH TIME ZONE`, sempre UTC).
+
+Esta decisão não altera `07_DATA_MODEL.md`. O Domain Model já declarava, como princípio geral (Seção 22), que "toda entidade deverá possuir... `createdAt`; `updatedAt`", mas nenhuma interface de domínio implementa esse campo hoje — lacuna pré-existente ao Modelo inteiro, não introduzida nem resolvida por esta decisão, e fora do escopo da Sprint 2.
+
+### Justificativa
+
+Resolve, sem ambiguidade, a contradição interna já existente entre Seção 5 e Seção 8 de `07C_STORAGE_MODEL.md`, sem exigir nenhuma decisão de negócio nova — apenas aplica uma regra já aprovada às tabelas que ainda não a seguiam.
+
+### Consequências
+
+Positivas:
+
+- Elimina a inconsistência identificada na auditoria da Sprint 2 entre `07C_STORAGE_MODEL.md` §5 e §8.
+- Toda tabela operacional fica auditável, útil para diagnóstico e para a estratégia de expiração de sessões anônimas (DEC-0017).
+
+Negativas:
+
+- Nenhuma identificada. Mudança estritamente aditiva, sem dado de produção existente a migrar.
+
+### Documentos relacionados
+
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções; Seção 5 — Tabelas Operacionais; Seção 8 — Auditoria)
+- 07D_PRISMA_MAPPING.md (Seção 8 — Convenções Prisma, regra já geral, sem alteração necessária)
+- 13_DECISION_LOG.md (DEC-0013, DEC-0014 — mesmas tabelas)
+
+---
+
+## DEC-0017
+
+### Título
+
+Política do cookie de identidade anônima — Max-Age, SameSite, Secure, renovação e tratamento de ausência/invalidez.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+DEC-0013 definiu o mecanismo de identidade anônima (cookie `httpOnly`, UUID gerado no servidor), mas não seus parâmetros. DEC-0015 (persistência em lote) implica que o cookie só é lido/escrito dentro do `submitAssessment` — não existe evento de "início de sessão" separado no servidor nesta fase.
+
+### Alternativas consideradas
+
+**Max-Age:** cookie de sessão, sem Max-Age (rejeitada — inviabiliza "Histórico de avaliações" entre visitas); 400 dias, máximo aceito pelos navegadores majoritários (rejeitada — trata o identificador anônimo como quase-permanente sem necessidade documentada); **180 dias** (adotada).
+
+**SameSite:** Strict (rejeitada — pode falhar na navegação de entrada vinda de link externo); **Lax** (adotada — padrão seguro para cookie de primeira parte fora de contexto cross-site).
+
+**Secure:** sempre `true` (rejeitada — quebraria o fluxo em desenvolvimento local sobre HTTP); **condicional ao ambiente** (adotada).
+
+**Renovação:** fixa a partir da criação (rejeitada — deixaria expirar o histórico de usuários ativos); **deslizante a cada submit bem-sucedido** (adotada).
+
+**Cookie ausente ou inválido:** rejeitar a requisição com erro (rejeitada — `anonymousId` não é token de autenticação, não há superfície de segurança a proteger); **tratar os dois casos da mesma forma, gerando novo `anonymousId`** (adotada).
+
+### Decisão
+
+- UUID v4, gerado no servidor.
+- `httpOnly = true`.
+- `Max-Age = 180 dias` (15.552.000 segundos).
+- `SameSite = Lax`.
+- `Secure = true` em produção; `Secure = false` em desenvolvimento local (`NODE_ENV`).
+- Renovação: `Max-Age` reiniciado a cada `submitAssessment` bem-sucedido (sliding).
+- Cookie ausente: gerar novo `anonymousId`, sem erro.
+- Cookie presente mas inválido (não é um UUID v4 bem formado): tratar como ausente, gerar novo `anonymousId`, sem erro.
+- Nenhuma associação com User/Account nesta Sprint (reafirma DEC-0013).
+
+### Justificativa
+
+Mantém a Sprint 2 estritamente dentro de identidade anônima técnica (DEC-0013), sem introduzir superfície de segurança nova: nenhum dos parâmetros escolhidos depende de o valor do cookie ser confiável além de servir como chave de agrupamento de histórico.
+
+### Consequências
+
+Positivas:
+
+- Comportamento determinístico e testável para os quatro cenários (presente/válido, presente/inválido, ausente, renovação).
+- Nenhuma dependência de infraestrutura nova (`next/headers`, já disponível no Next.js já adotado).
+
+Negativas:
+
+- Histórico anônimo por cookie de 180 dias ainda não sobrevive a troca de dispositivo/navegador ou limpeza de cookies — mesma limitação já aceita em DEC-0013.
+- Nenhuma política de LGPD/retenção formal foi endereçada aqui — permanece pendência aberta desde DEC-0013.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0013 — mecanismo; DEC-0015 — ponto único de leitura/escrita do cookie)
+- 07_DATA_MODEL.md (Seção 8A — AssessmentSession) — não alterado por esta decisão, é decisão de transporte/infraestrutura, não de domínio
+
+---
+
+## DEC-0018
+
+### Título
+
+Report como snapshot escalar em `assessment_result` — sem tabela/relação operacional dedicada na Sprint 2.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+`07_DATA_MODEL.md`, Seção 17, define `Report` com `id`/`template`/`language`/`generatedAt`/`downloadUrl`. `07C_STORAGE_MODEL.md` já tinha uma tabela estática `report_template` (`id`/`language`/`version`) e um campo `report_id` em `assessment_result`, mas nenhum documento definia como os quatro campos de `Report` seriam efetivamente persistidos por execução, e `07D_PRISMA_MAPPING.md`, Seção 5, nunca chegou a documentar a relação `AssessmentResult → Report` como relação Prisma — lacuna pré-existente a esta decisão. A leitura do código de produção (`core/engines/resultBuilder/buildAssessmentResult.ts`) confirmou que `report.generatedAt` e `assessmentResult.generatedAt` são o mesmo valor (`Date`) em toda execução, nunca dois eventos distintos, e que `report.id` já é sintético (`report_${archetypeId}`), sem identidade própria.
+
+### Alternativas consideradas
+
+- Manter `report_id` como Foreign Key para `report_template` e persistir apenas `downloadUrl` como snapshot. Rejeitada: exigiria semear `report_template` com um registro fixo só para satisfazer uma FK cujo valor nunca varia nesta Sprint (Report Engine, DEC-0012, ainda é stub) — infraestrutura específica de Report que esta Sprint decidiu não construir.
+- **Report como snapshot escalar dentro de `assessment_result`, sem relação com `report_template`** (adotada). Mesmo padrão já aprovado em DEC-0014 para `matchedIndicators`/`strengths`/`attentionPoints`/`evolutionPlanHabits`, estendido aos campos de Report.
+
+### Decisão
+
+`assessment_result` (07C_STORAGE_MODEL.md, Seção 5) passa a incluir:
+- `report_template` (escalar, not null) — sempre `"assessment-default-v1"` nesta Sprint (DEC-0012).
+- `report_language` (escalar, not null).
+- `report_download_url` (escalar, nullable) — sempre `null` nesta Sprint; nenhum Report Engine gera valor real ainda.
+
+`report_id` é removido de `assessment_result`. Nenhuma Foreign Key liga `assessment_result` a `report_template` nesta Sprint.
+
+`report_template` (tabela estática) permanece documentada tal como está, sem uso nesta Sprint, reservada para uma eventual Fase 5 (Report Engine).
+
+`Report.generatedAt` (07_DATA_MODEL.md, Seção 17) não recebe coluna própria — é documentado como sempre idêntico a `AssessmentResult.generatedAt`, já existente, confirmado pelo código de produção.
+
+`07_DATA_MODEL.md` não é alterado — `Report` continua definido exatamente como está; esta decisão define apenas sua representação de armazenamento, mesmo padrão de DEC-0014.
+
+### Justificativa
+
+Evita construir infraestrutura de Report (semeadura de tabela, resolução de FK) para um valor que nunca varia enquanto o Report Engine não existir, sem perder nenhum campo do contrato de domínio — os quatro campos de `Report` continuam recuperáveis a partir de uma única linha de `assessment_result`.
+
+### Consequências
+
+Positivas:
+
+- Fecha uma lacuna que já existia antes desta Sprint (relação Report nunca documentada em `07D_PRISMA_MAPPING.md`).
+- Nenhuma tabela nova, nenhuma seed necessária para Report nesta Sprint.
+- Caminho de migração para a Fase 5 é apenas aditivo: quando o Report Engine existir, `report_download_url` passa a receber valor real sem alteração estrutural.
+
+Negativas:
+
+- `report_template` (tabela estática) fica sem uso funcional até a Fase 5 — mantida apenas como reserva.
+- Se a Fase 5 exigir múltiplos templates versionados de fato, esta decisão precisará ser revisitada (hoje assume um único template fixo).
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0012 — stub do Report; DEC-0014 — mesmo padrão de snapshot, estendido aqui)
+- 07_DATA_MODEL.md (Seção 17 — Report; Seção 18 — AssessmentResult) — não alterado por esta decisão
+- 07C_STORAGE_MODEL.md (Seção 4 — report_template; Seção 5 — assessment_result)
+- 07D_PRISMA_MAPPING.md (Seção 4 — Mapeamento Oficial; Seção 5 — Relacionamentos; Seção 6 — Constraints)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0015
-- DEC-0016
-- DEC-0017
-- DEC-0018
+- DEC-0019
+- DEC-0020
+- DEC-0021
+- DEC-0022
 - ...
 ## Regras
 
