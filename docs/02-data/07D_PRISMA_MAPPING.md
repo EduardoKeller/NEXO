@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07D_PRISMA_MAPPING.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
 **Última atualização:** 17/08/2026
 
@@ -102,7 +102,7 @@ created_at
 
 ## Chaves
 
-UUID
+UUID — exclusivamente nos Models operacionais (`AssessmentSession`, `AssessmentAnswer`, `AssessmentResult`, `BehaviorIndex`), gerados em runtime (`@default(uuid())` no Prisma, ou `crypto.randomUUID()` na camada de Repository/Server Action, DEC-0017). Nos Models de conteúdo estático, o `id` é o identificador (slug) já definido em `core/content/*`, fornecido explicitamente pelo seed — `String @id`, sem `@default(uuid())` (13_DECISION_LOG.md, DEC-0019).
 
 ---
 
@@ -262,17 +262,13 @@ BehaviorIndex[]
 
 `reportTemplate`, `reportLanguage` e `reportDownloadUrl` são snapshots escalares diretamente em `AssessmentResult`, sem `@relation()` para `ReportTemplate` — mesmo padrão de `matchedIndicators`/`strengths`/`attentionPoints`/`evolutionPlanHabits` (DEC-0014), estendido por DEC-0018. `Report.generatedAt` (07_DATA_MODEL.md, Seção 17) é sempre idêntico a `AssessmentResult.generatedAt` — não é persistido em campo separado.
 
+`insights`, `missions` e `resources` (07_DATA_MODEL.md, Seção 18) são também snapshots JSON diretamente em `AssessmentResult`, sem `@relation()` para `Insight`, `Mission` ou `Resource` — mesmo padrão, estendido por DEC-0020. Nenhum outro campo de `AssessmentResult` recebeu esse tratamento além destes três.
+
 ---
 
 ## EvolutionPlan
 
 Pertence a um Archetype.
-
-Possui.
-
-Mission[]
-
-Resource[]
 
 ```text
 EvolutionPlan
@@ -281,6 +277,8 @@ EvolutionPlan
 
 Archetype
 ```
+
+`EvolutionPlan` permanece reservado, sem seed e sem relação `Mission[]`/`Resource[]` nesta Sprint (13_DECISION_LOG.md, DEC-0021) — a Evolution Engine continua produzindo o `EvolutionPlan` de cada execução dinamicamente, sem ler desta tabela. `evolutionPlanHabits` (JSONB em `AssessmentResult`, DEC-0014) permanece o único traço persistido de um plano de evolução.
 
 ---
 
@@ -297,6 +295,8 @@ Language deverá ser obrigatória.
 Status deverá ser obrigatório.
 
 Nenhuma Foreign Key poderá aceitar registros inexistentes.
+
+Todos os IDs deverão utilizar UUID — regra aplicável exclusivamente aos Models operacionais; Models de conteúdo estático usam o identificador já definido em `core/content/*` (13_DECISION_LOG.md, DEC-0019).
 
 ---
 
@@ -380,7 +380,7 @@ Enums deverão ser compartilhados.
 
 ## Tipos Estruturados (Json)
 
-Uso restrito. Aprovado exclusivamente para `AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` (13_DECISION_LOG.md, DEC-0014). Nenhum outro Model deverá adotar `Json` sem uma decisão própria registrada no Decision Log.
+Uso restrito. Aprovado exclusivamente para `AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` (13_DECISION_LOG.md, DEC-0014), e `AssessmentResult.insights`, `AssessmentResult.missions`, `AssessmentResult.resources` (13_DECISION_LOG.md, DEC-0020). Nenhum outro Model deverá adotar `Json` sem uma decisão própria registrada no Decision Log.
 
 ---
 

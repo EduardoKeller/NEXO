@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform
 **Documento:** 07C_STORAGE_MODEL.md
-**Versão:** 1.1
+**Versão:** 1.2
 **Status:** Approved
 **Última atualização:** 17/08/2026
 
@@ -58,11 +58,11 @@ snake_case
 
 Primary Key
 
-UUID
+UUID — exclusivamente nas tabelas operacionais (`assessment_session`, `assessment_answer`, `assessment_result`, `behavior_index`), geradas em runtime a cada execução. Nas tabelas de conteúdo estático (Seção 4), o Primary Key é o identificador (slug) já definido em `core/content/*` (ex.: `"initiative"`, `"Q001"`, `"executor_under_pressure"`), fornecido explicitamente pelo seed — nunca gerado (13_DECISION_LOG.md, DEC-0019).
 
 Foreign Key
 
-UUID
+Mesmo tipo da coluna referenciada — UUID quando aponta para uma tabela operacional; slug quando aponta para uma tabela de conteúdo estático (DEC-0019).
 
 ---
 
@@ -82,7 +82,7 @@ Não utilizar durante o MVP.
 
 ## Tipos Estruturados (JSON/JSONB)
 
-Uso restrito. Aprovado exclusivamente para os campos de snapshot calculado de `assessment_result` (13_DECISION_LOG.md, DEC-0014): `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits`.
+Uso restrito. Aprovado exclusivamente para os campos de snapshot calculado de `assessment_result`: `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits` (13_DECISION_LOG.md, DEC-0014) e `insights`, `missions`, `resources` (13_DECISION_LOG.md, DEC-0020).
 
 Nenhuma outra tabela deste documento deverá adotar JSON/JSONB sem uma decisão própria registrada no Decision Log.
 
@@ -198,6 +198,8 @@ Campos.
 
 ## evolution_plan
 
+Tabela reservada, sem uso operacional nesta Sprint — sem seed, sem relação com `mission`/`resource` (13_DECISION_LOG.md, DEC-0021). O `EvolutionPlan` de cada execução continua sendo produzido dinamicamente pela Evolution Engine, sem leitura desta tabela. `evolution_plan_habits` (JSONB em `assessment_result`, DEC-0014) permanece o único traço persistido de um plano de evolução.
+
 - id
 - archetype_id
 - first_step
@@ -252,7 +254,7 @@ Campos.
 
 ## assessment_result
 
-Representa o resultado calculado para uma `assessment_session` — snapshot imutável da execução (13_DECISION_LOG.md, DEC-0014). `archetype_confidence`, `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits`, `report_template`, `report_language` e `report_download_url` são gravados uma única vez, no momento da geração, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses campos possui Foreign Key para `indicator`, `archetype`, `report_template` ou qualquer outra tabela de conteúdo (13_DECISION_LOG.md, DEC-0018). `generated_at` também representa `Report.generatedAt` — os dois valores são sempre idênticos, não existe coluna separada para o timestamp do Report.
+Representa o resultado calculado para uma `assessment_session` — snapshot imutável da execução (13_DECISION_LOG.md, DEC-0014). `archetype_confidence`, `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits`, `report_template`, `report_language`, `report_download_url`, `insights`, `missions` e `resources` são gravados uma única vez, no momento da geração, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses campos possui Foreign Key para `indicator`, `archetype`, `report_template`, `insight`, `mission`, `resource` ou qualquer outra tabela de conteúdo (13_DECISION_LOG.md, DEC-0018, DEC-0020). `generated_at` também representa `Report.generatedAt` — os dois valores são sempre idênticos, não existe coluna separada para o timestamp do Report.
 
 Campos.
 
@@ -264,6 +266,9 @@ Campos.
 - strengths (JSONB — snapshot, sem Foreign Key)
 - attention_points (JSONB — snapshot, sem Foreign Key)
 - evolution_plan_habits (JSONB — snapshot, sem Foreign Key)
+- insights (JSONB — snapshot, sem Foreign Key — DEC-0020)
+- missions (JSONB — snapshot, sem Foreign Key — DEC-0020)
+- resources (JSONB — snapshot, sem Foreign Key — DEC-0020)
 - report_template (escalar, snapshot, sem Foreign Key — DEC-0018; sempre "assessment-default-v1" nesta Sprint)
 - report_language (escalar, snapshot, sem Foreign Key — DEC-0018)
 - report_download_url (escalar, nullable, snapshot, sem Foreign Key — DEC-0018; sempre null nesta Sprint)

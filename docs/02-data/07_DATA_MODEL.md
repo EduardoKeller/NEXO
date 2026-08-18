@@ -2,7 +2,7 @@
 
 **Projeto:** NEXO Platform  
 **Documento:** 07_DATA_MODEL.md  
-**Versão:** 2.1  
+**Versão:** 2.2  
 **Status:** Approved  
 **Última atualização:** 17/08/2026
 
@@ -520,6 +520,8 @@ generatedAt: Date
 Este objeto representa a saída oficial da plataforma.
 
 `id` e `sessionId` foram adicionados para permitir persistência (13_DECISION_LOG.md, DEC-0013). `sessionId` referencia a AssessmentSession (Seção 8A) que produziu este resultado.
+
+`insights`, `missions` e `resources` são persistidos como snapshot histórico imutável, sem Foreign Key para Insight, Mission ou Resource (13_DECISION_LOG.md, DEC-0020) — mesmo tratamento já aplicado a `behaviorArchetype.matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits` (DEC-0014). Esta nota não altera a interface acima nem introduz estratégia de persistência no domínio (Seção 2).
 
 ---
 

@@ -1368,14 +1368,172 @@ Negativas:
 
 ---
 
+## DEC-0019
+
+### Título
+
+Distinção entre IDs de conteúdo estático (slug fixo, sem geração) e IDs operacionais (UUID gerado em runtime) — correção de escopo de `07C_STORAGE_MODEL.md` §3 e `07D_PRISMA_MAPPING.md` §3/§6.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` proposto para a Sprint 2 confrontou a regra "Chaves: UUID" (`07C_STORAGE_MODEL.md`, Seção 3; `07D_PRISMA_MAPPING.md`, Seções 3 e 6 — "Todos os IDs deverão utilizar UUID") com o conteúdo real de `core/content/*`, onde todo ID é um slug estável e legível, nunca um UUID: `Assessment.id = "assessment_procrastination_v1"`, `Dimension.id = "initiative"`, `Indicator.id = "initiative_start"`, `Question.id = "Q001"`, `Alternative.id = "A"|"B"|"C"|"D"`, `Archetype.id` (via `ArchetypeReferenceProfile`) `= "executor_under_pressure"`, `Insight.id = "insight_starting"`, `Mission.id = "mission_first_step"`, `Resource.id = "article_small_steps"`. Esses IDs são referenciados por todas as Engines, testes e pelo Result Builder desde a Sprint 1. A regra "Chaves: UUID" foi escrita no Sprint 0, antes de qualquer conteúdo real existir, e nunca foi reconciliada com os IDs efetivamente adotados pela Content Library.
+
+### Alternativas consideradas
+
+- Converter todos os IDs de `core/content/*` para UUID, ajustando Engines, testes e conteúdo. Rejeitada: alteração ampla e sem necessidade funcional, tocaria toda a Content Library e a suíte de testes apenas para satisfazer uma regra de nomenclatura escrita antes de o conteúdo existir.
+- **Aplicar "Chaves: UUID" apenas às tabelas operacionais, mantendo os IDs de conteúdo estático como estão** (adotada). Reconhece que a regra original visava identificadores gerados pelo sistema a cada execução de usuário, não identificadores de conteúdo editorial já estáveis desde a Content Library.
+
+### Decisão
+
+Tabelas de conteúdo estático (`assessment`, `question`, `alternative`, `dimension`, `indicator`, `insight`, `archetype`, `mission`, `resource`, `evolution_plan`, `report_template`) usam `id String @id`, **sem** `@default(uuid())` — o valor é sempre fornecido explicitamente pelo seed, replicando exatamente o ID já usado em `core/content/*`.
+
+Tabelas operacionais (`assessment_session`, `assessment_answer`, `assessment_result`, `behavior_index`) usam UUID real, gerado em runtime (`@default(uuid())` no Prisma, ou `crypto.randomUUID()` na camada de Repository/Server Action conforme DEC-0017).
+
+Nenhum ID existente em `core/content/*` é alterado por esta decisão; nenhum arquivo em `src/core/` é modificado.
+
+### Justificativa
+
+Preserva a estabilidade dos identificadores já em uso pelo domínio, evitando uma migração de dado sem necessidade real, e alinha a documentação à prática já estabelecida desde a Sprint 1 — sem enfraquecer a garantia de geração de UUID onde ela realmente importa: nas entidades criadas a cada execução real de usuário.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma alteração em `src/core/`.
+- A documentação passa a refletir com precisão o que o `schema.prisma` efetivamente implementa.
+- Nenhuma migração de dado necessária.
+
+Negativas:
+
+- A regra "Chaves: UUID" deixa de ser universal — precisa ser lida em conjunto com esta decisão para não ser mal interpretada como aplicável a todas as tabelas.
+
+### Documentos relacionados
+
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções, Chaves)
+- 07D_PRISMA_MAPPING.md (Seção 3 — Convenções, Chaves; Seção 6 — Constraints)
+- 13_DECISION_LOG.md (DEC-0013, DEC-0017 — mecanismo de UUID operacional)
+
+---
+
+## DEC-0020
+
+### Título
+
+Persistência de `AssessmentResult.insights`/`missions`/`resources` como snapshot JSON/JSONB, estendendo o padrão de DEC-0014.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` identificou que `07_DATA_MODEL.md`, Seção 18, declara `AssessmentResult.insights: Insight[]`, `.missions: Mission[]` e `.resources: Resource[]` — arrays de objetos completos, selecionados/resolvidos uma única vez por execução (Insight Engine, DEC-0010; Evolution Engine, DEC-0011) — mas nem `07C_STORAGE_MODEL.md` nem `07D_PRISMA_MAPPING.md` jamais definiram representação de armazenamento para esses três campos. DEC-0014 já havia resolvido o mesmo tipo de problema para `matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits`, mas seu escopo textual ("cinco campos calculados") nunca incluiu `insights`/`missions`/`resources` — uma lacuna não intencional da auditoria original, não uma exclusão deliberada.
+
+### Alternativas consideradas
+
+- Não persistir `insights`/`missions`/`resources`, resolvendo-os novamente a partir da Content Library a cada leitura do histórico. Rejeitada: contradiz diretamente o princípio já aprovado em DEC-0014 — um resultado entregue ao usuário não deve mudar retroativamente se o conteúdo editorial referenciado for revisado depois. O mesmo raciocínio já usado para `strengths`/`attentionPoints` se aplica integralmente a `insights`/`missions`/`resources`.
+- Criar tabelas de junção (`assessment_result_insight`, `assessment_result_mission`, `assessment_result_resource`) com Foreign Key para as tabelas de conteúdo. Rejeitada pelo mesmo motivo já usado em DEC-0014 para rejeitar a alternativa equivalente: acoplaria o snapshot histórico a conteúdo vivo que pode mudar, e aumentaria a complexidade transacional sem necessidade comprovada nesta Sprint.
+- **Snapshot JSON/JSONB, sem Foreign Key, mesmo padrão de DEC-0014** (adotada).
+
+### Decisão
+
+`assessment_result` (`07C_STORAGE_MODEL.md`, Seção 5) passa a incluir três colunas adicionais: `insights` (JSONB), `missions` (JSONB), `resources` (JSONB) — todas snapshot, gravadas uma única vez no momento da geração do resultado, sem Foreign Key para `insight`, `mission` ou `resource`. Nenhum campo além destes três é adicionado por esta decisão.
+
+### Justificativa
+
+Extensão direta e necessária do princípio já aprovado em DEC-0014, fechando uma lacuna que a auditoria original daquela decisão não cobriu. Mantém `AssessmentResult` como uma unidade de snapshot coerente — não faria sentido snapshotar 4 dos 7 campos computados e deixar os outros 3 sujeitos a resolução dinâmica, o que reabriria exatamente o risco que DEC-0014 foi criada para eliminar.
+
+### Consequências
+
+Positivas:
+
+- Fecha a lacuna identificada na auditoria do schema da Sprint 2.
+- `AssessmentResult` passa a ser um snapshot histórico completo e internamente consistente.
+- Nenhuma tabela nova, nenhuma complexidade transacional adicional.
+
+Negativas:
+
+- Mesma ressalva já registrada em DEC-0014: consultas futuras que precisem filtrar ou agregar por item individual dentro de `insights`, `missions` ou `resources` exigirão extrair de JSONB.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0010 — Insight Engine; DEC-0011 — Evolution Engine; DEC-0014 — mesmo padrão, escopo original)
+- 07_DATA_MODEL.md (Seção 18 — AssessmentResult)
+- 07C_STORAGE_MODEL.md (Seção 5 — assessment_result)
+- 07D_PRISMA_MAPPING.md (Seção 5 — AssessmentResult; Seção 8 — Tipos Estruturados)
+
+---
+
+## DEC-0021
+
+### Título
+
+`evolution_plan` (tabela estática) permanece reservada, sem seed e sem relação com `mission`/`resource`, nesta Sprint.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` identificou que `07D_PRISMA_MAPPING.md`, Seção 5, descreve uma relação `EvolutionPlan → Mission[], Resource[]`, mas `07C_STORAGE_MODEL.md` nunca definiu a tabela de junção necessária para essa relação, e não existe nenhuma fonte de seed (`core/content/evolutionPlans.ts` não existe) para a tabela estática `evolution_plan`. Por DEC-0011, o `EvolutionPlan` de cada execução é montado dinamicamente pela Evolution Engine a partir de `archetypeEvolutionContent` e constantes fixas do MVP (`Difficulty.Easy`, `estimatedDuration = 7`), nunca lido de uma tabela de conteúdo própria — a tabela `evolution_plan` está, na prática, órfã desde que foi documentada no Sprint 0.
+
+### Alternativas consideradas
+
+- Criar as tabelas de junção `evolution_plan_mission`/`evolution_plan_resource` e popular `evolution_plan` via seed sintético. Rejeitada: exigiria inventar dado de seed sem correspondência real em `core/content/`, e alteraria a Evolution Engine para passar a ler de uma fonte que ela não usa hoje — fora do escopo da Sprint 2 (persistência), sem necessidade documentada.
+- **Manter `evolution_plan` reservada, sem seed, sem relação com `mission`/`resource`, sem alteração na Evolution Engine** (adotada). Mesmo tratamento já aplicado a `report_template` em DEC-0018.
+
+### Decisão
+
+A tabela `evolution_plan` permanece no Storage Model/Prisma Mapping exatamente como já documentada (`id`, `archetype_id`, `first_step`, `estimated_duration`, `difficulty`), mas sem seed nesta Sprint, sem tabela de junção com `mission`/`resource`, e sem nenhuma Foreign Key partindo de `mission` ou `resource` em sua direção. A Evolution Engine continua produzindo o `EvolutionPlan` de cada execução dinamicamente, sem qualquer alteração de código. `evolution_plan_habits` (JSONB em `assessment_result`, já decidido em DEC-0014) permanece o único traço persistido de um plano de evolução.
+
+### Justificativa
+
+Evita inventar dado ou relação sem base real, mantendo a Sprint 2 estritamente dentro de "persistência", não "reestruturação da Evolution Engine" — mesmo raciocínio já usado em DEC-0018 para `report_template`.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma tabela nova, nenhum seed artificial, nenhuma alteração na Evolution Engine.
+- Fecha, sem ambiguidade, a divergência entre `07D_PRISMA_MAPPING.md` e `07C_STORAGE_MODEL.md` identificada na auditoria.
+
+Negativas:
+
+- `evolution_plan` permanece sem uso funcional até uma futura decisão que lhe dê propósito real (ex.: se planos de evolução passarem a ser versionados como conteúdo, não apenas computados em runtime).
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0011 — Evolution Engine; DEC-0018 — mesmo padrão de tabela reservada)
+- 07C_STORAGE_MODEL.md (Seção 4 — evolution_plan)
+- 07D_PRISMA_MAPPING.md (Seção 5 — EvolutionPlan)
+
+---
+
 ## Próximas decisões
 
 As próximas decisões deverão receber numeração sequencial:
 
-- DEC-0019
-- DEC-0020
-- DEC-0021
 - DEC-0022
+- DEC-0023
+- DEC-0024
+- DEC-0025
 - ...
 ## Regras
 
