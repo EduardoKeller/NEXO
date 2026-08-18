@@ -66,8 +66,8 @@ model Assessment {
   language      String
   status        AssessmentStatus
   estimatedTime Int              @map("estimated_time")
-  createdAt     DateTime         @default(now()) @map("created_at")
-  updatedAt     DateTime         @updatedAt @map("updated_at")
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   questions Question[]
   sessions  AssessmentSession[]
@@ -84,8 +84,8 @@ model Question {
   description        String?
   weight             Float
   order              Int
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   assessment       Assessment         @relation(fields: [assessmentId], references: [id])
   dimension        Dimension          @relation(fields: [dimensionId], references: [id])
@@ -102,7 +102,7 @@ model Alternative {
   questionId String   @map("question_id")
   label      String
   score      Float
-  createdAt  DateTime @default(now()) @map("created_at")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   question Question           @relation(fields: [questionId], references: [id])
   answers  AssessmentAnswer[]
@@ -223,10 +223,10 @@ model AssessmentSession {
   id           String    @id @default(uuid())
   assessmentId String    @map("assessment_id")
   anonymousId  String    @map("anonymous_id")
-  startedAt    DateTime  @map("started_at")
-  finishedAt   DateTime? @map("finished_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  startedAt    DateTime  @map("started_at") @db.Timestamptz(3)
+  finishedAt   DateTime? @map("finished_at") @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   assessment Assessment         @relation(fields: [assessmentId], references: [id])
   answers    AssessmentAnswer[]
@@ -241,9 +241,9 @@ model AssessmentAnswer {
   sessionId     String   @map("session_id")
   questionId    String   @map("question_id")
   alternativeId String   @map("alternative_id")
-  answeredAt    DateTime @map("answered_at")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  answeredAt    DateTime @map("answered_at") @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   session     AssessmentSession @relation(fields: [sessionId], references: [id])
   question    Question          @relation(fields: [questionId], references: [id])
@@ -268,9 +268,9 @@ model AssessmentResult {
   reportTemplate      String   @map("report_template")
   reportLanguage      String   @map("report_language")
   reportDownloadUrl   String?  @map("report_download_url")
-  generatedAt         DateTime @map("generated_at")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  generatedAt         DateTime @map("generated_at") @db.Timestamptz(3)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   session         AssessmentSession @relation(fields: [sessionId], references: [id])
   archetype       Archetype         @relation(fields: [archetypeId], references: [id])
@@ -286,8 +286,8 @@ model BehaviorIndex {
   rawScore        Float    @map("raw_score")
   normalizedScore Float    @map("normalized_score")
   confidence      Float
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   result    AssessmentResult @relation(fields: [resultId], references: [id])
   dimension Dimension        @relation(fields: [dimensionId], references: [id])
