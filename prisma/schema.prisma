@@ -87,11 +87,12 @@ model Question {
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  assessment       Assessment         @relation(fields: [assessmentId], references: [id])
-  dimension        Dimension          @relation(fields: [dimensionId], references: [id])
-  primaryIndicator Indicator          @relation(fields: [primaryIndicatorId], references: [id])
-  alternatives     Alternative[]
-  answers          AssessmentAnswer[]
+  assessment          Assessment                   @relation(fields: [assessmentId], references: [id])
+  dimension           Dimension                    @relation(fields: [dimensionId], references: [id])
+  primaryIndicator    Indicator                    @relation(fields: [primaryIndicatorId], references: [id])
+  alternatives        Alternative[]
+  answers             AssessmentAnswer[]
+  secondaryIndicators QuestionSecondaryIndicator[]
 
   @@index([assessmentId])
   @@map("question")
@@ -109,6 +110,24 @@ model Alternative {
 
   @@id([questionId, id])
   @@map("alternative")
+}
+
+/**
+ * Relação N:N entre Question e Indicator para `secondaryIndicatorIds`
+ * (até 2 por Question, `05_CONTENT_LIBRARY.md` §16). Tabela de junção
+ * com FK real para ambos os lados — preserva integridade referencial,
+ * sem usar JSON (uso de JSON/JSONB permanece restrito aos campos já
+ * aprovados em `assessment_result`, DEC-0014/DEC-0020).
+ */
+model QuestionSecondaryIndicator {
+  questionId  String @map("question_id")
+  indicatorId String @map("indicator_id")
+
+  question  Question  @relation(fields: [questionId], references: [id])
+  indicator Indicator @relation(fields: [indicatorId], references: [id])
+
+  @@id([questionId, indicatorId])
+  @@map("question_secondary_indicator")
 }
 
 model Dimension {
@@ -133,9 +152,10 @@ model Indicator {
   description String
   weight      Float
 
-  dimension          Dimension  @relation(fields: [dimensionId], references: [id])
-  insights           Insight[]
-  primaryOfQuestions Question[]
+  dimension            Dimension                    @relation(fields: [dimensionId], references: [id])
+  insights             Insight[]
+  primaryOfQuestions   Question[]
+  secondaryOfQuestions QuestionSecondaryIndicator[]
 
   @@index([dimensionId])
   @@map("indicator")

@@ -214,6 +214,27 @@ async function seedQuestionsAndAlternatives(tx: Prisma.TransactionClient): Promi
         create: { id: alternative.id, questionId: question.id, ...alternativeData },
       });
     }
+
+    // Sincroniza QuestionSecondaryIndicator escopado a esta Question: remove
+    // relações que não estão mais em `secondaryIndicatorIds` e insere as
+    // atuais. Nunca um DELETE global — `deleteMany` sempre filtra por
+    // `questionId: question.id`. Idempotente: reexecutar produz o mesmo
+    // estado (deleteMany não encontra nada a remover, upsert não altera
+    // linhas já existentes).
+    await tx.questionSecondaryIndicator.deleteMany({
+      where: {
+        questionId: question.id,
+        indicatorId: { notIn: question.secondaryIndicatorIds },
+      },
+    });
+
+    for (const indicatorId of question.secondaryIndicatorIds) {
+      await tx.questionSecondaryIndicator.upsert({
+        where: { questionId_indicatorId: { questionId: question.id, indicatorId } },
+        update: {},
+        create: { questionId: question.id, indicatorId },
+      });
+    }
   }
 }
 
