@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+coverage
+public
+package-lock.json
+
+# Documentation is governed by 03-ai/09B_CODE_STYLE.md as content, not code.
+# Its formatting conventions (blank-line spacing, arrows) are intentional and
+# must not be rewritten by Prettier.
+docs
+AGENTS.md
+CLAUDE.md
+
+# Local tooling configuration, not project source.
+.claude

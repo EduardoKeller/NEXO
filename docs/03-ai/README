@@ -1,0 +1,458 @@
+# Artificial Intelligence
+
+> Framework oficial para desenvolvimento assistido por Inteligência Artificial da plataforma **NEXO**.
+
+---
+
+# Objetivo
+
+Esta pasta reúne toda a documentação responsável por definir como Inteligências Artificiais e Desenvolvedores deverão participar da construção da plataforma NEXO.
+
+Ela estabelece:
+
+- princípios;
+- arquitetura de colaboração;
+- personas;
+- workflows;
+- playbooks;
+- prompts;
+- contexto;
+- diretrizes de implementação;
+- padrões de código.
+
+O objetivo é garantir que qualquer implementação seja consistente, previsível e totalmente alinhada à documentação oficial do projeto.
+
+---
+
+# Filosofia
+
+Toda implementação da NEXO segue a metodologia:
+
+```
+Documentation First
+
+↓
+
+Architecture First
+
+↓
+
+Implementation
+
+↓
+
+Validation
+
+↓
+
+Review
+
+↓
+
+Commit
+```
+
+A documentação define o comportamento.
+
+O código apenas implementa a documentação.
+
+---
+
+# Estrutura da Governança da IA
+
+Esta documentação está organizada em três camadas.
+
+```
+Governança
+
+08_AI_DEVELOPMENT_CHARTER
+
+↓
+
+Operação
+
+08A_AI_PROMPTS
+08B_AI_PERSONAS
+08C_AI_WORKFLOWS
+08D_AI_PLAYBOOK
+08E_AI_CONTEXT_PACKS
+
+↓
+
+Implementação
+
+09A_IMPLEMENTATION_GUIDELINES
+09B_CODE_STYLE
+```
+
+Cada camada possui responsabilidades específicas.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser utilizada sempre que houver necessidade de:
+
+- iniciar uma nova implementação;
+- utilizar IA para desenvolvimento;
+- revisar código produzido por IA;
+- criar novos prompts;
+- configurar múltiplos agentes;
+- definir workflows;
+- preparar contexto para uma tarefa;
+- validar arquitetura;
+- definir padrões de implementação;
+- revisar estilo de código.
+
+Toda utilização de IA deverá seguir esta documentação.
+
+---
+
+# Ordem Oficial de Leitura
+
+A leitura recomendada é:
+
+```text
+08_AI_DEVELOPMENT_CHARTER.md
+
+↓
+
+08A_AI_PROMPTS.md
+
+↓
+
+08B_AI_PERSONAS.md
+
+↓
+
+08C_AI_WORKFLOWS.md
+
+↓
+
+08D_AI_PLAYBOOK.md
+
+↓
+
+08E_AI_CONTEXT_PACKS.md
+
+↓
+
+09A_IMPLEMENTATION_GUIDELINES.md
+
+↓
+
+09B_CODE_STYLE.md
+```
+
+Cada documento adiciona uma nova camada de especialização.
+
+---
+
+# Documentos
+
+## 08_AI_DEVELOPMENT_CHARTER.md
+
+Define os princípios obrigatórios para qualquer Inteligência Artificial utilizada no projeto.
+
+Responde:
+
+> Quais regras toda IA deve seguir?
+
+---
+
+## 08A_AI_PROMPTS.md
+
+Centraliza os prompts oficiais utilizados durante o desenvolvimento.
+
+Inclui:
+
+- prompts de implementação;
+- prompts de revisão;
+- prompts arquiteturais;
+- prompts de documentação.
+
+Responde:
+
+> Como solicitar corretamente uma tarefa para a IA?
+
+---
+
+## 08B_AI_PERSONAS.md
+
+Define papéis especializados para diferentes agentes.
+
+Inclui:
+
+- Software Architect
+- Frontend Engineer
+- Backend Engineer
+- Data Engineer
+- QA Engineer
+- AI Reviewer
+
+Responde:
+
+> Quem deve executar cada tipo de tarefa?
+
+---
+
+## 08C_AI_WORKFLOWS.md
+
+Documenta os fluxos oficiais de desenvolvimento entre as personas.
+
+Responde:
+
+> Como uma tarefa percorre o processo de desenvolvimento?
+
+---
+
+## 08D_AI_PLAYBOOK.md
+
+Apresenta procedimentos completos para os cenários mais comuns.
+
+Inclui:
+
+- nova funcionalidade;
+- correção de bug;
+- refatoração;
+- criação de APIs;
+- atualização de documentação;
+- releases.
+
+Responde:
+
+> Como executar uma tarefa do início ao fim?
+
+---
+
+## 08E_AI_CONTEXT_PACKS.md
+
+Define quais documentos deverão ser fornecidos à IA para cada tipo de atividade.
+
+Responde:
+
+> Qual contexto a IA precisa receber antes de iniciar uma tarefa?
+
+---
+
+## 09A_IMPLEMENTATION_GUIDELINES.md
+
+Define como qualquer implementação deverá ser realizada.
+
+Inclui:
+
+- arquitetura Feature First;
+- organização das Features;
+- responsabilidades;
+- separação de camadas;
+- princípios de implementação;
+- fluxo de desenvolvimento.
+
+Responde:
+
+> Como a IA deve implementar funcionalidades na NEXO?
+
+---
+
+## 09B_CODE_STYLE.md
+
+Padroniza toda a escrita de código da plataforma.
+
+Inclui:
+
+- nomenclatura;
+- estrutura de arquivos;
+- convenções TypeScript;
+- React;
+- Server Components;
+- organização de imports;
+- componentes;
+- hooks;
+- repositories;
+- services;
+- commits;
+- branches.
+
+Responde:
+
+> Como o código da NEXO deve ser escrito?
+
+---
+
+# Fluxo Oficial de Desenvolvimento
+
+Toda implementação deverá seguir obrigatoriamente esta sequência.
+
+```text
+1. Ler a documentação do Produto
+
+↓
+
+2. Carregar o Context Pack adequado
+
+↓
+
+3. Assumir a Persona correspondente
+
+↓
+
+4. Executar o Workflow oficial
+
+↓
+
+5. Seguir o Playbook
+
+↓
+
+6. Implementar conforme o
+09A_IMPLEMENTATION_GUIDELINES
+
+↓
+
+7. Escrever código conforme o
+09B_CODE_STYLE
+
+↓
+
+8. Atualizar documentação
+(se necessário)
+
+↓
+
+9. Apresentar resumo
+
+↓
+
+10. Aguardar aprovação
+
+↓
+
+11. Commit
+```
+
+Nenhuma implementação deverá ignorar este fluxo.
+
+---
+
+# Dependências
+
+Esta documentação depende das seguintes camadas.
+
+```text
+00-foundation
+
+↓
+
+01-product
+
+↓
+
+02-data
+```
+
+Toda Inteligência Artificial deverá compreender essas camadas antes de iniciar qualquer implementação.
+
+---
+
+# Próxima Etapa
+
+Após concluir esta seção, continuar para:
+
+```text
+04-engineering/
+```
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a:
+
+- ChatGPT
+- Claude
+- GitHub Copilot
+- Cursor
+- Windsurf
+- Continue.dev
+- Desenvolvedores
+- Arquitetos de Software
+- Tech Leads
+
+---
+
+# Critérios de Atualização
+
+Esta documentação deverá ser atualizada quando houver mudanças em:
+
+- arquitetura;
+- metodologia de desenvolvimento;
+- workflows;
+- prompts;
+- personas;
+- contexto;
+- implementação;
+- padrões de código.
+
+Toda alteração deverá refletir também em:
+
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md (quando representar uma decisão arquitetural)
+
+---
+
+# Regras Gerais
+
+Toda Inteligência Artificial deverá:
+
+✓ Consultar a documentação oficial antes de implementar.
+
+✓ Utilizar o Context Pack apropriado.
+
+✓ Assumir a Persona adequada.
+
+✓ Seguir o Workflow correspondente.
+
+✓ Respeitar os padrões arquiteturais.
+
+✓ Implementar conforme o 09A_IMPLEMENTATION_GUIDELINES.
+
+✓ Escrever código conforme o 09B_CODE_STYLE.
+
+✓ Atualizar a documentação quando necessário.
+
+✓ Apresentar um resumo completo antes de qualquer commit.
+
+Nunca:
+
+✗ Criar comportamento não documentado.
+
+✗ Alterar regras de negócio sem aprovação.
+
+✗ Alterar arquitetura sem justificativa.
+
+✗ Inventar entidades.
+
+✗ Modificar contratos de API.
+
+✗ Ignorar a documentação oficial.
+
+✗ Realizar commits automaticamente.
+
+---
+
+# Resumo
+
+Esta pasta representa a camada oficial de governança da Inteligência Artificial da plataforma NEXO.
+
+Ela responde às perguntas fundamentais:
+
+- Como utilizar IA no projeto?
+- Como padronizar diferentes agentes?
+- Como organizar o desenvolvimento assistido por IA?
+- Como implementar funcionalidades?
+- Como manter um padrão único de código?
+- Como reduzir ambiguidades?
+- Como transformar documentação em software de forma previsível?
+
+Toda implementação assistida por Inteligência Artificial deverá seguir obrigatoriamente esta documentação antes de qualquer alteração no projeto.

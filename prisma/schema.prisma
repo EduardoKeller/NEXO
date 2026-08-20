@@ -1,0 +1,317 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// NEXO Platform — Sprint 2 (Persistência)
+// Fonte: docs/02-data/07_DATA_MODEL.md, docs/02-data/07C_STORAGE_MODEL.md,
+// docs/02-data/07D_PRISMA_MAPPING.md, docs/04-engineering/13_DECISION_LOG.md
+// (DEC-0013 a DEC-0021).
+//
+// `Alternative.id` ("A"/"B"/"C"/"D") não é globalmente único — se repete
+// em todas as 10 Questions. Resolvido com chave primária composta
+// `@@id([questionId, id])`, sem alterar nenhum ID existente em
+// core/content/* e sem introduzir campo novo (decisão aprovada).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AssessmentStatus {
+  Draft
+  Active
+  Deprecated
+  Archived
+}
+
+enum Difficulty {
+  Easy
+  Medium
+  Hard
+}
+
+enum Priority {
+  Critical
+  High
+  Medium
+  Low
+}
+
+enum ResourceType {
+  Article
+  Video
+  Podcast
+  Book
+  Checklist
+  Template
+  Exercise
+  Reflection
+}
+
+// ---------------------------------------------------------------------------
+// Conteúdo estático (07C_STORAGE_MODEL.md, Seção 4)
+// IDs = slugs já definidos em core/content/*, fornecidos pelo seed.
+// String @id, sem @default(uuid()) — DEC-0019.
+// ---------------------------------------------------------------------------
+
+model Assessment {
+  id            String           @id
+  slug          String           @unique
+  name          String
+  description   String
+  version       String
+  language      String
+  status        AssessmentStatus
+  estimatedTime Int              @map("estimated_time")
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  questions Question[]
+  sessions  AssessmentSession[]
+
+  @@map("assessment")
+}
+
+model Question {
+  id                 String   @id
+  assessmentId       String   @map("assessment_id")
+  dimensionId        String   @map("dimension_id")
+  primaryIndicatorId String   @map("primary_indicator_id")
+  title              String
+  description        String?
+  weight             Float
+  order              Int
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  assessment          Assessment                   @relation(fields: [assessmentId], references: [id])
+  dimension           Dimension                    @relation(fields: [dimensionId], references: [id])
+  primaryIndicator    Indicator                    @relation(fields: [primaryIndicatorId], references: [id])
+  alternatives        Alternative[]
+  answers             AssessmentAnswer[]
+  secondaryIndicators QuestionSecondaryIndicator[]
+
+  @@index([assessmentId])
+  @@map("question")
+}
+
+model Alternative {
+  id         String
+  questionId String   @map("question_id")
+  label      String
+  score      Float
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  question Question           @relation(fields: [questionId], references: [id])
+  answers  AssessmentAnswer[]
+
+  @@id([questionId, id])
+  @@map("alternative")
+}
+
+/**
+ * Relação N:N entre Question e Indicator para `secondaryIndicatorIds`
+ * (até 2 por Question, `05_CONTENT_LIBRARY.md` §16). Tabela de junção
+ * com FK real para ambos os lados — preserva integridade referencial,
+ * sem usar JSON (uso de JSON/JSONB permanece restrito aos campos já
+ * aprovados em `assessment_result`, DEC-0014/DEC-0020).
+ */
+model QuestionSecondaryIndicator {
+  questionId  String @map("question_id")
+  indicatorId String @map("indicator_id")
+
+  question  Question  @relation(fields: [questionId], references: [id])
+  indicator Indicator @relation(fields: [indicatorId], references: [id])
+
+  @@id([questionId, indicatorId])
+  @@map("question_secondary_indicator")
+}
+
+model Dimension {
+  id          String @id
+  slug        String @unique
+  name        String
+  description String
+  weight      Float
+
+  indicators      Indicator[]
+  questions       Question[]
+  behaviorIndexes BehaviorIndex[]
+
+  @@map("dimension")
+}
+
+model Indicator {
+  id          String @id
+  dimensionId String @map("dimension_id")
+  slug        String @unique
+  name        String
+  description String
+  weight      Float
+
+  dimension            Dimension                    @relation(fields: [dimensionId], references: [id])
+  insights             Insight[]
+  primaryOfQuestions   Question[]
+  secondaryOfQuestions QuestionSecondaryIndicator[]
+
+  @@index([dimensionId])
+  @@map("indicator")
+}
+
+model Insight {
+  id             String   @id
+  indicatorId    String   @map("indicator_id")
+  priority       Priority
+  title          String
+  description    String
+  recommendation String
+
+  indicator Indicator @relation(fields: [indicatorId], references: [id])
+
+  @@index([indicatorId])
+  @@map("insight")
+}
+
+model Archetype {
+  id          String @id
+  slug        String @unique
+  name        String
+  summary     String
+  description String
+
+  evolutionPlans EvolutionPlan[]
+  results        AssessmentResult[]
+
+  @@map("archetype")
+}
+
+model Mission {
+  id            String     @id
+  title         String
+  goal          String
+  difficulty    Difficulty
+  estimatedTime Int        @map("estimated_time")
+
+  @@map("mission")
+}
+
+model Resource {
+  id          String       @id
+  type        ResourceType
+  title       String
+  description String
+  url         String?
+
+  @@map("resource")
+}
+
+// Reservada, sem uso operacional nesta Sprint — DEC-0021. Sem seed, sem
+// relação com Mission/Resource. O EvolutionPlan de cada execução continua
+// sendo produzido dinamicamente pela Evolution Engine (core/engines/evolution/).
+model EvolutionPlan {
+  id                String     @id
+  archetypeId       String     @map("archetype_id")
+  firstStep         String     @map("first_step")
+  estimatedDuration Int        @map("estimated_duration")
+  difficulty        Difficulty
+
+  archetype Archetype @relation(fields: [archetypeId], references: [id])
+
+  @@map("evolution_plan")
+}
+
+// Reservada, sem uso operacional nesta Sprint — DEC-0018. Sem FK a partir
+// de assessment_result (que persiste reportTemplate/reportLanguage/
+// reportDownloadUrl como snapshot escalar, não como relação).
+model ReportTemplate {
+  id       String @id
+  language String
+  version  String
+
+  @@map("report_template")
+}
+
+// ---------------------------------------------------------------------------
+// Tabelas operacionais (07C_STORAGE_MODEL.md, Seção 5)
+// IDs = UUID gerado em runtime — DEC-0019.
+// ---------------------------------------------------------------------------
+
+model AssessmentSession {
+  id           String    @id @default(uuid())
+  assessmentId String    @map("assessment_id")
+  anonymousId  String    @map("anonymous_id")
+  startedAt    DateTime  @map("started_at") @db.Timestamptz(3)
+  finishedAt   DateTime? @map("finished_at") @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  assessment Assessment         @relation(fields: [assessmentId], references: [id])
+  answers    AssessmentAnswer[]
+  result     AssessmentResult?
+
+  @@index([anonymousId])
+  @@map("assessment_session")
+}
+
+model AssessmentAnswer {
+  id            String   @id @default(uuid())
+  sessionId     String   @map("session_id")
+  questionId    String   @map("question_id")
+  alternativeId String   @map("alternative_id")
+  answeredAt    DateTime @map("answered_at") @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  session     AssessmentSession @relation(fields: [sessionId], references: [id])
+  question    Question          @relation(fields: [questionId], references: [id])
+  alternative Alternative       @relation(fields: [questionId, alternativeId], references: [questionId, id])
+
+  @@index([sessionId])
+  @@map("assessment_answer")
+}
+
+model AssessmentResult {
+  id                  String   @id @default(uuid())
+  sessionId           String   @unique @map("session_id")
+  archetypeId         String   @map("archetype_id")
+  archetypeConfidence Float    @map("archetype_confidence")
+  matchedIndicators   Json     @map("matched_indicators")
+  strengths           Json
+  attentionPoints     Json     @map("attention_points")
+  evolutionPlanHabits Json     @map("evolution_plan_habits")
+  insights            Json
+  missions            Json
+  resources           Json
+  reportTemplate      String   @map("report_template")
+  reportLanguage      String   @map("report_language")
+  reportDownloadUrl   String?  @map("report_download_url")
+  generatedAt         DateTime @map("generated_at") @db.Timestamptz(3)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  session         AssessmentSession @relation(fields: [sessionId], references: [id])
+  archetype       Archetype         @relation(fields: [archetypeId], references: [id])
+  behaviorIndexes BehaviorIndex[]
+
+  @@map("assessment_result")
+}
+
+model BehaviorIndex {
+  id              String   @id @default(uuid())
+  resultId        String   @map("result_id")
+  dimensionId     String   @map("dimension_id")
+  rawScore        Float    @map("raw_score")
+  normalizedScore Float    @map("normalized_score")
+  confidence      Float
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  result    AssessmentResult @relation(fields: [resultId], references: [id])
+  dimension Dimension        @relation(fields: [dimensionId], references: [id])
+
+  @@index([resultId])
+  @@map("behavior_index")
+}

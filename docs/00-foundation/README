@@ -1,0 +1,182 @@
+# Foundation
+
+> A fundação conceitual da plataforma NEXO.
+
+---
+
+# Objetivo
+
+Esta pasta contém toda a documentação responsável por definir a identidade, visão, metodologia e princípios fundamentais da plataforma NEXO.
+
+Nenhum desenvolvimento deverá iniciar sem compreender os documentos desta seção.
+
+Todo o restante da documentação parte dos conceitos definidos aqui.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser consultada quando houver necessidade de:
+
+- compreender o propósito da plataforma;
+- entender a metodologia utilizada;
+- conhecer os conceitos do domínio;
+- alinhar decisões arquiteturais à visão do produto;
+- integrar novos membros à equipe;
+- fornecer contexto para agentes de Inteligência Artificial.
+
+---
+
+# Ordem de Leitura
+
+A leitura recomendada é a seguinte.
+
+```text
+00_VISION.md
+
+↓
+
+00A_METHODOLOGY.md
+
+↓
+
+00B_PERSONAS.md
+
+↓
+
+00C_GLOSSARY.md
+
+↓
+
+00D_BRAND_GUIDELINES.md
+
+↓
+
+00E_PRODUCT_PRINCIPLES.md
+```
+
+Cada documento depende do entendimento do anterior.
+
+---
+
+# Documentos
+
+## 00_VISION.md
+
+Define a visão estratégica da plataforma.
+
+Responde.
+
+> Por que a NEXO existe?
+
+---
+
+## 00A_METHODOLOGY.md
+
+Define a metodologia utilizada para construção da Assessment.
+
+Responde.
+
+> Como a plataforma gera valor?
+
+---
+
+## 00B_PERSONAS.md
+
+Define os perfis de usuários considerados durante o desenvolvimento do produto.
+
+Responde.
+
+> Para quem estamos construindo?
+
+---
+
+## 00C_GLOSSARY.md
+
+Centraliza todos os termos oficiais utilizados na documentação.
+
+Responde.
+
+> O que cada conceito significa?
+
+---
+
+## 00D_BRAND_GUIDELINES.md
+
+Define identidade visual, linguagem e posicionamento da marca.
+
+Responde.
+
+> Como a NEXO deve ser apresentada?
+
+---
+
+## 00E_PRODUCT_PRINCIPLES.md
+
+Define os princípios que orientam todas as decisões do produto.
+
+Responde.
+
+> Quais valores nunca podem ser quebrados?
+
+---
+
+# Dependências
+
+Esta pasta não possui dependências.
+
+Ela representa o nível mais alto da documentação.
+
+Todos os demais documentos dependem dela.
+
+---
+
+# Documentos Relacionados
+
+Após concluir a leitura desta seção, continuar para:
+
+```text
+01-product/
+```
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a:
+
+- Product Owners
+- Desenvolvedores
+- Arquitetos
+- Designers
+- QA
+- Stakeholders
+- Agentes de IA
+
+---
+
+# Critérios de Atualização
+
+Alterações nesta pasta deverão ocorrer apenas quando houver mudanças estratégicas na plataforma.
+
+Mudanças deverão ser registradas em:
+
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md (quando impactarem decisões estruturais)
+
+---
+
+# Resumo
+
+Esta pasta define a identidade da NEXO.
+
+Ela responde às perguntas fundamentais:
+
+- O que é a NEXO?
+- Por que ela existe?
+- Para quem ela foi criada?
+- Como ela gera valor?
+- Quais princípios orientam sua evolução?
+
+Nenhuma decisão técnica deverá contradizer os conceitos estabelecidos nesta documentação.

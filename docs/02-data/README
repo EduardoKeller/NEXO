@@ -1,0 +1,225 @@
+# Data
+
+> A arquitetura de dados da plataforma NEXO.
+
+---
+
+# Objetivo
+
+Esta pasta reúne toda a documentação responsável por definir como os dados da plataforma NEXO são modelados, persistidos, expostos e utilizados durante a execução do sistema.
+
+Ela estabelece a estrutura oficial das entidades, contratos de API, modelo de armazenamento, mapeamento do banco de dados e diretrizes para implementação.
+
+Toda persistência deverá seguir obrigatoriamente esta documentação.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser consultada quando houver necessidade de:
+
+- implementar persistência de dados;
+- criar ou alterar entidades;
+- desenvolver APIs;
+- criar migrações do banco;
+- atualizar o schema Prisma;
+- compreender o fluxo de dados da plataforma.
+
+---
+
+# Ordem de Leitura
+
+A leitura recomendada é a seguinte.
+
+```text
+07_DATA_MODEL.md
+
+↓
+
+07A_DOMAIN_DIAGRAMS.md
+
+↓
+
+07B_API_CONTRACTS.md
+
+↓
+
+07C_STORAGE_MODEL.md
+
+↓
+
+07D_PRISMA_MAPPING.md
+
+↓
+
+07E_IMPLEMENTATION_GUIDE.md
+```
+
+Cada documento complementa o anterior, formando a arquitetura completa de dados da plataforma.
+
+---
+
+# Documentos
+
+## 07_DATA_MODEL.md
+
+Define todas as entidades oficiais da NEXO e seus relacionamentos.
+
+Responde.
+
+> Quais informações existem na plataforma?
+
+---
+
+## 07A_DOMAIN_DIAGRAMS.md
+
+Apresenta diagramas que representam visualmente o domínio da aplicação.
+
+Inclui.
+
+- entidades;
+- relacionamentos;
+- fluxos;
+- dependências.
+
+Responde.
+
+> Como os elementos do domínio se relacionam?
+
+---
+
+## 07B_API_CONTRACTS.md
+
+Define os contratos oficiais das APIs.
+
+Inclui.
+
+- endpoints;
+- requests;
+- responses;
+- códigos de erro;
+- versionamento.
+
+Responde.
+
+> Como clientes e serviços se comunicam?
+
+---
+
+## 07C_STORAGE_MODEL.md
+
+Define como os dados são organizados e armazenados.
+
+Inclui.
+
+- tabelas;
+- relacionamentos;
+- índices;
+- restrições.
+
+Responde.
+
+> Como os dados são persistidos?
+
+---
+
+## 07D_PRISMA_MAPPING.md
+
+Documenta o mapeamento entre o modelo de domínio e o banco de dados utilizando Prisma ORM.
+
+Responde.
+
+> Como o domínio é convertido para persistência?
+
+---
+
+## 07E_IMPLEMENTATION_GUIDE.md
+
+Define a ordem oficial de implementação da plataforma.
+
+Inclui.
+
+- etapas;
+- dependências;
+- critérios de conclusão;
+- organização do projeto.
+
+Responde.
+
+> Como implementar corretamente a arquitetura definida?
+
+---
+
+# Dependências
+
+Esta pasta depende da documentação presente em.
+
+```text
+00-foundation/
+
+↓
+
+01-product/
+```
+
+Os conceitos de negócio e arquitetura definidos nessas camadas são utilizados como base para toda a modelagem de dados.
+
+---
+
+# Próxima Etapa
+
+Após concluir esta seção, continuar para.
+
+```text
+03-ai/
+```
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a.
+
+- Software Architects
+- Backend Engineers
+- Data Engineers
+- DevOps Engineers
+- QA Engineers
+- Agentes de Inteligência Artificial
+
+---
+
+# Critérios de Atualização
+
+Alterações nesta pasta deverão ocorrer quando houver mudanças em.
+
+- modelo de domínio;
+- entidades;
+- contratos de API;
+- persistência;
+- banco de dados;
+- implementação da arquitetura.
+
+Toda alteração deverá refletir também em.
+
+- 10_ROADMAP.md
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md
+- 12C_TECH_STACK.md (quando houver mudança tecnológica)
+
+---
+
+# Resumo
+
+Esta pasta representa a camada técnica responsável pela organização e persistência dos dados da plataforma.
+
+Ela responde às perguntas fundamentais.
+
+- Quais dados existem?
+- Como eles se relacionam?
+- Como são armazenados?
+- Como são expostos pelas APIs?
+- Como são implementados no banco de dados?
+
+Toda implementação de backend deverá utilizar esta documentação como referência antes de alterar qualquer estrutura de dados ou contrato de comunicação.

@@ -1,0 +1,209 @@
+# Product
+
+> A definição funcional da plataforma NEXO.
+
+---
+
+# Objetivo
+
+Esta pasta reúne toda a documentação responsável por definir o funcionamento da plataforma NEXO.
+
+Aqui estão descritos os requisitos do produto, sua arquitetura, regras de negócio, sistema de design, biblioteca de conteúdo e funcionamento da Assessment Engine.
+
+Esta documentação traduz a visão do produto em funcionalidades concretas.
+
+---
+
+# Quando consultar esta documentação
+
+Esta documentação deverá ser consultada quando houver necessidade de:
+
+- implementar novas funcionalidades;
+- compreender o comportamento da plataforma;
+- entender as regras de negócio;
+- criar componentes de interface;
+- modificar o fluxo da Assessment;
+- revisar requisitos do produto.
+
+---
+
+# Ordem de Leitura
+
+A leitura recomendada é a seguinte.
+
+```text
+01_PRD.md
+
+↓
+
+02_ARCHITECTURE.md
+
+↓
+
+03_DESIGN_SYSTEM.md
+
+↓
+
+04_BUSINESS_RULES.md
+
+↓
+
+05_CONTENT_LIBRARY.md
+
+↓
+
+06_ASSESSMENT_ENGINE.md
+```
+
+Cada documento adiciona uma nova camada de entendimento sobre o produto.
+
+---
+
+# Documentos
+
+## 01_PRD.md
+
+Define os requisitos funcionais e não funcionais da plataforma.
+
+Responde.
+
+> O que a NEXO deve fazer?
+
+---
+
+## 02_ARCHITECTURE.md
+
+Define a arquitetura oficial do sistema.
+
+Responde.
+
+> Como a plataforma está organizada?
+
+---
+
+## 03_DESIGN_SYSTEM.md
+
+Define os padrões de interface, componentes e identidade visual da aplicação.
+
+Responde.
+
+> Como a interface deve ser construída?
+
+---
+
+## 04_BUSINESS_RULES.md
+
+Documenta todas as regras de negócio da plataforma.
+
+Responde.
+
+> Como a NEXO deve se comportar?
+
+---
+
+## 05_CONTENT_LIBRARY.md
+
+Centraliza o conteúdo utilizado pela plataforma.
+
+Inclui.
+
+- perguntas;
+- arquétipos;
+- insights;
+- missões;
+- recursos.
+
+Responde.
+
+> Qual conteúdo alimenta a plataforma?
+
+---
+
+## 06_ASSESSMENT_ENGINE.md
+
+Define toda a lógica responsável pela execução da Assessment.
+
+Inclui.
+
+- validação;
+- pontuação;
+- comportamento;
+- arquétipos;
+- insights;
+- plano de evolução.
+
+Responde.
+
+> Como a Assessment funciona internamente?
+
+---
+
+# Dependências
+
+Esta pasta depende da documentação presente em:
+
+```text
+00-foundation/
+```
+
+Os conceitos definidos na Foundation são utilizados por todos os documentos desta pasta.
+
+---
+
+# Próxima Etapa
+
+Após concluir esta seção, continuar para:
+
+```text
+02-data/
+```
+
+---
+
+# Público-Alvo
+
+Esta documentação destina-se a:
+
+- Product Owners
+- Software Architects
+- Desenvolvedores Frontend
+- Desenvolvedores Backend
+- UX/UI Designers
+- QA Engineers
+- Agentes de Inteligência Artificial
+
+---
+
+# Critérios de Atualização
+
+Alterações nesta pasta deverão ocorrer quando houver mudanças em:
+
+- requisitos do produto;
+- regras de negócio;
+- arquitetura;
+- Assessment Engine;
+- biblioteca de conteúdo;
+- Design System.
+
+Toda alteração deverá refletir também em:
+
+- 10_ROADMAP.md
+- 11_CHANGELOG.md
+- 11A_RELEASE_NOTES.md (quando aplicável)
+- 13_DECISION_LOG.md (quando impactar decisões arquiteturais)
+
+---
+
+# Resumo
+
+Esta pasta representa o núcleo funcional da plataforma NEXO.
+
+Ela responde às perguntas fundamentais:
+
+- O que a plataforma faz?
+- Como ela funciona?
+- Quais regras devem ser respeitadas?
+- Como a interface deve ser construída?
+- Como a Assessment gera seus resultados?
+
+Toda implementação deverá seguir rigorosamente esta documentação antes de avançar para a camada de dados e implementação.

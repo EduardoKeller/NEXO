@@ -1,0 +1,525 @@
+# PRISMA MAPPING
+
+**Projeto:** NEXO Platform
+**Documento:** 07D_PRISMA_MAPPING.md
+**Versão:** 1.2
+**Status:** Approved
+**Última atualização:** 17/08/2026
+
+---
+
+# 1. Objetivo
+
+Este documento define como o Modelo de Domínio será convertido para o Prisma ORM.
+
+Ele funciona como uma camada intermediária entre.
+
+07_DATA_MODEL.md
+
+↓
+
+07C_STORAGE_MODEL.md
+
+↓
+
+schema.prisma
+
+Seu objetivo é evitar que decisões do ORM alterem o domínio da plataforma.
+
+---
+
+# 2. Arquitetura
+
+A camada de persistência deverá seguir obrigatoriamente.
+
+```text
+Domain Model
+
+↓
+
+Storage Model
+
+↓
+
+Prisma Mapping
+
+↓
+
+schema.prisma
+
+↓
+
+PostgreSQL
+```
+
+Cada camada possui uma responsabilidade única.
+
+---
+
+# 3. Convenções
+
+## Models
+
+PascalCase
+
+Exemplo.
+
+Assessment
+
+BehaviorIndex
+
+EvolutionPlan
+
+---
+
+## Campos
+
+camelCase
+
+Exemplo.
+
+createdAt
+
+updatedAt
+
+primaryIndicatorId
+
+---
+
+## Banco
+
+snake_case
+
+Exemplo.
+
+assessment
+
+behavior_index
+
+created_at
+
+---
+
+## Chaves
+
+UUID — exclusivamente nos Models operacionais (`AssessmentSession`, `AssessmentAnswer`, `AssessmentResult`, `BehaviorIndex`), gerados em runtime (`@default(uuid())` no Prisma, ou `crypto.randomUUID()` na camada de Repository/Server Action, DEC-0017). Nos Models de conteúdo estático, o `id` é o identificador (slug) já definido em `core/content/*`, fornecido explicitamente pelo seed — `String @id`, sem `@default(uuid())` (13_DECISION_LOG.md, DEC-0019).
+
+---
+
+## Datas
+
+DateTime
+
+UTC
+
+---
+
+# 4. Mapeamento Oficial
+
+| Domain | Storage | Prisma Model |
+|---------|----------|--------------|
+| Assessment | assessment | Assessment |
+| Question | question | Question |
+| Alternative | alternative | Alternative |
+| AssessmentSession | assessment_session | AssessmentSession |
+| Answer | assessment_answer | AssessmentAnswer |
+| Dimension | dimension | Dimension |
+| Indicator | indicator | Indicator |
+| BehaviorIndex | behavior_index | BehaviorIndex |
+| BehaviorArchetype | archetype | Archetype |
+| Insight | insight | Insight |
+| EvolutionPlan | evolution_plan | EvolutionPlan |
+| Mission | mission | Mission |
+| Resource | resource | Resource |
+| Report | assessment_result (campos inline: reportTemplate, reportLanguage, reportDownloadUrl) | — (sem Model dedicado nesta Sprint — 13_DECISION_LOG.md, DEC-0018) |
+| AssessmentResult | assessment_result | AssessmentResult |
+
+---
+
+# 5. Relacionamentos
+
+## Assessment
+
+Possui muitas Questions.
+
+Possui muitas AssessmentSessions.
+
+```text
+Assessment
+
+↓
+
+Question[]
+```
+
+```text
+Assessment
+
+↓
+
+AssessmentSession[]
+```
+
+---
+
+## Question
+
+Possui muitas Alternatives.
+
+Pertence a uma Dimension.
+
+Referencia um Indicator primário, via `primaryIndicatorId`.
+
+```text
+Question
+
+↓
+
+Alternative[]
+```
+
+```text
+Question
+
+↓ (N:1)
+
+Dimension
+```
+
+```text
+Question
+
+↓ (N:1, via primaryIndicatorId)
+
+Indicator
+```
+
+---
+
+## Dimension
+
+Possui muitos Indicators.
+
+```text
+Dimension
+
+↓
+
+Indicator[]
+```
+
+---
+
+## Indicator
+
+Possui muitos Insights.
+
+```text
+Indicator
+
+↓
+
+Insight[]
+```
+
+---
+
+## AssessmentSession
+
+Possui muitas Answers.
+
+Possui um AssessmentResult (1:1).
+
+```text
+AssessmentSession
+
+↓
+
+AssessmentAnswer[]
+```
+
+```text
+AssessmentSession
+
+↓
+
+AssessmentResult
+```
+
+---
+
+## AssessmentResult
+
+Possui muitos BehaviorIndexes.
+
+```text
+AssessmentResult
+
+↓
+
+BehaviorIndex[]
+```
+
+`reportTemplate`, `reportLanguage` e `reportDownloadUrl` são snapshots escalares diretamente em `AssessmentResult`, sem `@relation()` para `ReportTemplate` — mesmo padrão de `matchedIndicators`/`strengths`/`attentionPoints`/`evolutionPlanHabits` (DEC-0014), estendido por DEC-0018. `Report.generatedAt` (07_DATA_MODEL.md, Seção 17) é sempre idêntico a `AssessmentResult.generatedAt` — não é persistido em campo separado.
+
+`insights`, `missions` e `resources` (07_DATA_MODEL.md, Seção 18) são também snapshots JSON diretamente em `AssessmentResult`, sem `@relation()` para `Insight`, `Mission` ou `Resource` — mesmo padrão, estendido por DEC-0020. Nenhum outro campo de `AssessmentResult` recebeu esse tratamento além destes três.
+
+---
+
+## EvolutionPlan
+
+Pertence a um Archetype.
+
+```text
+EvolutionPlan
+
+↓ (N:1)
+
+Archetype
+```
+
+`EvolutionPlan` permanece reservado, sem seed e sem relação `Mission[]`/`Resource[]` nesta Sprint (13_DECISION_LOG.md, DEC-0021) — a Evolution Engine continua produzindo o `EvolutionPlan` de cada execução dinamicamente, sem ler desta tabela. `evolutionPlanHabits` (JSONB em `AssessmentResult`, DEC-0014) permanece o único traço persistido de um plano de evolução.
+
+---
+
+# 6. Constraints
+
+Todos os IDs deverão utilizar UUID.
+
+Slug deverá ser único.
+
+Version deverá ser obrigatória.
+
+Language deverá ser obrigatória.
+
+Status deverá ser obrigatório.
+
+Nenhuma Foreign Key poderá aceitar registros inexistentes.
+
+Todos os IDs deverão utilizar UUID — regra aplicável exclusivamente aos Models operacionais; Models de conteúdo estático usam o identificador já definido em `core/content/*` (13_DECISION_LOG.md, DEC-0019).
+
+---
+
+## Identidade Anônima e Snapshot (DEC-0013 / DEC-0014)
+
+`AssessmentSession.anonymousId` é um identificador opaco (UUID), gerado no servidor. Não possui nenhuma relação com User, Account ou Login, e não representa autenticação.
+
+`AssessmentResult.sessionId` deverá ser único (`@unique`), representando a cardinalidade 1:1 com `AssessmentSession`.
+
+`AssessmentResult.archetypeConfidence` é campo escalar.
+
+`AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` são snapshots imutáveis, gravados uma única vez no momento da geração do resultado, e nunca recalculados nem resolvidos novamente a partir da Content Library. Nenhum desses quatro campos deverá possuir Foreign Key ou `@relation()` para `Indicator`, `Archetype` ou qualquer outra tabela de conteúdo.
+
+`BehaviorIndex.confidence` (por Dimensão) e `AssessmentResult.archetypeConfidence` (por resultado) são campos distintos, em Models distintos, e não deverão ser confundidos.
+
+---
+
+## Persistência em Lote e Report Snapshot (DEC-0015 / DEC-0018)
+
+`AssessmentSession.startedAt`/`finishedAt` e todo `AssessmentAnswer.answeredAt` de uma mesma sessão recebem o mesmo timestamp de servidor na Sprint 2 — consequência documentada da persistência em lote no submit final (13_DECISION_LOG.md, DEC-0015), não um erro de mapeamento.
+
+`AssessmentResult.reportTemplate`, `AssessmentResult.reportLanguage` e `AssessmentResult.reportDownloadUrl` são snapshots escalares, sem `@relation()` para `ReportTemplate` (13_DECISION_LOG.md, DEC-0018). `ReportTemplate` permanece fora do schema desta Sprint, reservado para uma futura Fase 5 (Report Engine).
+
+---
+
+# 7. Índices
+
+Criar índices para.
+
+Assessment.slug
+
+Question.assessmentId
+
+Indicator.dimensionId
+
+Insight.indicatorId
+
+BehaviorIndex.resultId
+
+AssessmentAnswer.sessionId
+
+AssessmentResult.sessionId
+
+AssessmentSession.anonymousId
+
+`createdAt`/`updatedAt` (DEC-0016) não recebem índice dedicado nesta Sprint — sem consulta documentada que os exija.
+
+---
+
+# 8. Convenções Prisma
+
+Todos os Models deverão possuir.
+
+```text
+id
+
+createdAt
+
+updatedAt
+```
+
+Sempre.
+
+---
+
+Campos opcionais deverão utilizar.
+
+```text
+?
+```
+
+Relacionamentos deverão utilizar.
+
+```text
+@relation()
+```
+
+Enums deverão ser compartilhados.
+
+---
+
+## Tipos Estruturados (Json)
+
+Uso restrito. Aprovado exclusivamente para `AssessmentResult.matchedIndicators`, `AssessmentResult.strengths`, `AssessmentResult.attentionPoints` e `AssessmentResult.evolutionPlanHabits` (13_DECISION_LOG.md, DEC-0014), e `AssessmentResult.insights`, `AssessmentResult.missions`, `AssessmentResult.resources` (13_DECISION_LOG.md, DEC-0020). Nenhum outro Model deverá adotar `Json` sem uma decisão própria registrada no Decision Log.
+
+---
+
+# 9. Enum Mapping
+
+## Status
+
+Domain
+
+↓
+
+Status
+
+↓
+
+Prisma Enum
+
+↓
+
+PostgreSQL ENUM
+
+---
+
+## Difficulty
+
+↓
+
+Difficulty
+
+↓
+
+ENUM
+
+---
+
+## Priority
+
+↓
+
+Priority
+
+↓
+
+ENUM
+
+---
+
+## ResourceType
+
+↓
+
+ResourceType
+
+↓
+
+ENUM
+
+---
+
+# 10. Versionamento
+
+Toda alteração incompatível deverá gerar nova Migration.
+
+Nunca editar migrations antigas.
+
+Sempre criar novas.
+
+---
+
+# 11. Fluxo de Geração
+
+A criação do banco deverá seguir.
+
+```text
+07_DATA_MODEL
+
+↓
+
+07C_STORAGE_MODEL
+
+↓
+
+07D_PRISMA_MAPPING
+
+↓
+
+schema.prisma
+
+↓
+
+Migration
+
+↓
+
+Banco
+```
+
+Nunca gerar o schema diretamente do domínio.
+
+---
+
+# 12. Checklist
+
+Antes de gerar o schema.
+
+✓ Todos os Models existem.
+
+✓ Todos os relacionamentos existem.
+
+✓ Todas as Foreign Keys estão documentadas.
+
+✓ Todos os índices estão definidos.
+
+✓ Todos os Enums existem.
+
+✓ Todos os nomes seguem convenção.
+
+---
+
+# 13. Critérios de Aceite
+
+O Prisma Mapping será considerado concluído quando.
+
+✓ O schema.prisma puder ser implementado apenas utilizando este documento.
+
+✓ Nenhuma decisão de domínio depender do Prisma.
+
+✓ O Storage Model permanecer independente.
+
+✓ Todos os relacionamentos estiverem documentados.
+
+---
+
+# 14. Princípio Supremo
+
+O Prisma é apenas uma ferramenta de persistência.
+
+Ele nunca deverá influenciar o Modelo de Domínio.
+
+A arquitetura da NEXO pertence ao domínio.
+
+Não ao ORM.

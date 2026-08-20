@@ -1,0 +1,1546 @@
+# Decision Log
+
+> Registro oficial das decisões arquiteturais e de produto da plataforma NEXO.
+
+---
+
+## Objetivo
+
+Este documento registra todas as decisões relevantes tomadas durante o desenvolvimento da plataforma.
+
+Cada decisão deve conter:
+
+- contexto;
+- problema;
+- alternativas avaliadas;
+- decisão adotada;
+- justificativa;
+- impacto técnico;
+- data.
+
+Este documento funciona como histórico oficial da evolução do projeto.
+
+---
+
+# Template
+
+## DEC-XXXX
+
+**Título**
+
+### Data
+
+AAAA-MM-DD
+
+### Status
+
+- Proposed
+- Approved
+- Deprecated
+- Superseded
+
+### Contexto
+
+Descreva o problema que motivou a decisão.
+
+### Alternativas consideradas
+
+- Alternativa A
+- Alternativa B
+- Alternativa C
+
+### Decisão
+
+Descreva claramente a decisão tomada.
+
+### Justificativa
+
+Explique por que esta alternativa foi escolhida.
+
+### Consequências
+
+Liste impactos positivos e negativos.
+
+### Documentos relacionados
+
+- PRD
+- Architecture
+- Business Rules
+- Assessment Engine
+
+---
+
+# Histórico de Decisões
+
+## DEC-0001
+
+### Título
+
+Documentação como fonte única da verdade.
+
+### Data
+
+2026-08-03
+
+### Status
+
+Approved
+
+### Contexto
+
+Era necessário definir uma metodologia que garantisse consistência entre produto, arquitetura e implementação.
+
+### Alternativas consideradas
+
+- Documentação opcional
+- Documentação após implementação
+- Documentation First
+
+### Decisão
+
+Adotar a metodologia **Documentation First**, onde toda implementação deve ser precedida pela documentação correspondente.
+
+### Justificativa
+
+Reduz ambiguidades, melhora o uso de Inteligência Artificial e facilita manutenção.
+
+### Consequências
+
+Positivas:
+
+- melhor rastreabilidade;
+- menor retrabalho;
+- documentação sempre atualizada.
+
+Negativas:
+
+- maior tempo inicial de planejamento.
+
+### Documentos relacionados
+
+- 00_VISION.md
+- 00A_METHODOLOGY.md
+
+---
+
+## DEC-0002
+
+### Título
+
+Organização da documentação dentro da pasta `/docs`.
+
+### Data
+
+2026-08-03
+
+### Status
+
+Approved
+
+### Contexto
+
+Inicialmente a documentação estava distribuída na raiz do repositório.
+
+### Decisão
+
+Centralizar toda a documentação na pasta `/docs`, mantendo apenas os arquivos de entrada do projeto (`README.md`, `AGENTS.md` e `CLAUDE.md`) na raiz.
+
+### Justificativa
+
+Melhora a organização, facilita a navegação e mantém a estrutura preparada para crescimento.
+
+### Documentos relacionados
+
+- docs/README.md
+
+---
+
+## DEC-0003
+
+### Título
+
+Algoritmo oficial de classificação de Arquétipos Comportamentais.
+
+### Data
+
+2026-08-04
+
+### Status
+
+Approved
+
+### Contexto
+
+O Archetype Resolver (06_ASSESSMENT_ENGINE.md, Seção 9) definia apenas entrada e saída do módulo responsável por identificar o Arquétipo predominante, sem especificar o algoritmo de classificação. Além disso, 04_BUSINESS_RULES.md (Seção 16) e 06_ASSESSMENT_ENGINE.md (Seção 14) definiam critérios de desempate divergentes entre si, e o cálculo do Confidence Score nunca havia sido especificado em nenhum documento.
+
+### Alternativas consideradas
+
+- Distância Euclidiana (Ponderada)
+- Score Ponderado
+- Sistema Baseado em Regras
+- Cosine Similarity
+
+### Decisão
+
+Adotar Distância Euclidiana Ponderada como algoritmo oficial de classificação de Arquétipos, comparando o vetor de Índices Comportamentais do usuário contra um `reference_profile` por Arquétipo (mantido na Content Library), utilizando os pesos oficiais por Dimensão já definidos na plataforma.
+
+O Confidence Score é calculado pela margem relativa entre a menor e a segunda menor distância, normalizado na faixa 0–100.
+
+Os critérios de desempate divergentes entre Business Rules e Assessment Engine foram unificados em uma única regra canônica, definida em 04_BUSINESS_RULES.md, Seção 16.
+
+Os valores do `reference_profile` (80/50/20) representam uma calibração inicial (v1.0), não constantes imutáveis, sujeitas a validação e recalibração com dados reais de uso.
+
+### Justificativa
+
+Entre as quatro alternativas avaliadas, a Distância Euclidiana Ponderada foi a única que atende simultaneamente aos requisitos já documentados de determinismo e escalabilidade sem alteração estrutural (02_ARCHITECTURE.md, Seção 15; 06_ASSESSMENT_ENGINE.md, Seções 2 e 18), produz o Confidence Score de forma natural a partir da própria distância (sem heurística adicional) e mantém a separação entre dado (perfil de referência, na Content Library) e lógica (fórmula, na Assessment Engine).
+
+Sistema Baseado em Regras foi rejeitado por violar o requisito de escalabilidade sem reestruturação (adicionar um Arquétipo exige revisar toda a árvore de regras) e por não produzir um Confidence Score contínuo nativamente.
+
+Score Ponderado foi rejeitado por exigir calibração de pesos com sinal (positivo/negativo) por Arquétipo × Dimensão, com risco de resultados degenerados (perfil uniformemente alto vencendo todos os Arquétipos) caso mal calibrado.
+
+Cosine Similarity foi rejeitado por ignorar a magnitude dos Índices Comportamentais (considera apenas a proporção relativa entre eles), o que contradiz o conceito de intensidade comportamental definido em 00A_METHODOLOGY.md, Seção 9.
+
+### Consequências
+
+Positivas:
+
+- Algoritmo de classificação determinístico, documentado e testável.
+- Confidence Score bem definido, com faixa oficial e correspondência ao enum `ConfidenceLevel`.
+- Regra de desempate única, elimina a contradição entre Business Rules e Assessment Engine.
+- Novos Arquétipos podem ser adicionados apenas com um novo `reference_profile`, sem alterar a fórmula.
+
+Negativas:
+
+- Os valores de calibração inicial (`reference_profile`) foram derivados manualmente das descrições textuais de cada Arquétipo, não de dados reais — exigem validação futura.
+- Introduz dependência entre Content Library (dado) e Assessment Engine (lógica) que deve ser mantida sincronizada a cada recalibração.
+
+### Documentos relacionados
+
+- 04_BUSINESS_RULES.md
+- 05_CONTENT_LIBRARY.md
+- 06_ASSESSMENT_ENGINE.md
+- 07_DATA_MODEL.md
+- 07B_API_CONTRACTS.md
+- 00A_METHODOLOGY.md
+
+---
+
+## DEC-0004
+
+### Título
+
+Arquitetura Oficial da Aplicação — Estrutura de Pastas, Domain Kernel e Fluxo de Server Actions.
+
+### Data
+
+2026-08-05
+
+### Status
+
+Approved — nomenclatura do diretório de domínio (`kernel/`) parcialmente superseded por DEC-0005 (renomeado para `core/`). Todo o restante desta decisão (responsabilidades de camada, Dependency Inversion, Fluxo de Dependências e Fluxo de Execução) permanece integralmente válido.
+
+### Contexto
+
+A revisão arquitetural da Sprint 1 identificou que a estrutura de pastas de `src/` não possuía uma definição única: três documentos "oficiais" descreviam árvores fisicamente incompatíveis.
+
+- `09A_IMPLEMENTATION_GUIDELINES.md` definia uma estrutura Feature-First pura (`app/ features/ shared/ providers/ config/ styles/ middleware/`), com cada Feature carregando seus próprios `components/hooks/services/repositories/api`.
+- `07E_IMPLEMENTATION_GUIDE.md` (Seção 5) e `12A_DEVELOPMENT_STANDARDS.md` (Seção 3) definiam uma estrutura Layer-First (`components/ features/ domain/ engines/ services/ hooks/ lib/ types/ styles/ tests/`), na qual Engines, Domain e Components eram pastas de topo irmãs de `features/`, sem papel claro para esta última.
+- `08_AI_DEVELOPMENT_CHARTER.md` (Seção 6) descrevia uma terceira variação, subconjunto da segunda, sem `shared/`, `providers/`, `config/`, `styles/` ou `middleware/` — embora `07E_IMPLEMENTATION_GUIDE.md` (Fase 2) exigisse explicitamente um Theme Provider.
+
+Adicionalmente, `02_ARCHITECTURE.md` (Seção 5) descrevia as Engines como parte da **Application Layer**, enquanto `12B_ARCHITECTURE_PATTERNS.md` (Seção 6) já as descrevia corretamente como parte da **Domain Layer** — uma contradição conceitual entre os dois documentos que fundamentam a arquitetura.
+
+Por fim, `07A_DOMAIN_DIAGRAMS.md` (Seção 3) e `07E_IMPLEMENTATION_GUIDE.md` (Seção 4) mostram que o Assessment Pipeline (Validation → Score → Behavior → Archetype → Insight → Evolution → Report) é consumido por múltiplas Features (`assessment`, `insights`, `evolution`, `reports`). Isso é incompatível com a regra de isolamento de Features definida em `09A_IMPLEMENTATION_GUIDELINES.md` ("uma Feature nunca deverá acessar arquivos internos de outra Feature") caso as Engines estivessem aninhadas dentro da Feature `assessment`, como o Feature-First puro sugeriria.
+
+Nenhuma linha de código da plataforma havia sido escrita até este ponto, tornando esta a última oportunidade de resolver o conflito antes do início da Fase 1 de `07E_IMPLEMENTATION_GUIDE.md`.
+
+### Alternativas consideradas
+
+- **Feature-First puro** (adotar integralmente `09A_IMPLEMENTATION_GUIDELINES.md`). Rejeitada: não define onde vivem as Engines compartilhadas entre múltiplas Features sem violar o isolamento de Features.
+- **Layer-First puro** (adotar integralmente `07E_IMPLEMENTATION_GUIDE.md` / `12A_DEVELOPMENT_STANDARDS.md`). Rejeitada: fragmenta uma mesma funcionalidade de produto (ex.: Assessment) em até quatro pastas de topo diferentes (`components/assessment`, `features/assessment`, `domain/assessment`, `engines/{validation,scoring}`), prejudicando descoberta e DX — exatamente o problema que Feature-First existe para resolver.
+- **Domain Kernel + Feature-First híbrido** (adotada). Aplica Feature-First à Presentation/Application Layer (`features/`) e Layer-First/Clean Architecture ao núcleo de domínio (`kernel/`), que é fisicamente único e nunca pertence a uma Feature.
+
+### Decisão
+
+A arquitetura oficial da aplicação passa a ser:
+
+```text
+src/
+
+app/
+  (marketing)/
+  (application)/
+  api/
+
+features/
+  assessment/
+    components/
+    hooks/
+    actions/
+    services/
+    api/
+    schemas/
+    types/
+    utils/
+    constants/
+    store/
+    index.ts
+  auth/
+  dashboard/
+  onboarding/
+  profile/
+  reports/
+
+kernel/
+  domain/
+  engines/
+    validation/
+    scoring/
+    behavior/
+    archetype/
+    insight/
+    evolution/
+    report/
+  content/
+  contracts/
+  errors/
+  types/
+
+shared/
+  ui/
+  hooks/
+  lib/
+  utils/
+  validators/
+  constants/
+
+infrastructure/
+  database/
+  repositories/
+  external/
+
+providers/
+
+config/
+
+styles/
+
+middleware/
+
+tests/
+```
+
+**Responsabilidades:**
+
+- `app/` — apenas roteamento (App Router). Nunca contém regra de negócio, acesso a banco ou lógica compartilhada.
+- `features/` — cada Feature representa uma funcionalidade de produto e é autocontida (components, hooks, actions, services, api, schemas, types, utils, constants, store). Nunca contém Repositories. Uma Feature nunca acessa arquivos internos de outra Feature; toda comunicação ocorre por contratos públicos (`index.ts`).
+- `kernel/` (nome oficial — nunca `core/`) — Domain Model, Business Rules, Engines, Value Objects, Content Access, Contracts e Errors. Nunca depende de React, Next.js, Tailwind, Infrastructure ou de qualquer Feature. Features importam o Kernel; o Kernel nunca importa Features.
+- `shared/` — UI genérica, hooks, lib, utils, validators e constants reutilizáveis entre Features. Nunca contém regra de negócio.
+- `infrastructure/` — exclusivamente Prisma, banco, Repositories, APIs externas, cache e storage. Nunca contém regra de negócio. Toda Repository implementa um contrato definido em `kernel/contracts/` (Dependency Inversion).
+- `providers/`, `config/`, `styles/`, `middleware/` — infraestrutura transversal do Next.js (Theme, Analytics, configuração, Tailwind/fonts, middleware de rotas), sem regra de negócio.
+
+**Estes são dois conceitos independentes e não devem ser sobrepostos:** Fluxo de Dependências (direção de `import`, compile-time) e Fluxo de Execução (ordem de chamadas em runtime).
+
+**Fluxo de Dependências (imports):**
+
+```text
+App → Features → Kernel
+```
+
+```text
+Infrastructure → Kernel (kernel/contracts/)
+```
+
+Nunca no sentido inverso. O Kernel não importa Features. O Kernel não importa Infrastructure — nenhum diagrama desta decisão contém uma seta de import partindo do Kernel em direção à Infrastructure. A única relação entre os dois é a Infrastructure implementando uma interface definida em `kernel/contracts/`, o que faz o import apontar de Infrastructure para Kernel, nunca o inverso (Dependency Inversion, mantendo o padrão já descrito em `12B_ARCHITECTURE_PATTERNS.md`, Seção 8). A composição entre contrato e implementação concreta acontece na Application Layer (Feature Service ou Server Action) — nunca dentro do Kernel, que nunca conhece Infrastructure.
+
+Esta separação corrige o enunciado inicial da tarefa que originou esta decisão, que descrevia um único fluxo `App → Features → Kernel → Infrastructure`; lido como fluxo de dependências, isso contradiria a regra, também estabelecida na mesma tarefa, de que "o Kernel nunca depende de infraestrutura". A leitura correta é: esse enunciado descreve o Fluxo de Execução (abaixo), não o Fluxo de Dependências.
+
+**Fluxo de Execução (runtime, uma requisição real):**
+
+```text
+React Component (Client)
+  chama →
+Server Action
+  chama →
+Feature Service
+  chama →
+Kernel (Engines / Contracts)
+  chama →
+Infrastructure (Repository, já resolvida via contrato)
+  chama →
+Database
+```
+
+Uma seta neste diagrama significa "chama em runtime", nunca "importa". A chamada entre Kernel e Infrastructure é, na prática, a Feature Service invocando — através do contrato do Kernel — uma implementação de Infrastructure que ela mesma compôs; o Kernel não invoca nem importa Infrastructure diretamente.
+
+Durante a Sprint 1 (sem persistência), o fluxo termina no Kernel: a Server Action invoca as Engines em processo e devolve o resultado diretamente à Presentation Layer.
+
+Route Handlers (`app/api/`) ficam reservados exclusivamente para APIs públicas, Webhooks e integrações externas, a partir da Sprint 3 (10_ROADMAP.md). Durante a Sprint 1, utilizar exclusivamente Server Actions.
+
+**Escopo por Sprint:** a árvore acima representa a plataforma completa (10_ROADMAP.md, Sprints 1–6), não o escopo do MVP. `features/auth/`, `features/dashboard/`, `features/onboarding/`, `features/profile/` e `infrastructure/` permanecem sem implementação até suas Sprints correspondentes — login, cadastro, histórico e dashboard estão explicitamente fora do escopo do MVP (01_PRD.md, Seção 8). Apenas `features/assessment/`, `kernel/` completo, e `app/(marketing)` + `app/(application)/assessment` são implementados na Sprint 1.
+
+### Justificativa
+
+O híbrido é a única alternativa consistente simultaneamente com os princípios já documentados e aprovados da plataforma:
+
+- **Engine-Based** (`02_ARCHITECTURE.md`, Seção 2.3): "toda regra de negócio deverá existir dentro das Engines" e "uma Engine nunca chamará outra diretamente sem uma camada de orquestração" — isso exige que as Engines sejam um módulo único e compartilhado, não fragmentos dentro de uma Feature.
+- **Dependency Inversion** e **Repository Pattern** (`12B_ARCHITECTURE_PATTERNS.md`, Seções 8 e 14): "componentes dependerão de abstrações, nunca de implementações concretas" e "a camada de domínio nunca acessará o ORM diretamente" — resolvidos por `kernel/contracts/` + `infrastructure/repositories/`.
+- **Feature-First** como filosofia declarada (`09A_IMPLEMENTATION_GUIDELINES.md`, Seção Filosofia) é preservado onde ele efetivamente melhora DX: na Presentation/Application Layer, onde componentes, hooks e ações de uma mesma funcionalidade de produto ficam colocalizados.
+- **Escalabilidade sem reescrita estrutural** (`02_ARCHITECTURE.md`, Seção 15; `04_BUSINESS_RULES.md`, Seção 22): novas Assessments, Arquétipos ou Dimensões exigem apenas alterações dentro de `kernel/`, sem tocar em `features/`; novas funcionalidades de produto exigem apenas uma nova pasta em `features/`, sem tocar em `kernel/`.
+
+### Consequências
+
+Positivas:
+
+- Existe agora uma única árvore de pastas oficial, referenciada de forma idêntica por `02_ARCHITECTURE.md`, `07E_IMPLEMENTATION_GUIDE.md`, `09A_IMPLEMENTATION_GUIDELINES.md`, `09B_CODE_STYLE.md`, `12A_DEVELOPMENT_STANDARDS.md` e `08_AI_DEVELOPMENT_CHARTER.md`.
+- As Engines deixam de estar mal posicionadas conceitualmente entre Application e Domain Layer — passam a pertencer inequivocamente ao Domain, fisicamente em `kernel/engines/`.
+- A fronteira Cliente↔Servidor da Sprint 1, antes indefinida, fica resolvida: Server Actions dentro da Feature, sem API HTTP formal até a Sprint 3.
+- O Kernel, sendo livre de frameworks, permanece trivialmente testável de forma unitária (alinhado à meta de cobertura ≥90% das Engines em `07E_IMPLEMENTATION_GUIDE.md`, Seção 7).
+
+Negativas:
+
+- `features/auth/`, `dashboard/`, `onboarding/`, `profile/` e `infrastructure/` existem como estrutura prevista mas ficam vazios até Sprints futuras — risco de serem criados prematuramente se a Fase 1 não observar a seção "Escopo por Sprint".
+- Nomenclatura `kernel/` (em vez de `core/`, termo mais comum no mercado) exige atenção em revisões e onboarding para não ser confundida com bibliotecas externas de mesmo nome.
+- Cinco documentos precisaram de alteração coordenada; qualquer decisão futura que volte a alterar a estrutura de pastas deverá atualizar os mesmos cinco documentos para não reabrir a divergência que esta decisão elimina.
+
+### Documentos relacionados
+
+- 02_ARCHITECTURE.md
+- 07E_IMPLEMENTATION_GUIDE.md
+- 07A_DOMAIN_DIAGRAMS.md
+- 09A_IMPLEMENTATION_GUIDELINES.md
+- 09B_CODE_STYLE.md
+- 12A_DEVELOPMENT_STANDARDS.md
+- 12B_ARCHITECTURE_PATTERNS.md
+- 08_AI_DEVELOPMENT_CHARTER.md
+- 01_PRD.md
+- 10_ROADMAP.md
+
+### Nota de Superseding (2026-08-05)
+
+O nome do diretório `kernel/` referenciado em toda esta decisão foi renomeado para `core/` por DEC-0005. Esta seção é mantida sem alteração de texto, incluindo os trechos que argumentavam a favor de `kernel/` sobre `core/`, para preservar o registro histórico exato do que foi decidido e por quê em 2026-08-05. A partir de DEC-0005, toda a documentação viva (não histórica) do projeto usa `core/`. Nenhuma responsabilidade de camada, regra de Dependency Inversion ou fluxo definido nesta decisão foi alterado — apenas o nome do diretório.
+
+---
+
+## DEC-0005
+
+### Título
+
+Renomeação do Domain Kernel — `kernel/` para `core/`.
+
+### Data
+
+2026-08-05
+
+### Status
+
+Approved
+
+### Contexto
+
+Após DEC-0004 ter sido aprovada em princípio, a equipe reavaliou o nome oficial do diretório de domínio antes do início da implementação (nenhuma linha de código havia sido escrita). DEC-0004 já havia identificado `core/` como alternativa e a rejeitado explicitamente, adotando `kernel/` com a justificativa de evitar confusão com bibliotecas externas de mesmo nome.
+
+A reavaliação concluiu que esse risco é secundário frente ao ganho de familiaridade: `core/` é o nome convencionalmente usado em Clean Architecture, DDD e Onion Architecture para o mesmo conceito (o núcleo de domínio, livre de frameworks), e é mais reconhecível para novos desenvolvedores que ingressarem no projeto.
+
+### Alternativas consideradas
+
+- **Manter `kernel/`** (decisão original de DEC-0004). Rejeitada nesta reavaliação: nome menos convencional no ecossistema de Clean Architecture/DDD, aumenta a curva de familiarização de novos desenvolvedores sem benefício compensatório, já que o risco de colisão com bibliotecas externas chamadas "core" é baixo dentro de `src/core/` (namespace do projeto, não um pacote publicado).
+- **Renomear para `core/`** (adotada). Mantém exatamente o mesmo conceito arquitetural do Domain Kernel definido em DEC-0004.
+
+### Decisão
+
+O diretório oficial do domínio passa de `kernel/` para `core/`.
+
+Nenhuma responsabilidade de camada é alterada. Todas as regras estabelecidas em DEC-0004 permanecem idênticas, apenas com o nome do diretório trocado:
+
+- `core/` (nunca `kernel/`) concentra Domain Model, Business Rules, Engines, Value Objects, Content Access, Contracts e Errors.
+- `core/` nunca depende de React, Next.js, Tailwind, Infrastructure ou de qualquer Feature.
+- Features importam `core/`; `core/` nunca importa Features.
+- A ligação entre `core/` e `infrastructure/` continua ocorrendo exclusivamente por Dependency Inversion via `core/contracts/`, conforme o padrão já descrito em `12B_ARCHITECTURE_PATTERNS.md`, Seção 8 — inalterado por esta decisão.
+- O Fluxo de Dependências (`App → Features → Core`, `Infrastructure → Core`) e o Fluxo de Execução (`React Component → Server Action → Feature Service → Core → Infrastructure → Database`) permanecem exatamente os mesmos definidos em DEC-0004, apenas com "Kernel" substituído por "Core" em toda a nomenclatura.
+
+Esta renomeação foi propagada integralmente para toda a documentação viva do projeto: `02_ARCHITECTURE.md`, `07E_IMPLEMENTATION_GUIDE.md`, `08_AI_DEVELOPMENT_CHARTER.md`, `09A_IMPLEMENTATION_GUIDELINES.md`, `09B_CODE_STYLE.md`, `12A_DEVELOPMENT_STANDARDS.md`. O texto de DEC-0004 no Decision Log não foi alterado, apenas marcado como parcialmente superseded (ver Nota de Superseding acima), preservando o histórico de por que `kernel/` havia sido escolhido originalmente.
+
+### Justificativa
+
+"Core" é o termo amplamente utilizado em Clean Architecture, DDD e Onion Architecture para o mesmo conceito de núcleo de domínio independente de frameworks — a mudança reduz a fricção de onboarding sem exigir nenhuma alteração estrutural, de responsabilidade ou de regra arquitetural, já que nenhuma implementação existente precisa ser migrada (Sprint 1 ainda não iniciada).
+
+### Consequências
+
+Positivas:
+
+- Nome mais reconhecível para desenvolvedores familiarizados com Clean Architecture/DDD/Onion Architecture.
+- Custo de migração é zero: a renomeação ocorre inteiramente em documentação, antes de qualquer scaffold de código.
+- Toda a arquitetura, contratos e fluxos aprovados em DEC-0004 permanecem intactos — risco de regressão arquitetural nulo.
+
+Negativas:
+
+- Reintroduz o risco que DEC-0004 havia identificado e rejeitado (confusão com bibliotecas/pacotes externos chamados "core"); aceito conscientemente nesta decisão.
+- Caso o projeto já tivesse código implementado sob `kernel/`, este seria um rename de maior custo — não é o caso aqui.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0004, parcialmente superseded)
+- 02_ARCHITECTURE.md
+- 07E_IMPLEMENTATION_GUIDE.md
+- 08_AI_DEVELOPMENT_CHARTER.md
+- 09A_IMPLEMENTATION_GUIDELINES.md
+- 09B_CODE_STYLE.md
+- 12A_DEVELOPMENT_STANDARDS.md
+
+---
+
+## DEC-0006
+
+### Título
+
+Adoção de Next.js 16 (e React 19.2) como versão oficial, substituindo Next.js 15 em `12C_TECH_STACK.md`.
+
+### Data
+
+2026-08-05
+
+### Status
+
+Approved
+
+### Contexto
+
+O início do bootstrap da Sprint 1 (PR 1) exigia criar o projeto Next.js "utilizando a versão estável mais recente". Ao rodar `create-next-app@latest`, a versão resolvida foi Next.js 16.3.0 com React 19.2.8, enquanto `12C_TECH_STACK.md` (Approved) especifica explicitamente "Next.js 15" como versão oficial. Next.js 15 já não é a versão estável mais recente da série ativa no momento do bootstrap.
+
+A questão foi levada ao responsável pelo produto antes de mesclar o scaffold no repositório, dado que `12C_TECH_STACK.md` §17 exige que toda nova tecnologia (e, por extensão, mudança de versão principal já documentada) seja registrada no Decision Log antes de ser adotada.
+
+### Alternativas consideradas
+
+- **Fixar em Next.js 15.x**, mantendo consistência estrita com o texto atual de `12C_TECH_STACK.md` sem atualizá-lo. Rejeitada: instalaria uma versão que não é mais a mais recente estável, contrariando a instrução explícita desta tarefa e adiando uma atualização que seria necessária de qualquer forma.
+- **Usar Next.js 16.3.0 e atualizar `12C_TECH_STACK.md`** (adotada). Mantém o princípio do próprio Tech Stack (Seção 2: "priorizar... performance... manutenção de longo prazo"; Seção 18: "sempre utilizar versões LTS ou estáveis") usando a versão estável real mais recente, com o documento normativo corrigido para refletir a realidade instalada.
+
+### Decisão
+
+Adotar Next.js 16.3.0 e React 19.2.8 como versões oficiais da plataforma, substituindo a referência a "Next.js 15" em `12C_TECH_STACK.md`, Seção 4. Nenhuma outra tecnologia da Seção 4 (TypeScript, Tailwind, shadcn/ui, Lucide React, React Hook Form, Zod) é afetada por esta decisão.
+
+### Justificativa
+
+Next.js 16 mantém integralmente as razões documentadas para a escolha do framework (App Router, Server Components, Performance, Ecossistema, Longo suporte) e é a versão estável recomendada pelo próprio time do Next.js no momento da criação do projeto. Adiar a adoção fixando a versão 15 criaria dívida técnica imediata — o projeto nasceria em uma versão que a comunidade já considera anterior, incorrendo em custo de upgrade futuro sem benefício correspondente, contrariando `12C_TECH_STACK.md`, Seção 2 ("manutenção de longo prazo").
+
+### Consequências
+
+Positivas:
+
+- Projeto inicia na versão estável mais recente, com Turbopack já como bundler padrão de build (`12C_TECH_STACK.md`, Seção 9, que já previa "Turbopack quando estável para produção").
+- `12C_TECH_STACK.md` deixa de divergir do que foi efetivamente instalado.
+
+Negativas:
+
+- Nenhuma decisão anterior do Decision Log referenciava uma versão específica do Next.js além do Tech Stack, portanto não há outras decisões a reconciliar.
+- Diferenças de comportamento entre Next.js 15 e 16 (ainda não auditadas em detalhe) poderão exigir ajustes ao longo da Sprint 1 caso a documentação de Engines/Server Actions tenha sido escrita com Next 15 em mente; nenhuma incompatibilidade foi identificada durante o bootstrap (build, lint e type-check passaram sem erros).
+
+### Documentos relacionados
+
+- 12C_TECH_STACK.md
+- 02_ARCHITECTURE.md
+
+---
+
+## DEC-0007
+
+### Título
+
+Calibração provisória v0.1 de `Alternative.score`, `Question.weight` (Q002–Q010) e `Indicator.weight` — não representa calibração definitiva de negócio.
+
+### Data
+
+2026-08-10
+
+### Status
+
+Approved — a *adoção do mecanismo* de calibração provisória está aprovada; os *valores numéricos* específicos abaixo são explicitamente provisórios e não representam uma decisão de negócio definitiva (ver Contexto e Consequências).
+
+### Contexto
+
+A Fase 4 de `07E_IMPLEMENTATION_GUIDE.md` (Assessment Engine — Validation, Score, Behavior, Archetype Resolver, Insight, Evolution Engines e Result Builder) depende de dados numéricos da Content Library que nunca foram oficialmente definidos: `05_CONTENT_LIBRARY.md` documenta a fórmula de score (`04_BUSINESS_RULES.md`, Seção 9: `Pontuação da Alternativa × Peso da Pergunta × Peso da Dimensão`), mas nenhuma das 40 alternativas (10 perguntas × 4 alternativas) possui um valor de `score` preenchido, apenas 1 das 10 perguntas (Q001) possui `weight` explícito, e nenhum dos 10 Indicadores possui `weight` preenchido. `Dimension.weight` é a única das quatro grandezas de peso já 100% documentada (5/5 dimensões).
+
+Sem esses valores, o Score Engine e o Behavior Engine não têm o que calcular — a Fase 4 fica bloqueada. Aguardar validação comercial/de produto antes de atribuir esses valores adiaria indefinidamente o desenvolvimento, sem necessidade real: a arquitetura já isola completamente dado (Content Library / `core/content/`) de lógica (Engines), então valores provisórios podem ser substituídos depois sem qualquer alteração de código nas Engines.
+
+### Alternativas consideradas
+
+- **Aguardar validação de produto antes de iniciar a Fase 4.** Rejeitada: bloqueia indefinidamente o desenvolvimento por uma dependência (validação comercial) que não existe ainda e não tem previsão.
+- **Atribuir valores arbitrários sem documentar a origem ou a natureza provisória.** Rejeitada: esconderia a suposição, arriscando que os valores fossem tratados como oficiais por engano em decisões futuras (produto, conteúdo, ou uma eventual auditoria).
+- **Calibração provisória v0.1, documentada, versionada e explicitamente não-definitiva** (adotada). Destrava a Fase 4 imediatamente, mantém rastreabilidade total da suposição adotada e da regra usada para derivá-la, e deixa o caminho de substituição trivial (apenas dado, nunca lógica).
+
+### Decisão
+
+Adotar a seguinte calibração provisória v0.1, aplicada apenas onde a Content Library não possuía valor oficial:
+
+**`Alternative.score`** (as 40 alternativas de Q001–Q010) — regra: a ordem de autoria das alternativas (A→D) já reflete, em todas as 10 perguntas, intensidade decrescente de expressão do Indicador Principal (A = expressão mais proativa/adaptativa, D = mais evitativa/problemática, confirmado por leitura de todas as 10 perguntas). Aplicada uma escala Likert uniforme de 4 pontos, igualmente espaçada, para todas as perguntas:
+
+| Alternativa | Score |
+|---|---|
+| A | 100 |
+| B | 67 |
+| C | 33 |
+| D | 0 |
+
+**`Question.weight`** — Q001 mantém `1.0`, valor já oficialmente documentado antes desta decisão (não é calibração v0.1). Para Q002–Q010, na ausência de qualquer sinal de peso diferenciado entre perguntas de uma mesma dimensão, adotado `1.0` uniforme (calibração v0.1) para não introduzir hierarquia não documentada.
+
+**`Indicator.weight`** — os 10 indicadores (2 por dimensão) recebem `1.0` uniforme (calibração v0.1), pela mesma ausência de sinal de diferenciação entre os 2 indicadores de uma mesma dimensão.
+
+**`Dimension.weight`** — inalterado, permanece 100% oficial (initiative 1.0 · planning 1.0 · pressure 1.0 · distraction 1.0 · consistency 1.2), não faz parte desta calibração.
+
+Todos os valores desta calibração são marcados com o metadado `calibrationVersion: "v0.1"` exclusivamente nos dados de `core/content/` (nunca em `core/engines/`), e anotados inline em `05_CONTENT_LIBRARY.md` com a marca "Calibração v0.1 (provisória) — DEC-0007", distinguindo-os dos valores já oficialmente documentados (`Dimension.weight` e `Q001.weight`).
+
+### Justificativa
+
+A escala uniforme 100/67/33/0 é a opção menos arbitrária disponível: qualquer distribuição não-uniforme exigiria uma justificativa qualitativa por pergunta que a documentação nunca forneceu, enquanto uma escala igualmente espaçada não introduz nenhum viés além da ordenação A→D já presente na redação original das perguntas. O mesmo raciocínio se aplica aos pesos uniformes de Pergunta e Indicador: no MVP, a única diferenciação de peso já documentada e intencional é entre Dimensões (Consistência = 1.2), não dentro delas.
+
+### Consequências
+
+Positivas:
+
+- Destrava integralmente a Fase 4 (`07E_IMPLEMENTATION_GUIDE.md`) sem esperar por um processo de validação de produto que ainda não existe.
+- Rastreabilidade total: todo valor provisório é identificável (`calibrationVersion: "v0.1"` no dado, anotação inline na documentação, referência a esta decisão).
+- Substituição futura é apenas uma alteração de dado em `core/content/` — nenhuma Engine precisa ser alterada.
+
+Negativas:
+
+- **Os valores numéricos adotados aqui não são uma calibração definitiva de negócio.** Eles não foram validados com usuários reais, especialistas de produto, ou dados de uso, e não deverão ser citados como tal em nenhum contexto (relatório, documentação de produto, comunicação externa).
+- Resultados de Assessment gerados enquanto a calibração v0.1 estiver em vigor (Behavior Indexes, Arquétipo, Confidence Score) refletem essa suposição provisória, não um modelo de negócio validado — qualquer uso desses resultados fora do desenvolvimento/QA interno deve deixar isso explícito.
+- Esta calibração deverá ser revisada e provavelmente substituída (nova versão, ex. v1.0) assim que houver dados reais de uso ou validação comercial, seguindo o processo de Content Governance (`05_CONTENT_LIBRARY.md`, Seção 29). Essa substituição futura não é, por si só, uma nova decisão arquitetural — é a continuação natural desta.
+
+### Documentos relacionados
+
+- 05_CONTENT_LIBRARY.md (Indicator Library, Question Library)
+- 07_DATA_MODEL.md (Alternative, Question, Indicator, Dimension)
+- 04_BUSINESS_RULES.md (Seção 9 — Pontuação)
+- 06_ASSESSMENT_ENGINE.md (Seção 6 — Score Engine, Seção 7 — Behavior Engine)
+- 07E_IMPLEMENTATION_GUIDE.md (Fase 4 — Assessment Engine)
+- 13_DECISION_LOG.md (DEC-0003 — mesmo padrão de calibração provisória, já aplicado ao `reference_profile` dos Arquétipos)
+
+---
+
+## DEC-0008
+
+### Título
+
+Algoritmo oficial do Behavior Engine — agregação de indicadores em Dimensão, normalização 0–100 e placeholder provisório de `BehaviorIndex.confidence`.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *fórmula de agregação e normalização* é adotada como algoritmo oficial (mesma natureza de DEC-0003). O valor constante de `BehaviorIndex.confidence` é explicitamente um *placeholder provisório*, não uma fórmula de negócio definitiva (ver Consequências).
+
+### Contexto
+
+A Fase 4 (`07E_IMPLEMENTATION_GUIDE.md`) exigia implementar o Behavior Engine (`06_ASSESSMENT_ENGINE.md`, Seção 7–8), mas nenhuma fórmula estava documentada para: (1) combinar os 2 `IndicatorScore` de uma Dimensão em um score bruto único; (2) normalizar esse score bruto — que já carrega `Dimension.weight` embutido desde a Score Engine (`04_BUSINESS_RULES.md`, Seção 9), podendo chegar a 120 para Consistência — para a faixa oficial 0–100; (3) calcular `BehaviorIndex.confidence` (`07_DATA_MODEL.md`, Seção 11), campo que nunca foi definido em nenhum documento, diferente de `BehaviorArchetype.confidence`, já formulado via DEC-0003. Adicionalmente, `07B_API_CONTRACTS.md` (Seção 8) define `BehaviorIndex` com campos `score`/sem `id`, divergindo de `07_DATA_MODEL.md` (Seção 11), que usa `rawScore`/com `id` — resolvido a favor de `07_DATA_MODEL.md`, por ser o documento normativo do domínio (não é decisão de negócio, é correção de nomenclatura, mesmo tratamento dado a `AssessmentStatus`).
+
+### Alternativas consideradas
+
+**Agregação indicador → Dimensão:**
+- **Média ponderada por `Indicator.weight`** (adotada): `rawScore = Σ(indicatorScore × weight) / Σ(weight)`. Consistente com a decisão já tomada na Score Engine de que `Indicator.weight` é de uso exclusivo do Behavior Engine.
+- Soma ponderada sem dividir. Rejeitada: dobra a escala sem referência de máximo clara, dificultando a normalização seguinte.
+
+**Normalização 0–100:**
+- **Dividir por `Dimension.weight`** (adotada): `normalizedScore = rawScore / Dimension.weight`. Cancela o efeito de `Dimension.weight` nesta etapa (já aplicado no score por pergunta), produzindo um Índice comparável entre as 5 Dimensões independentemente do peso. `Dimension.weight` volta a ser usado no Archetype Resolver (DEC-0003), em uma etapa distinta do pipeline.
+- Clamp simples em 100. Rejeitada: comprime artificialmente toda a faixa 100–120 de Consistência em um único valor (100), perdendo capacidade de diferenciação dentro dessa Dimensão.
+
+**`BehaviorIndex.confidence`:**
+- **Constante 100, documentada como placeholder** (adotada): a Validation Engine já garante que as 10 perguntas foram respondidas antes de qualquer cálculo (`04_BUSINESS_RULES.md`, Seção 18) — não existe cenário de dado parcial no MVP, tornando uma constante honesta sobre a ausência de fórmula oficial, sem inventar uma métrica.
+- Omitir o campo. Rejeitada: `BehaviorIndex.confidence` é campo não-opcional em `07_DATA_MODEL.md`, Seção 11.
+
+### Decisão
+
+O Behavior Engine (`core/engines/behavior/`) calcula, para cada uma das 5 Dimensões:
+
+```
+rawScore(dimensão) = Σ(IndicatorScore × Indicator.weight) / Σ(Indicator.weight)
+                      para os indicadores dessa Dimensão
+
+normalizedScore(dimensão) = rawScore(dimensão) / Dimension.weight
+
+confidence(dimensão) = 100  (placeholder provisório)
+```
+
+`BehaviorIndex` usa exatamente os campos de `07_DATA_MODEL.md`, Seção 11 (`id`, `dimensionId`, `rawScore`, `normalizedScore`, `confidence`), não os de `07B_API_CONTRACTS.md`, Seção 8.
+
+### Justificativa
+
+A média ponderada e a normalização por `Dimension.weight` são as únicas fórmulas consistentes com decisões já aprovadas (Score Engine, DEC-0003) sem introduzir dupla contagem do peso de Dimensão nem comprimir informação. O placeholder de `confidence` evita inventar uma métrica sem base documental, seguindo o mesmo espírito de transparência de DEC-0007.
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia o Behavior Engine sem inventar regras de negócio ocultas — toda a fórmula está documentada e é publicamente rastreável a esta decisão.
+- `BehaviorIndex.confidence = 100` é trivialmente substituível por uma fórmula real no futuro (constante isolada, nenhuma Engine downstream depende do seu valor específico ainda).
+
+Negativas:
+
+- **`BehaviorIndex.confidence` não representa uma métrica de confiança real.** É um placeholder até que uma fórmula oficial seja definida (ex.: baseada em variância entre indicadores de uma Dimensão, ou outro critério a determinar pelo time de produto).
+- A fórmula de agregação/normalização, embora consistente com o restante do pipeline, nunca foi validada com dados reais de uso — mesma ressalva já aplicada à calibração v0.1 (DEC-0007).
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 7 — Behavior Engine, Seção 8 — Behavior Indexes)
+- 04_BUSINESS_RULES.md (Seção 9 — Pontuação)
+- 07_DATA_MODEL.md (Seção 11 — BehaviorIndex)
+- 07B_API_CONTRACTS.md (Seção 8 — Behavior Index, divergência de nomenclatura resolvida)
+- 13_DECISION_LOG.md (DEC-0003 — mesmo padrão de decisão algorítmica; DEC-0007 — mesmo padrão de placeholder provisório)
+
+---
+
+## DEC-0009
+
+### Título
+
+Implementação parcial do Archetype Resolver — interpretação dos critérios de desempate 1–3 de `04_BUSINESS_RULES.md` §16, e adiamento formal de `matchedIndicators`/"Indicador predominante".
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *interpretação* dos critérios 1–3 e o *adiamento* de `matchedIndicators` são aprovados como forma de destravar o pipeline. Nenhum dos dois representa uma decisão de negócio definitiva (ver Consequências).
+
+### Contexto
+
+Ao implementar a Archetype Resolver (`06_ASSESSMENT_ENGINE.md`, Seção 9), a distância euclidiana ponderada e o Confidence Score (DEC-0003) estavam completamente especificados. Dois problemas reais impediram uma implementação completa:
+
+1. **Critérios de desempate 1–3 (`04_BUSINESS_RULES.md`, Seção 16) são ambíguos ou matematicamente inoperantes como escritos.** O critério 1 ("Maior Confidence Score") não pode discriminar entre arquétipos empatados: em qualquer empate real na menor distância, a segunda menor distância *é* a distância do outro arquétipo empatado, o que sempre produz o mesmo `confidence = 50` (a razão `distancia_melhor / (distancia_melhor + distancia_segundo_melhor)` é sempre 0,5 quando as duas distâncias são iguais) **para qualquer candidato escolhido** — o critério nunca desempata nada, apenas repete o mesmo valor constante. Os critérios 2–3 ("Maior Índice de Consistência/Planejamento") não especificam se comparam o Índice do **usuário** (idêntico para todos os candidatos empatados — também inoperante) ou o `reference_profile` de **cada arquétipo candidato** (única leitura que diferencia).
+
+2. **"Indicador predominante"** (usado por `matchedIndicators`, `07_DATA_MODEL.md` §12, e pelo critério de desempate 4) nunca foi definido em nenhum documento, incluindo o Glossário Oficial. Ao ser consultado, o responsável pelo produto optou explicitamente por **não** aceitar uma fórmula provisória e adiar essa parte até definição oficial, em vez de estabelecer um placeholder (diferente do tratamento dado a `BehaviorIndex.confidence` em DEC-0008).
+
+### Alternativas consideradas
+
+**Critérios de desempate 1–3:**
+- **Critério 1 tratado como no-op documentado; 2–3 comparam `reference_profile` do arquétipo candidato** (adotada). É a única leitura que torna os critérios 2–3 operantes, e reconhece formalmente que o critério 1 nunca decide nada em um empate real.
+- Implementar os 3 critérios literalmente, usando o Índice do usuário para 2–3. Rejeitada: produz os mesmos 3 critérios sempre inoperantes, tornando o desempate real apenas os critérios 4–5.
+- Reescrever os critérios 1–3 do zero. Rejeitada: seria alterar uma regra de negócio já aprovada (`04_BUSINESS_RULES.md`) sem mandato para tanto.
+
+**`matchedIndicators` / Indicador predominante:**
+- **Adiar completamente, sem placeholder** (adotada, por decisão explícita do responsável pelo produto). A Archetype Resolver retorna um tipo de saída próprio (`ArchetypeResolverOutput`, `core/contracts/archetypeResolver.ts`) que não inclui `matchedIndicators` nem os demais campos de `BehaviorArchetype` que dependem de conteúdo ainda não carregado (`summary`). O critério de desempate 4 é pulado explicitamente na cadeia (nunca "aplicado com resultado sempre vazio").
+- Placeholder provisório (ex.: indicadores acima da média). Rejeitada nesta etapa — oferecida e recusada explicitamente.
+
+### Decisão
+
+Cadeia de desempate implementada (`core/engines/archetype/resolveArchetype.ts`), aplicada somente quando 2+ arquétipos empatam (dentro de uma tolerância de ponto flutuante) na menor distância:
+
+```
+1. Confidence Score          → no-op documentado, nunca decide (sempre seguem empatados)
+2. reference_profile.consistency do arquétipo candidato → maior valor vence
+3. reference_profile.planning do arquétipo candidato    → maior valor vence
+4. Indicadores predominantes  → PULADO (pendente de definição oficial)
+5. Prioridade oficial fixa    → Refinador Estratégico → Explorador Analítico →
+                                 Executor Sob Pressão → Acumulador de Prioridades
+```
+
+`ArchetypeResolverOutput` não é o `BehaviorArchetype` de `07_DATA_MODEL.md` §12 — não inclui `matchedIndicators`, `summary` nem `slug`/`name`. É um tipo de fronteira desta Engine (mesma categoria de `ScoreEngineOutput`/`BehaviorEngineOutput`), a ser reconciliado com o `BehaviorArchetype` completo quando o Result Builder existir e "Indicador predominante" for definido.
+
+### Justificativa
+
+Interpretar os critérios 2–3 como comparação do `reference_profile` do arquétipo é a única leitura logicamente consistente com o próprio propósito de um critério de desempate (diferenciar candidatos), e não exige reescrever nenhuma regra aprovada — apenas resolve uma ambiguidade de redação. Adiar `matchedIndicators` sem placeholder, por instrução explícita do responsável pelo produto, evita que uma fórmula inventada sem base documental seja tratada como definitiva mais adiante.
+
+### Consequências
+
+Positivas:
+
+- A Archetype Resolver produz distância, Confidence Score e desempate corretos para o cenário mais provável (nenhum empate) e para o caso de empate real, sem inventar critérios de negócio.
+- `ArchetypeResolverOutput` deixa claro, pelo próprio tipo, o que ainda não está pronto — impossível confundir com o `BehaviorArchetype` oficial completo.
+
+Negativas:
+
+- **O critério de desempate 4 (`04_BUSINESS_RULES.md`, Seção 16) permanece não implementado.** Em um empate que só seria resolvido por esse critério (raro, mas possível com 4 arquétipos), o resultado cai direto para a prioridade fixa (critério 5), que sempre favorece "Refinador Estratégico" sobre os demais em qualquer empate residual.
+- `BehaviorArchetype.matchedIndicators` continua sem implementação — bloqueia a criação completa desse tipo de domínio e do Result Builder até definição oficial de "Indicador predominante".
+- A reinterpretação dos critérios 1–3 não foi validada pelo autor original de `04_BUSINESS_RULES.md` além desta sessão — deve ser revisada se o documento for atualizado por outra via.
+
+### Documentos relacionados
+
+- 04_BUSINESS_RULES.md (Seção 16 — Empates)
+- 06_ASSESSMENT_ENGINE.md (Seção 9 — Archetype Resolver, Seção 14 — Tratamento de Empates)
+- 07_DATA_MODEL.md (Seção 12 — BehaviorArchetype)
+- 05_CONTENT_LIBRARY.md (Archetype Library — reference_profile)
+- 13_DECISION_LOG.md (DEC-0003 — algoritmo original; DEC-0008 — mesmo padrão de placeholder provisório, não aplicado aqui por decisão explícita)
+
+---
+
+## DEC-0010
+
+### Título
+
+Definição oficial de "Indicador Predominante" (para a Insight Engine) e escopo da Insight Engine sobre conteúdo incompleto da Insight Library.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved — a *fórmula* de "Indicador Predominante" é adotada como algoritmo oficial (mesma natureza de DEC-0008). O *threshold* numérico (T=20) é uma calibração provisória, sujeita a revisão (mesmo espírito de DEC-0007).
+
+### Contexto
+
+Ao auditar a Insight Engine (`06_ASSESSMENT_ENGINE.md`, Seção 10), "Indicadores predominantes" apareceu como **input formal** do processo de seleção de Insights (também confirmado em `05_CONTENT_LIBRARY.md`, Seção 18) — a mesma lacuna que DEC-0009 havia pausado para a Archetype Resolver, mas lá o conceito só afetava uma saída secundária (`matchedIndicators`) e um critério de desempate raro. Na Insight Engine, sem essa definição, não há como selecionar Insight nenhum. Adicionalmente, a Insight Library (`05_CONTENT_LIBRARY.md`, Seção 18) só documenta 3 dos 10 Insights necessários para cobrir todos os indicadores oficiais (`insight_starting`/`initiative_start`, `insight_focus`/`distraction_focus`, `insight_consistency`/`consistency_completion`) — os outros 7 indicadores não têm nenhum Insight escrito. Diferente de um valor numérico ausente, isso é conteúdo editorial (título, descrição, recomendação), que não deve ser inventado por esta implementação.
+
+### Alternativas consideradas
+
+**Fórmula de "Indicador Predominante":**
+- **Normalizar por Dimension.weight (mesma lógica de DEC-0008) e usar desvio do ponto neutro (50)** (adotada): `normalizedIndicatorScore = IndicatorScore.score / Dimension.weight`; indicador é predominante quando `|normalizedIndicatorScore − 50| ≥ T`. Trata desvios altos e baixos simetricamente (ambos representam sinal comportamental forte, seja como força ou como ponto de atenção), é comparável entre indicadores de Dimensões com pesos diferentes, e reaproveita a normalização já aprovada, sem introduzir um conceito novo.
+- Considerar só desvios altos (ex.: normalizedIndicatorScore ≥ T). Rejeitada: descartaria indicadores muito baixos, que são exatamente o tipo de sinal que a Insight Library usa para "Pontos de Atenção" (ex.: `insight_consistency`, sobre abandonar tarefas).
+
+**Threshold T:**
+- **T = 20** (adotada). Espelha a largura das faixas já oficiais de `ConfidenceLevel` (0–20, 21–40, …), mantendo consistência de escala com o restante do produto.
+- T = 30. Rejeitada nesta calibração: mais restritivo, deixaria de considerar "predominante" qualquer resposta que não seja a alternativa mais extrema (A ou D) na calibração v0.1 atual — nenhuma justificativa documental favorece esse corte sobre o de 20.
+
+**Escopo retroativo (Archetype Resolver):**
+- **Manter restrito à Insight Engine agora** (adotada). A Archetype Resolver já está commitada e publicada (`56d0a0a`); `matchedIndicators` e o critério de desempate 4 continuam pendentes lá, tratados como follow-up separado se/quando necessário — não reabre uma decisão já fechada (DEC-0009) sem necessidade concreta.
+- Completar `matchedIndicators` na Archetype Resolver nesta mesma etapa. Rejeitada: escopo desta etapa é a Insight Engine; misturar as duas ampliaria o commit sem necessidade imediata.
+
+**Conteúdo incompleto da Insight Library:**
+- **Implementar a Engine para funcionar corretamente sobre qualquer subconjunto de conteúdo disponível** (adotada). A seleção é a interseção entre os indicadores predominantes do usuário e os Insights existentes na Library — indicadores sem Insight correspondente simplesmente não geram um Insight, resultado vazio é um caso válido e esperado, não um erro. Nenhum texto é inventado.
+- Aguardar a Insight Library ficar completa (10/10) antes de implementar. Rejeitada por instrução explícita: não bloquear o desenvolvimento por conteúdo editorial pendente.
+
+**`strengths`/`attentionPoints` do resultado final:**
+- **Vêm do conteúdo do Arquétipo vencedor** (`05_CONTENT_LIBRARY.md`, Seção 17 — `strengths`/`attention_points`, já presentes por Arquétipo), não computados pela Insight Engine (adotada). `Insight` (`07_DATA_MODEL.md`, Seção 13) não tem campo de polaridade (força vs. atenção), então não há como a Insight Engine derivar essas duas listas a partir dos Insights selecionados sem inventar uma regra de classificação. A composição final de `AssessmentResult.strengths`/`attentionPoints` a partir do conteúdo do Arquétipo é responsabilidade do Result Builder (etapa futura), não da Insight Engine.
+- Insight Engine deriva `strengths`/`attentionPoints` a partir dos Insights selecionados. Rejeitada: exigiria inventar uma regra de polaridade não documentada.
+
+### Decisão
+
+```
+normalizedIndicatorScore(indicador) = IndicatorScore.score / Dimension.weight
+
+Indicador Predominante ⟺ |normalizedIndicatorScore − 50| ≥ 20
+```
+
+A Insight Engine (`core/engines/insight/`) seleciona, dentre os Insights de `core/content/insights.ts` (espelhando os 3 já documentados em `05_CONTENT_LIBRARY.md`), aqueles cujo `indicatorId` está entre os indicadores predominantes do usuário, ordenados por `priority` (Critical > High > Medium > Low). `Arquétipo` é recebido como input (fiel ao contrato documentado em `06_ASSESSMENT_ENGINE.md`, Seção 10) mas não filtra a seleção nesta versão — nenhuma regra operacional de uso do Arquétipo na seleção está documentada em lugar nenhum. `strengths`/`attentionPoints` não são produzidos por esta Engine.
+
+### Justificativa
+
+A fórmula mantém consistência total com o padrão já aprovado em DEC-0008 (mesma normalização, mesma escala 0–100), evita duplicar lógica de agregação, e é simétrica o suficiente para servir tanto força quanto atenção sem precisar de duas regras separadas. Implementar sobre o conteúdo real (por menor que seja) evita bloquear a Fase 4 por uma dependência editorial que está fora do escopo desta implementação.
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia a Insight Engine sem inventar texto editorial nem uma regra de negócio isolada — a fórmula deriva diretamente do padrão de DEC-0008.
+- Resultado vazio (nenhum Insight selecionado) é um estado válido e testável, não uma condição de erro.
+
+Negativas:
+
+- **O threshold T=20 é provisório**, como toda calibração desta fase (mesma ressalva de DEC-0007/DEC-0008) — não validado com dados reais de uso.
+- Com apenas 3/10 indicadores cobertos na Insight Library, a maioria das combinações de resposta do usuário vai produzir 0, 1 ou 2 Insights — a experiência final de produto depende de completar a Insight Library, fora do escopo desta implementação.
+- `matchedIndicators` na Archetype Resolver continua sem uso desta definição — pendência técnica que persiste até um follow-up explícito.
+- `strengths`/`attentionPoints` do resultado final dependem do Result Builder (ainda não implementado) para agregar o conteúdo do Arquétipo — até lá, não há como visualizar esse dado de ponta a ponta.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 10 — Insight Engine)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library, strengths/attention_points; Seção 18 — Insight Library)
+- 07_DATA_MODEL.md (Seção 13 — Insight)
+- 13_DECISION_LOG.md (DEC-0008 — mesmo padrão de normalização; DEC-0009 — mesma lacuna, escopo diferente, ainda pendente lá)
+
+---
+
+## DEC-0011
+
+### Título
+
+Escopo da Evolution Engine — campos do `EvolutionPlan`, fonte única de recomendações (Arquétipo) e tratamento de referências quebradas/conteúdo incompleto.
+
+### Data
+
+2026-08-11
+
+### Status
+
+Approved.
+
+### Contexto
+
+Ao auditar a Evolution Engine (`06_ASSESSMENT_ENGINE.md`, Seção 11), três problemas reais foram identificados. Primeiro, três documentos divergem sobre os campos do Plano de Evolução: `06_ASSESSMENT_ENGINE.md` §11 exige Primeiro Passo/Hábito/**Exercício**/Missão/Recursos; `04_BUSINESS_RULES.md` §13 exige os mesmos mais **checklist**; `07_DATA_MODEL.md` §14 (`EvolutionPlan`) não tem `exercise` nem `checklist` — e, na prática, nenhum dos 4 Arquétipos tem conteúdo de exercício documentado em lugar nenhum, tornando o impacto atual da divergência nulo. Segundo, o conteúdo de evolução (`first_step`, `recommended_habits`, `recommended_missions`, `recommended_resources`) está embutido em cada entrada de Arquétipo (`05_CONTENT_LIBRARY.md` §17), não em instâncias reais de "Evolution Library" (§19, que só define o schema abstrato) — e só o Arquétipo 01 (Executor Sob Pressão) tem os 4 campos preenchidos; os Arquétipos 02–04 só têm `first_step`. Terceiro, o próprio Arquétipo 01 referencia `mission_deadline` e `article_deadlines`, nenhum dos quais existe na Mission Library (§20: só `mission_first_step`, `mission_focus`, `mission_priority`) ou na Resource Library (§21: só `article_small_steps`) — referências quebradas, não apenas cobertura incompleta.
+
+### Alternativas consideradas
+
+**Campos do `EvolutionPlan`:**
+- **Seguir `07_DATA_MODEL.md` estritamente** (adotada): `id, firstStep, habits, missions, resources, estimatedDuration, difficulty`. Mesmo padrão já aplicado a `AssessmentStatus` (DEC-0003→correção similar) e `BehaviorIndex` (DEC-0008) — o Data Model prevalece como fonte do contrato de código.
+- Estender para incluir `exercise`/`checklist`. Rejeitada nesta etapa: sem conteúdo disponível para nenhum arquétipo, a extensão não teria efeito prático agora; pode ser revisitada quando houver conteúdo real.
+
+**Fonte de recomendações (Missões/Recursos):**
+- **Somente `recommended_habits`/`recommended_missions`/`recommended_resources` do Arquétipo vencedor** (adotada). Alinhado a `04_BUSINESS_RULES.md` §13: "O plano deverá respeitar o arquétipo predominante."
+- Unir com `related_missions`/`related_resources` dos Insights selecionados. Rejeitada nesta etapa: nenhum documento define a regra de composição entre as duas fontes: ficaria em aberto para decisão futura, se necessário.
+
+**Conteúdo quebrado/incompleto:**
+- **Filtrar silenciosamente, sem inventar** (adotada). IDs de missão/recurso que não existem na respectiva Library são removidos do resultado sem erro; Arquétipos sem `recommended_habits`/`recommended_missions`/`recommended_resources` produzem arrays vazios, mantendo apenas `firstStep`. Mesmo padrão já aprovado para a Insight Engine (DEC-0010).
+- Pausar até o conteúdo ser corrigido/completado. Rejeitada por instrução explícita: não bloquear o desenvolvimento por conteúdo editorial pendente.
+
+**`Índices`/`Insights` como input:**
+- Mantidos no contrato (`EvolutionEngineInput`), fiéis ao que `06_ASSESSMENT_ENGINE.md` §11 documenta como entrada ("Recebe: Arquétipo; Índices; Insights"), mas sem nenhuma regra de filtragem aplicada — mesmo padrão já usado para `archetypeId` na Insight Engine (DEC-0010).
+
+### Decisão
+
+`EvolutionPlan` implementado exatamente como `07_DATA_MODEL.md` §14 define. `Difficulty.Easy` e `estimatedDuration = 7` são constantes fixas do MVP (`05_CONTENT_LIBRARY.md` §19 — "O MVP utilizará apenas planos Easy" / "No MVP. 7 dias.", já oficiais, não calibração). A Evolution Engine (`core/engines/evolution/`) monta o plano exclusivamente a partir do conteúdo de evolução do Arquétipo vencedor, filtrando toda referência de missão/recurso que não exista nas respectivas Libraries.
+
+### Justificativa
+
+Mantém consistência com todas as decisões anteriores desta Sprint (Data Model como fonte de contrato de código; filtragem silenciosa como padrão já validado; nenhuma regra de negócio inventada sem necessidade documental).
+
+### Consequências
+
+Positivas:
+
+- Desbloqueia a Evolution Engine sem inventar conteúdo editorial (hábitos, missões, recursos, ou exercícios).
+- Resultado parcial (arrays vazios) é um estado válido e testável para 3 dos 4 Arquétipos, e também para as referências quebradas do Arquétipo 01.
+
+Negativas:
+
+- **Na prática, hoje só 1 dos 4 Arquétipos produz um plano com qualquer hábito**, e nenhum produz um plano com missão ou recurso resolvido (ambas as referências do único Arquétipo com conteúdo estão quebradas) — a experiência de produto depende de completar/corrigir a Content Library, fora do escopo desta implementação.
+- `exercise`/`checklist` continuam ausentes do contrato de código, divergindo de dois documentos aprovados — decisão a revisitar se/quando houver conteúdo real.
+- A fonte única (Arquétipo) deixa `related_missions`/`related_resources` dos Insights sem uso nesta etapa, mesmo já existindo na Content Library.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 11 — Evolution Engine)
+- 04_BUSINESS_RULES.md (Seção 13 — Plano de Evolução, Seção 14 — Missões)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library; Seção 19 — Evolution Library; Seção 20 — Mission Library; Seção 21 — Resource Library)
+- 07_DATA_MODEL.md (Seção 14 — EvolutionPlan, Seção 15 — Mission, Seção 16 — Resource)
+- 13_DECISION_LOG.md (DEC-0010 — mesmo padrão de filtragem silenciosa e input não-filtrante)
+
+---
+
+## DEC-0012
+
+### Título
+
+Escopo do Result Builder — conteúdo de perfil do Arquétipo, resolução de `matchedIndicators`, `Report.template` stub, e não-adoção de `confidenceScore` no topo do `AssessmentResult`.
+
+### Data
+
+2026-08-12
+
+### Status
+
+Approved.
+
+### Contexto
+
+Ao auditar o Result Builder (`06_ASSESSMENT_ENGINE.md` §13, `07_DATA_MODEL.md` §18), quatro pontos precisavam de decisão antes da implementação. Primeiro, `summary`, `description`, `strengths` e `attention_points` de cada Arquétipo (`05_CONTENT_LIBRARY.md` §17) nunca haviam sido carregados em `core/content/` — só `reference_profile` (Archetype Resolver, DEC-0009) e o conteúdo de evolução (Evolution Engine, DEC-0011) existiam. Segundo, `BehaviorArchetype.matchedIndicators` (`07_DATA_MODEL.md` §12) permanecia pendente desde DEC-0009, que previu reconciliação "quando o Result Builder existir e 'Indicador predominante' for definido" — condição já satisfeita por DEC-0010. Terceiro, `Report.template` (`07_DATA_MODEL.md` §17) é campo obrigatório sem nenhum valor documentado — a "Report Library" em `05_CONTENT_LIBRARY.md` é apenas um título de uma linha, sem estrutura. Quarto, `confidenceScore` aparece como campo de topo na "Estrutura oficial" informal de `06_ASSESSMENT_ENGINE.md` §13, mas não existe em `07_DATA_MODEL.md` nem em `07B_API_CONTRACTS.md` — redundante com `behaviorArchetype.confidence`, já presente.
+
+### Alternativas consideradas
+
+**Conteúdo de perfil do Arquétipo:**
+- **Novo tipo de conteúdo dedicado (`ArchetypeProfile`), separado de `ArchetypeReferenceProfile` e `ArchetypeEvolutionContent`** (adotada). Mesma responsabilidade única já aplicada às duas divisões anteriores do conteúdo de Arquétipo — cada tipo cobre exatamente um aspecto (distância/matching, evolução, perfil textual), sem introduzir um "Arquétipo" monolítico.
+- Estender `ArchetypeReferenceProfile` com os novos campos. Rejeitada: misturaria dado numérico (usado pela fórmula de distância) com conteúdo textual (usado só para exibição), violando a separação já estabelecida nas duas decisões anteriores.
+
+**`matchedIndicators`:**
+- **Reutilizar `predominantIndicatorIds` (Insight Engine, DEC-0010) diretamente** (adotada). Resolve a pendência de DEC-0009 sem recalcular nada — o Result Builder é um agregador, nunca deve reimplementar a fórmula de "Indicador Predominante". Trata os dois conceitos ("indicador predominante" para seleção de Insights e `matchedIndicators` do Arquétipo) como equivalentes nesta versão, documentado explicitamente aqui.
+- Recalcular "indicador predominante" dentro do Result Builder. Rejeitada: duplicaria lógica que já pertence à Insight Engine, violando o princípio de que o Result Builder só agrega.
+
+**`Report.template`:**
+- **`"assessment-default-v1"`** (adotada). Valor determinístico e versionado (sufixo `v1`), sinalizando que é o único template do MVP e que futuras alterações de template devem incrementar essa versão — sem depender de nenhum conteúdo de Report Library, que não existe.
+- Deixar vazio ou usar `assessment.slug`. Rejeitada: um valor fixo e explicitamente nomeado como "default" comunica melhor que é um placeholder, não um valor derivado de alguma regra.
+
+**`confidenceScore` no topo do `AssessmentResult`:**
+- **Não adicionar** (adotada). `07_DATA_MODEL.md` é o contrato autoritativo de código (mesmo padrão já aplicado a `AssessmentStatus`, `BehaviorIndex.rawScore`, `EvolutionPlan` sem `exercise`/`checklist`); a menção em `06_ASSESSMENT_ENGINE.md` §13 é tratada como imprecisão de uma lista informal, redundante com `behaviorArchetype.confidence`.
+- Adicionar `confidenceScore` como espelho de `behaviorArchetype.confidence`. Rejeitada: duplicaria o mesmo valor em dois lugares do mesmo objeto, sem necessidade documentada.
+
+### Decisão
+
+`core/content/archetypeProfiles.ts` (tipo `ArchetypeProfile`) materializa exclusivamente `summary`/`description`/`strengths`/`attention_points` já documentados em `05_CONTENT_LIBRARY.md` §17, para os 4 Arquétipos oficiais — nenhum conteúdo editorial novo.
+
+`BehaviorArchetype.matchedIndicators` = `predominantIndicatorIds` (saída já calculada pela Insight Engine), sem recálculo.
+
+`AssessmentResult.report` é um stub: `{id, template: "assessment-default-v1", language, generatedAt}`, sem `downloadUrl` (campo opcional). Report Engine, HTML e PDF permanecem fora de escopo (Fase 5).
+
+`AssessmentResult` não tem `confidenceScore` de topo — segue `07_DATA_MODEL.md` §18 exatamente como documentado.
+
+O Result Builder (`core/engines/resultBuilder/`) é estritamente um Factory/aggregator (`12B_ARCHITECTURE_PATTERNS.md` §9): monta `AssessmentResult` a partir dos outputs já calculados por Validation, Score, Behavior, Archetype, Insight e Evolution, sem recriar nenhuma fórmula ou regra de negócio dessas Engines.
+
+### Justificativa
+
+Todas as quatro decisões seguem o mesmo princípio já aplicado consistentemente desde DEC-0007: preferir reutilização e transparência de placeholders explícitos a inventar regras de negócio ou duplicar lógica. Reutilizar `predominantIndicatorIds` em particular fecha uma pendência de duas decisões atrás (DEC-0009) sem introduzir uma segunda fórmula concorrente para o mesmo conceito.
+
+### Consequências
+
+Positivas:
+
+- Fecha a pendência de `matchedIndicators`, aberta desde DEC-0009, sem duplicar lógica.
+- `strengths`/`attentionPoints` do resultado final ficam visíveis de ponta a ponta pela primeira vez.
+- `Report.template` versionado facilita evolução futura sem ambiguidade.
+
+Negativas:
+
+- **A equivalência entre "Indicador Predominante" (Insight Engine) e `matchedIndicators` (Archetype) é uma decisão desta versão, não uma prova formal de que os dois conceitos são idênticos** — se o Archetype Resolver ganhar sua própria noção de indicadores de suporte no futuro, esta equivalência deverá ser revisitada.
+- `Report.template = "assessment-default-v1"` não tem nenhuma correspondência com conteúdo real de Report Library — só existe para satisfazer o tipo até a Fase 5.
+- A divergência de `confidenceScore` em `06_ASSESSMENT_ENGINE.md` §13 permanece sem correção no próprio documento — só resolvida no código.
+
+### Documentos relacionados
+
+- 06_ASSESSMENT_ENGINE.md (Seção 13 — Result Builder)
+- 07_DATA_MODEL.md (Seção 12 — BehaviorArchetype, Seção 17 — Report, Seção 18 — AssessmentResult)
+- 05_CONTENT_LIBRARY.md (Seção 17 — Archetype Library)
+- 12B_ARCHITECTURE_PATTERNS.md (Seção 9 — Factory Pattern)
+- 13_DECISION_LOG.md (DEC-0009 — pendência de matchedIndicators, resolvida aqui; DEC-0010 — predominantIndicatorIds, DEC-0011 — mesmo padrão de agregador puro)
+
+---
+
+## DEC-0013
+
+### Título
+
+Escopo de identidade para persistência da Sprint 2 — ausência de User/Account, `AssessmentSession` como execução anônima, e mecanismo de identidade por cookie HttpOnly.
+
+### Data
+
+14/08/2026
+
+### Status
+
+Approved.
+
+### Contexto
+
+A Sprint 2 (10_ROADMAP.md, Seção 5) introduz persistência (Prisma + PostgreSQL) e lista "Sessões" e "Histórico de avaliações" como funcionalidades. Uma auditoria da documentação existente (07_DATA_MODEL.md, 07C_STORAGE_MODEL.md, 07D_PRISMA_MAPPING.md, 01_PRD.md, 12C_TECH_STACK.md) identificou que nenhum documento define uma entidade de usuário, e que 01_PRD.md (Seção 8) exclui explicitamente "login" e "cadastro" do MVP, enquanto 12C_TECH_STACK.md (Seção 5) reserva Autenticação para "futura implementação". Sem uma decisão explícita, "Sessões" e "Histórico de avaliações" não poderiam ser implementados de forma coerente com o restante da documentação.
+
+### Alternativas consideradas
+
+**Identidade do usuário:**
+- **Persistência 100% anônima, sem entidade User/Account, usando um identificador opaco por execução** (adotada). Não introduz login, cadastro nem autenticação provisória — mantém total conformidade com 01_PRD.md, Seção 8, e 12C_TECH_STACK.md, Seção 5.
+- Criar uma entidade User mínima "só para resolver o problema" (ex.: sem senha, sem login real). Rejeitada explicitamente: introduziria uma entidade de domínio não solicitada por nenhum documento, e violaria 01_PRD.md, Seção 8 ("O MVP não deverá conter... login; cadastro").
+- Adiar toda a Sprint 2 até que autenticação exista. Rejeitada: 10_ROADMAP.md já define a Sprint 2 como persistência, não como autenticação; adiar bloquearia entregas já aprovadas sem necessidade.
+
+**Mecanismo de identidade anônima:**
+- **Cookie `httpOnly`, com um UUID opaco gerado no servidor na primeira execução de uma avaliação, lido/escrito via `next/headers` dentro da Server Action/Feature Service** (adotada). É o único mecanismo compatível com o Fluxo de Execução já documentado (`React Component → Server Action → Feature Service → Core → Repository → Database`, 02_ARCHITECTURE.md, Seção 13) sem introduzir uma nova convenção de transporte cliente→servidor. Não exige nenhuma biblioteca nova.
+- `localStorage`. Rejeitada: não é acessível no servidor (Server Actions/Server Components), exigindo que o identificador fosse lido no cliente e passado explicitamente em toda chamada de Server Action — uma convenção de transporte que hoje não existe no projeto.
+
+**Natureza de `assessment_session` / `AssessmentSession`:**
+- **Representa exclusivamente a execução de uma Avaliação (início/fim), nunca uma sessão de autenticação** (adotada). Mantém a nomenclatura já usada em 07C_STORAGE_MODEL.md, Seção 5, sem sobrecarregá-la com semântica de login.
+
+**"Histórico de avaliações" (Sprint 2):**
+- **Histórico técnico, anônimo, por identificador de sessão — não uma feature de produto vinculada a conta** (adotada). `10_ROADMAP.md` menciona "Histórico" tanto na Sprint 2 quanto na Sprint 4 (junto de "Dashboard" e "Comparação de resultados"); a leitura adotada é que a Sprint 2 apenas persiste e permite recuperar avaliações por sessão anônima, e a Sprint 4 é que entrega a feature de produto (conta, dashboard, comparação) sobre essa base.
+
+### Decisão
+
+A Sprint 2 não introduzirá nenhuma entidade `User`, `Account`, fluxo de login ou cadastro.
+
+`AssessmentSession` (nova entidade de domínio, 07_DATA_MODEL.md, Seção 8A) representa exclusivamente a execução de uma Avaliação — nunca uma sessão de autenticação.
+
+A identidade da sessão é um `anonymousId` opaco (UUID), gerado no servidor na primeira execução e transportado via cookie `httpOnly`, sem vínculo com nenhuma conta de usuário nesta fase.
+
+`Answer` e `AssessmentResult` (07_DATA_MODEL.md, Seções 8 e 18) passam a referenciar sua `AssessmentSession` através de `sessionId`.
+
+"Histórico de avaliações" (10_ROADMAP.md, Sprint 2) significa a capacidade técnica de recuperar todas as `AssessmentSession` que compartilham o mesmo `anonymousId` — não uma feature de produto vinculada a conta (essa permanece prevista para a Sprint 4, 10_ROADMAP.md).
+
+Uma futura associação entre `anonymousId` e uma conta de usuário real (quando Autenticação for implementada) não deverá exigir alteração estrutural em `AssessmentSession`, `Answer` ou `AssessmentResult`.
+
+Nenhuma integração com redes sociais (ex.: Instagram, TikTok) é criada, decidida ou pressuposta por esta decisão. Uma eventual frente futura de "Social Conversion" não deverá depender de nenhuma estrutura introduzida aqui, nem esta decisão cria dependência dela.
+
+### Justificativa
+
+Mantém a Sprint 2 estritamente dentro do que 10_ROADMAP.md e 12C_TECH_STACK.md já autorizam (persistência, não autenticação), evita duplicar ou antecipar decisões de produto (Sprint 4) e preserva a Application Layer e o Fluxo de Execução já documentados em 02_ARCHITECTURE.md sem introduzir uma camada de transporte cliente→servidor nova.
+
+### Consequências
+
+Positivas:
+
+- Resolve, sem ambiguidade, os conflitos entre 01_PRD.md (Seção 8), 12C_TECH_STACK.md (Seção 5) e 10_ROADMAP.md (Sprint 2) identificados em auditoria.
+- `anonymousId` é trivialmente associável a uma conta real no futuro, sem redesenho de `AssessmentSession`.
+
+Negativas:
+
+- Histórico anônimo por cookie não sobrevive à troca de dispositivo ou navegador, nem à limpeza de cookies — limitação aceita conscientemente para esta fase.
+- `AssessmentSession`, ao introduzir um identificador persistente (mesmo anônimo) associado a respostas comportamentais, aproxima-se de dado pseudonimizado — merece atenção de privacidade/LGPD antes de produção, ainda não formalmente endereçada em nenhum documento.
+
+### Documentos relacionados
+
+- 10_ROADMAP.md (Seção 5 — Sprint 2; Seção 7 — Sprint 4)
+- 01_PRD.md (Seção 8 — Fora do Escopo)
+- 12C_TECH_STACK.md (Seção 5 — Autenticação)
+- 02_ARCHITECTURE.md (Seção 13 — Fluxo de Execução)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession; Seção 18 — AssessmentResult; Seção 26 — ERM)
+- 07C_STORAGE_MODEL.md (Seção 5 — Tabelas Operacionais) — pendente de atualização em etapa futura
+- 07D_PRISMA_MAPPING.md — pendente de atualização em etapa futura
+
+---
+
+## DEC-0014
+
+### Título
+
+Persistência dos campos calculados de `AssessmentResult` como snapshot imutável — modelo híbrido (coluna escalar + JSONB) em `assessment_result`, sem tabelas filhas e sem Foreign Key para a Content Library.
+
+### Data
+
+14/08/2026
+
+### Status
+
+Approved.
+
+### Contexto
+
+A auditoria de `07C_STORAGE_MODEL.md` contra `07_DATA_MODEL.md` e DEC-0013 identificou que cinco campos calculados de `AssessmentResult` — `behaviorArchetype.confidence`, `behaviorArchetype.matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits` — não tinham nenhuma representação na Storage Model. DEC-0013 havia decidido apenas identidade/sessão, deixando essa lacuna explicitamente fora de escopo ("pendente de atualização em etapa futura"). Uma análise comparando três alternativas (A: JSON/estruturado em `assessment_result`; B: tabelas filhas normalizadas; C: híbrido) foi apresentada antes desta decisão.
+
+### Alternativas consideradas
+
+- **A) JSON/estruturado em `assessment_result` para todos os campos.** Compatível, mas trata `confidence` (um valor escalar único, sem coleção) da mesma forma que as quatro coleções, perdendo a oportunidade de um tipo nativo mais simples e consultável para esse campo específico.
+- **B) Tabelas filhas normalizadas para cada coleção.** Rejeitada: para ter sentido relacional, exigiria Foreign Keys entre o snapshot e a Content Library viva (ex.: `matched_indicators` → `indicator.id`), o que contradiz diretamente a natureza de snapshot decidida aqui — um resultado histórico não pode depender de um indicador que pode ser renomeado ou removido no futuro. Também aumenta a complexidade transacional da Sprint 2 (múltiplas tabelas, escrita em N linhas por resultado) sem necessidade comprovada — consultas analíticas item-a-item não são exigidas antes da Sprint 4/5.
+- **C) Modelo híbrido — `confidence` como coluna escalar; `matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits` como JSONB, todos em `assessment_result`** (adotada). `confidence` é um Value Object sem coleção (`07_DATA_MODEL.md`, Seção 19) e já tem precedente direto no próprio Storage Model (`behavior_index.confidence`, coluna escalar). As quatro coleções são snapshots de valores já embutidos por valor no Domain Model (não entidades com identidade própria), então JSONB — sem Foreign Key para a Content Library — preserva exatamente esse contrato sem introduzir uma granularidade de tabela que o domínio não modela.
+
+### Decisão
+
+`assessment_result` (`07C_STORAGE_MODEL.md`, Seção 5) passa a incluir:
+- `archetype_confidence` — coluna escalar.
+- `matched_indicators`, `strengths`, `attention_points`, `evolution_plan_habits` — colunas JSONB.
+
+Nenhuma dessas colunas possui Foreign Key para `indicator`, `archetype` ou qualquer outra tabela de conteúdo. Os valores são gravados uma única vez, no momento em que o `AssessmentResult` é produzido pelo Result Builder, e nunca são recalculados nem resolvidos novamente a partir da Content Library para reconstruir um resultado histórico — mesmo que o conteúdo referenciado (ex.: texto de um Insight, `strengths` de um Arquétipo) seja alterado posteriormente.
+
+`assessment_session` (`07C_STORAGE_MODEL.md`, Seção 5) recebe a coluna `anonymous_id`, conforme já decidido em DEC-0013.
+
+`assessment_answer` (`07C_STORAGE_MODEL.md`, Seção 5) recebe a coluna `answered_at`, refletindo o campo já existente em `Answer.answeredAt` (`07_DATA_MODEL.md`, Seção 8), previamente ausente da Storage Model.
+
+`assessment_result.session_id` passa a ser documentado como único (`UNIQUE`), representando explicitamente a cardinalidade 1:1 com `assessment_session` já definida em `07_DATA_MODEL.md`, Seção 26.
+
+JSON/JSONB é aprovado como técnica de persistência exclusivamente para os quatro campos de coleção listados acima — não é uma convenção geral do projeto, e nenhuma outra tabela do Storage Model deverá adotar JSON sem uma decisão própria.
+
+O Domain Model (`07_DATA_MODEL.md`) não é alterado por esta decisão — ele permanece a fonte do contrato; esta decisão define apenas a representação de armazenamento desse contrato.
+
+### Justificativa
+
+`confidence` e `matchedIndicators` são saídas computadas pelo Archetype Resolver e pela Insight Engine, específicas de cada execução — não existem como conteúdo estático em nenhum lugar, então não há "referência dinâmica" possível para eles além do já decidido (nunca recalcular). `strengths`, `attentionPoints` e `evolutionPlan.habits` são, no código real (`buildAssessmentResult.ts`, `buildEvolutionPlan.ts`), cópias diretas de conteúdo estático no momento da geração; tratá-los como referência dinâmica faria um resultado já entregue ao usuário mudar retroativamente se o conteúdo editorial for revisado depois — inconsistente com `AssessmentResult.generatedAt` já existir como timestamp imutável no Domain Model aprovado. O modelo híbrido evita tanto o acoplamento de uma Foreign Key viva (Alternativa B) quanto a complexidade transacional de múltiplas tabelas novas, mantendo a Sprint 2 dentro do escopo de persistência (não analytics).
+
+### Consequências
+
+Positivas:
+
+- Fecha a lacuna identificada na auditoria de `07C_STORAGE_MODEL.md` sem introduzir acoplamento entre resultados históricos e a Content Library viva.
+- `archetype_confidence` fica nativamente consultável/agregável (ex.: futura análise de distribuição de confiança), sem precisar extrair de JSON.
+- Nenhuma migration de tabelas novas é necessária para estes campos.
+
+Negativas:
+
+- Consultas futuras que precisem filtrar ou agregar por item individual dentro de `matched_indicators`, `strengths`, `attention_points` ou `evolution_plan_habits` (ex.: "quantos usuários tiveram X como ponto forte") exigirão extrair de JSONB, mais custoso que uma tabela normalizada — aceito conscientemente porque essa necessidade não está em escopo antes da Sprint 4/5.
+- JSON/JSONB é uma técnica sem precedente em qualquer outra tabela de `07C_STORAGE_MODEL.md` antes desta decisão — qualquer uso futuro de JSON fora deste caso específico exige nova decisão própria, não pode se apoiar nesta.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0013 — identidade anônima e AssessmentSession, mesma natureza de decisão)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession; Seção 18 — AssessmentResult; Seção 19 — Value Objects; Seção 26 — ERM) — não alterado por esta decisão, permanece a fonte do contrato
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções; Seção 5 — Tabelas Operacionais; Seção 7 — Índices)
+- 07D_PRISMA_MAPPING.md — pendente de atualização em etapa futura
+
+---
+
+## DEC-0015
+
+### Título
+
+Persistência em lote da Sprint 2 — Session, Answers e Result gravados no submit final; granularidade de timestamps como simplificação deliberada.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+DEC-0013 introduziu `AssessmentSession` e DEC-0014 o modelo de snapshot de `AssessmentResult`, mas nenhuma das duas decidiu se a persistência da Sprint 2 seria incremental (por pergunta, exigindo uma nova Server Action `startAssessment`) ou em lote (no `submitAssessment` já existente). O código da Sprint 1 (`features/assessment/hooks/useAssessmentFlow.ts`, `features/assessment/utils/assessmentAdapter.ts`) já coleta todas as respostas em memória no cliente e chama `submitAssessment` uma única vez, no final; `toCoreAnswers` aplica um único `answeredAt` compartilhado a todas as respostas do lote, pois o tipo `Answer` da Feature nunca carregou timestamp por pergunta.
+
+### Alternativas consideradas
+
+- **Persistência incremental** (nova Server Action `startAssessment`, grava resposta por resposta). Rejeitada: exigiria uma nova convenção de fluxo cliente-servidor e granularidade real de timestamps que o código atual não coleta — além do mínimo necessário para "resultados persistidos corretamente" (10_ROADMAP.md, Sprint 2).
+- **Persistência em lote no submit final, mantendo o fluxo atual** (adotada). Reaproveita a Server Action e o estado em memória já implementados na Sprint 1, sem nova superfície de API.
+- Quanto à granularidade dos timestamps: **documentar explicitamente a coincidência de valores** (adotada) vs. capturar timestamp real por pergunta no cliente (rejeitada nesta decisão — exigiria alterar o tipo `Answer` da Feature e o hook `useAssessmentFlow`, fora do escopo desta etapa).
+
+### Decisão
+
+A Sprint 2 persiste `AssessmentSession`, `Answer[]` e `AssessmentResult` em uma única operação, disparada pelo `submitAssessment` já existente. Nenhuma Server Action `startAssessment` é criada nesta Sprint.
+
+`AssessmentSession.startedAt` e `AssessmentSession.finishedAt` recebem o mesmo timestamp de servidor, gerado no momento do submit. Todo `Answer.answeredAt` de uma mesma sessão recebe esse mesmo timestamp. Esta é uma simplificação deliberada da Sprint 2, registrada explicitamente para não ser lida como defeito em revisões futuras.
+
+Esta decisão não altera `07_DATA_MODEL.md` — `Answer.answeredAt` e `AssessmentSession.startedAt`/`finishedAt` continuam representando, no domínio, "quando a resposta foi dada" e "quando a execução começou/terminou"; a coincidência de valores é uma característica da estratégia de persistência escolhida, não uma redefinição do domínio (07_DATA_MODEL.md, Seção 2 — independência de estratégia de persistência).
+
+### Justificativa
+
+Mantém a Sprint 2 no menor incremento necessário para atender ao critério de conclusão do Roadmap, sem introduzir uma segunda Server Action ou uma convenção de granularidade de timestamp que nenhum documento hoje exige. Documentar a simplificação evita que ela seja confundida com um bug em uma auditoria futura.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma mudança na Presentation/Application Layer além do estritamente necessário para persistência.
+- Comportamento previsível e testável: toda sessão terá exatamente um timestamp de execução.
+
+Negativas:
+
+- Não há distinção real entre "início" e "fim" da Assessment nos dados persistidos da Sprint 2 — análises futuras de tempo de preenchimento não serão possíveis com estes dados.
+- Se a granularidade real de `answeredAt` for necessária no futuro (ex.: analytics de abandono por pergunta), esta decisão precisará ser revisitada junto com o tipo `Answer` da Feature.
+
+### Documentos relacionados
+
+- 10_ROADMAP.md (Seção 5 — Sprint 2)
+- 13_DECISION_LOG.md (DEC-0013 — AssessmentSession; DEC-0014 — mesmo princípio de não alterar o domínio por decisão de persistência)
+- 07_DATA_MODEL.md (Seção 8 — Answer; Seção 8A — AssessmentSession) — não alterado por esta decisão
+
+---
+
+## DEC-0016
+
+### Título
+
+Auditoria — `createdAt`/`updatedAt` nas quatro tabelas operacionais da Sprint 2.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+`07C_STORAGE_MODEL.md`, Seção 8 ("Auditoria"), já declarava como regra geral que "toda tabela deverá possuir `created_at` [e] `updated_at`". A auditoria da Sprint 2 identificou que as quatro tabelas operacionais definidas por DEC-0013/DEC-0014 (`assessment_session`, `assessment_answer`, `assessment_result`, `behavior_index`) não listavam essas colunas em sua Seção 5, contradizendo a própria regra geral do documento.
+
+### Alternativas consideradas
+
+- Omitir `created_at`/`updated_at` das tabelas operacionais, tratando a regra da Seção 8 como aplicável só ao conteúdo estático (Seção 4). Rejeitada: a Seção 8 não faz essa distinção, e omitir auditoria justamente nas tabelas que registram execuções reais de usuário reduz a rastreabilidade operacional.
+- Adicionar `created_at`/`updated_at` às quatro tabelas operacionais, alinhando Seção 5 à Seção 8 (adotada).
+
+### Decisão
+
+`assessment_session`, `assessment_answer`, `assessment_result` e `behavior_index` (07C_STORAGE_MODEL.md, Seção 5) passam a incluir `created_at` e `updated_at`, seguindo a convenção já definida na Seção 3 (`TIMESTAMP WITH TIME ZONE`, sempre UTC).
+
+Esta decisão não altera `07_DATA_MODEL.md`. O Domain Model já declarava, como princípio geral (Seção 22), que "toda entidade deverá possuir... `createdAt`; `updatedAt`", mas nenhuma interface de domínio implementa esse campo hoje — lacuna pré-existente ao Modelo inteiro, não introduzida nem resolvida por esta decisão, e fora do escopo da Sprint 2.
+
+### Justificativa
+
+Resolve, sem ambiguidade, a contradição interna já existente entre Seção 5 e Seção 8 de `07C_STORAGE_MODEL.md`, sem exigir nenhuma decisão de negócio nova — apenas aplica uma regra já aprovada às tabelas que ainda não a seguiam.
+
+### Consequências
+
+Positivas:
+
+- Elimina a inconsistência identificada na auditoria da Sprint 2 entre `07C_STORAGE_MODEL.md` §5 e §8.
+- Toda tabela operacional fica auditável, útil para diagnóstico e para a estratégia de expiração de sessões anônimas (DEC-0017).
+
+Negativas:
+
+- Nenhuma identificada. Mudança estritamente aditiva, sem dado de produção existente a migrar.
+
+### Documentos relacionados
+
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções; Seção 5 — Tabelas Operacionais; Seção 8 — Auditoria)
+- 07D_PRISMA_MAPPING.md (Seção 8 — Convenções Prisma, regra já geral, sem alteração necessária)
+- 13_DECISION_LOG.md (DEC-0013, DEC-0014 — mesmas tabelas)
+
+---
+
+## DEC-0017
+
+### Título
+
+Política do cookie de identidade anônima — Max-Age, SameSite, Secure, renovação e tratamento de ausência/invalidez.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+DEC-0013 definiu o mecanismo de identidade anônima (cookie `httpOnly`, UUID gerado no servidor), mas não seus parâmetros. DEC-0015 (persistência em lote) implica que o cookie só é lido/escrito dentro do `submitAssessment` — não existe evento de "início de sessão" separado no servidor nesta fase.
+
+### Alternativas consideradas
+
+**Max-Age:** cookie de sessão, sem Max-Age (rejeitada — inviabiliza "Histórico de avaliações" entre visitas); 400 dias, máximo aceito pelos navegadores majoritários (rejeitada — trata o identificador anônimo como quase-permanente sem necessidade documentada); **180 dias** (adotada).
+
+**SameSite:** Strict (rejeitada — pode falhar na navegação de entrada vinda de link externo); **Lax** (adotada — padrão seguro para cookie de primeira parte fora de contexto cross-site).
+
+**Secure:** sempre `true` (rejeitada — quebraria o fluxo em desenvolvimento local sobre HTTP); **condicional ao ambiente** (adotada).
+
+**Renovação:** fixa a partir da criação (rejeitada — deixaria expirar o histórico de usuários ativos); **deslizante a cada submit bem-sucedido** (adotada).
+
+**Cookie ausente ou inválido:** rejeitar a requisição com erro (rejeitada — `anonymousId` não é token de autenticação, não há superfície de segurança a proteger); **tratar os dois casos da mesma forma, gerando novo `anonymousId`** (adotada).
+
+### Decisão
+
+- UUID v4, gerado no servidor.
+- `httpOnly = true`.
+- `Max-Age = 180 dias` (15.552.000 segundos).
+- `SameSite = Lax`.
+- `Secure = true` em produção; `Secure = false` em desenvolvimento local (`NODE_ENV`).
+- Renovação: `Max-Age` reiniciado a cada `submitAssessment` bem-sucedido (sliding).
+- Cookie ausente: gerar novo `anonymousId`, sem erro.
+- Cookie presente mas inválido (não é um UUID v4 bem formado): tratar como ausente, gerar novo `anonymousId`, sem erro.
+- Nenhuma associação com User/Account nesta Sprint (reafirma DEC-0013).
+
+### Justificativa
+
+Mantém a Sprint 2 estritamente dentro de identidade anônima técnica (DEC-0013), sem introduzir superfície de segurança nova: nenhum dos parâmetros escolhidos depende de o valor do cookie ser confiável além de servir como chave de agrupamento de histórico.
+
+### Consequências
+
+Positivas:
+
+- Comportamento determinístico e testável para os quatro cenários (presente/válido, presente/inválido, ausente, renovação).
+- Nenhuma dependência de infraestrutura nova (`next/headers`, já disponível no Next.js já adotado).
+
+Negativas:
+
+- Histórico anônimo por cookie de 180 dias ainda não sobrevive a troca de dispositivo/navegador ou limpeza de cookies — mesma limitação já aceita em DEC-0013.
+- Nenhuma política de LGPD/retenção formal foi endereçada aqui — permanece pendência aberta desde DEC-0013.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0013 — mecanismo; DEC-0015 — ponto único de leitura/escrita do cookie)
+- 07_DATA_MODEL.md (Seção 8A — AssessmentSession) — não alterado por esta decisão, é decisão de transporte/infraestrutura, não de domínio
+
+---
+
+## DEC-0018
+
+### Título
+
+Report como snapshot escalar em `assessment_result` — sem tabela/relação operacional dedicada na Sprint 2.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+`07_DATA_MODEL.md`, Seção 17, define `Report` com `id`/`template`/`language`/`generatedAt`/`downloadUrl`. `07C_STORAGE_MODEL.md` já tinha uma tabela estática `report_template` (`id`/`language`/`version`) e um campo `report_id` em `assessment_result`, mas nenhum documento definia como os quatro campos de `Report` seriam efetivamente persistidos por execução, e `07D_PRISMA_MAPPING.md`, Seção 5, nunca chegou a documentar a relação `AssessmentResult → Report` como relação Prisma — lacuna pré-existente a esta decisão. A leitura do código de produção (`core/engines/resultBuilder/buildAssessmentResult.ts`) confirmou que `report.generatedAt` e `assessmentResult.generatedAt` são o mesmo valor (`Date`) em toda execução, nunca dois eventos distintos, e que `report.id` já é sintético (`report_${archetypeId}`), sem identidade própria.
+
+### Alternativas consideradas
+
+- Manter `report_id` como Foreign Key para `report_template` e persistir apenas `downloadUrl` como snapshot. Rejeitada: exigiria semear `report_template` com um registro fixo só para satisfazer uma FK cujo valor nunca varia nesta Sprint (Report Engine, DEC-0012, ainda é stub) — infraestrutura específica de Report que esta Sprint decidiu não construir.
+- **Report como snapshot escalar dentro de `assessment_result`, sem relação com `report_template`** (adotada). Mesmo padrão já aprovado em DEC-0014 para `matchedIndicators`/`strengths`/`attentionPoints`/`evolutionPlanHabits`, estendido aos campos de Report.
+
+### Decisão
+
+`assessment_result` (07C_STORAGE_MODEL.md, Seção 5) passa a incluir:
+- `report_template` (escalar, not null) — sempre `"assessment-default-v1"` nesta Sprint (DEC-0012).
+- `report_language` (escalar, not null).
+- `report_download_url` (escalar, nullable) — sempre `null` nesta Sprint; nenhum Report Engine gera valor real ainda.
+
+`report_id` é removido de `assessment_result`. Nenhuma Foreign Key liga `assessment_result` a `report_template` nesta Sprint.
+
+`report_template` (tabela estática) permanece documentada tal como está, sem uso nesta Sprint, reservada para uma eventual Fase 5 (Report Engine).
+
+`Report.generatedAt` (07_DATA_MODEL.md, Seção 17) não recebe coluna própria — é documentado como sempre idêntico a `AssessmentResult.generatedAt`, já existente, confirmado pelo código de produção.
+
+`07_DATA_MODEL.md` não é alterado — `Report` continua definido exatamente como está; esta decisão define apenas sua representação de armazenamento, mesmo padrão de DEC-0014.
+
+### Justificativa
+
+Evita construir infraestrutura de Report (semeadura de tabela, resolução de FK) para um valor que nunca varia enquanto o Report Engine não existir, sem perder nenhum campo do contrato de domínio — os quatro campos de `Report` continuam recuperáveis a partir de uma única linha de `assessment_result`.
+
+### Consequências
+
+Positivas:
+
+- Fecha uma lacuna que já existia antes desta Sprint (relação Report nunca documentada em `07D_PRISMA_MAPPING.md`).
+- Nenhuma tabela nova, nenhuma seed necessária para Report nesta Sprint.
+- Caminho de migração para a Fase 5 é apenas aditivo: quando o Report Engine existir, `report_download_url` passa a receber valor real sem alteração estrutural.
+
+Negativas:
+
+- `report_template` (tabela estática) fica sem uso funcional até a Fase 5 — mantida apenas como reserva.
+- Se a Fase 5 exigir múltiplos templates versionados de fato, esta decisão precisará ser revisitada (hoje assume um único template fixo).
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0012 — stub do Report; DEC-0014 — mesmo padrão de snapshot, estendido aqui)
+- 07_DATA_MODEL.md (Seção 17 — Report; Seção 18 — AssessmentResult) — não alterado por esta decisão
+- 07C_STORAGE_MODEL.md (Seção 4 — report_template; Seção 5 — assessment_result)
+- 07D_PRISMA_MAPPING.md (Seção 4 — Mapeamento Oficial; Seção 5 — Relacionamentos; Seção 6 — Constraints)
+
+---
+
+## DEC-0019
+
+### Título
+
+Distinção entre IDs de conteúdo estático (slug fixo, sem geração) e IDs operacionais (UUID gerado em runtime) — correção de escopo de `07C_STORAGE_MODEL.md` §3 e `07D_PRISMA_MAPPING.md` §3/§6.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` proposto para a Sprint 2 confrontou a regra "Chaves: UUID" (`07C_STORAGE_MODEL.md`, Seção 3; `07D_PRISMA_MAPPING.md`, Seções 3 e 6 — "Todos os IDs deverão utilizar UUID") com o conteúdo real de `core/content/*`, onde todo ID é um slug estável e legível, nunca um UUID: `Assessment.id = "assessment_procrastination_v1"`, `Dimension.id = "initiative"`, `Indicator.id = "initiative_start"`, `Question.id = "Q001"`, `Alternative.id = "A"|"B"|"C"|"D"`, `Archetype.id` (via `ArchetypeReferenceProfile`) `= "executor_under_pressure"`, `Insight.id = "insight_starting"`, `Mission.id = "mission_first_step"`, `Resource.id = "article_small_steps"`. Esses IDs são referenciados por todas as Engines, testes e pelo Result Builder desde a Sprint 1. A regra "Chaves: UUID" foi escrita no Sprint 0, antes de qualquer conteúdo real existir, e nunca foi reconciliada com os IDs efetivamente adotados pela Content Library.
+
+### Alternativas consideradas
+
+- Converter todos os IDs de `core/content/*` para UUID, ajustando Engines, testes e conteúdo. Rejeitada: alteração ampla e sem necessidade funcional, tocaria toda a Content Library e a suíte de testes apenas para satisfazer uma regra de nomenclatura escrita antes de o conteúdo existir.
+- **Aplicar "Chaves: UUID" apenas às tabelas operacionais, mantendo os IDs de conteúdo estático como estão** (adotada). Reconhece que a regra original visava identificadores gerados pelo sistema a cada execução de usuário, não identificadores de conteúdo editorial já estáveis desde a Content Library.
+
+### Decisão
+
+Tabelas de conteúdo estático (`assessment`, `question`, `alternative`, `dimension`, `indicator`, `insight`, `archetype`, `mission`, `resource`, `evolution_plan`, `report_template`) usam `id String @id`, **sem** `@default(uuid())` — o valor é sempre fornecido explicitamente pelo seed, replicando exatamente o ID já usado em `core/content/*`.
+
+Tabelas operacionais (`assessment_session`, `assessment_answer`, `assessment_result`, `behavior_index`) usam UUID real, gerado em runtime (`@default(uuid())` no Prisma, ou `crypto.randomUUID()` na camada de Repository/Server Action conforme DEC-0017).
+
+Nenhum ID existente em `core/content/*` é alterado por esta decisão; nenhum arquivo em `src/core/` é modificado.
+
+### Justificativa
+
+Preserva a estabilidade dos identificadores já em uso pelo domínio, evitando uma migração de dado sem necessidade real, e alinha a documentação à prática já estabelecida desde a Sprint 1 — sem enfraquecer a garantia de geração de UUID onde ela realmente importa: nas entidades criadas a cada execução real de usuário.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma alteração em `src/core/`.
+- A documentação passa a refletir com precisão o que o `schema.prisma` efetivamente implementa.
+- Nenhuma migração de dado necessária.
+
+Negativas:
+
+- A regra "Chaves: UUID" deixa de ser universal — precisa ser lida em conjunto com esta decisão para não ser mal interpretada como aplicável a todas as tabelas.
+
+### Documentos relacionados
+
+- 07C_STORAGE_MODEL.md (Seção 3 — Convenções, Chaves)
+- 07D_PRISMA_MAPPING.md (Seção 3 — Convenções, Chaves; Seção 6 — Constraints)
+- 13_DECISION_LOG.md (DEC-0013, DEC-0017 — mecanismo de UUID operacional)
+
+---
+
+## DEC-0020
+
+### Título
+
+Persistência de `AssessmentResult.insights`/`missions`/`resources` como snapshot JSON/JSONB, estendendo o padrão de DEC-0014.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` identificou que `07_DATA_MODEL.md`, Seção 18, declara `AssessmentResult.insights: Insight[]`, `.missions: Mission[]` e `.resources: Resource[]` — arrays de objetos completos, selecionados/resolvidos uma única vez por execução (Insight Engine, DEC-0010; Evolution Engine, DEC-0011) — mas nem `07C_STORAGE_MODEL.md` nem `07D_PRISMA_MAPPING.md` jamais definiram representação de armazenamento para esses três campos. DEC-0014 já havia resolvido o mesmo tipo de problema para `matchedIndicators`, `strengths`, `attentionPoints` e `evolutionPlan.habits`, mas seu escopo textual ("cinco campos calculados") nunca incluiu `insights`/`missions`/`resources` — uma lacuna não intencional da auditoria original, não uma exclusão deliberada.
+
+### Alternativas consideradas
+
+- Não persistir `insights`/`missions`/`resources`, resolvendo-os novamente a partir da Content Library a cada leitura do histórico. Rejeitada: contradiz diretamente o princípio já aprovado em DEC-0014 — um resultado entregue ao usuário não deve mudar retroativamente se o conteúdo editorial referenciado for revisado depois. O mesmo raciocínio já usado para `strengths`/`attentionPoints` se aplica integralmente a `insights`/`missions`/`resources`.
+- Criar tabelas de junção (`assessment_result_insight`, `assessment_result_mission`, `assessment_result_resource`) com Foreign Key para as tabelas de conteúdo. Rejeitada pelo mesmo motivo já usado em DEC-0014 para rejeitar a alternativa equivalente: acoplaria o snapshot histórico a conteúdo vivo que pode mudar, e aumentaria a complexidade transacional sem necessidade comprovada nesta Sprint.
+- **Snapshot JSON/JSONB, sem Foreign Key, mesmo padrão de DEC-0014** (adotada).
+
+### Decisão
+
+`assessment_result` (`07C_STORAGE_MODEL.md`, Seção 5) passa a incluir três colunas adicionais: `insights` (JSONB), `missions` (JSONB), `resources` (JSONB) — todas snapshot, gravadas uma única vez no momento da geração do resultado, sem Foreign Key para `insight`, `mission` ou `resource`. Nenhum campo além destes três é adicionado por esta decisão.
+
+### Justificativa
+
+Extensão direta e necessária do princípio já aprovado em DEC-0014, fechando uma lacuna que a auditoria original daquela decisão não cobriu. Mantém `AssessmentResult` como uma unidade de snapshot coerente — não faria sentido snapshotar 4 dos 7 campos computados e deixar os outros 3 sujeitos a resolução dinâmica, o que reabriria exatamente o risco que DEC-0014 foi criada para eliminar.
+
+### Consequências
+
+Positivas:
+
+- Fecha a lacuna identificada na auditoria do schema da Sprint 2.
+- `AssessmentResult` passa a ser um snapshot histórico completo e internamente consistente.
+- Nenhuma tabela nova, nenhuma complexidade transacional adicional.
+
+Negativas:
+
+- Mesma ressalva já registrada em DEC-0014: consultas futuras que precisem filtrar ou agregar por item individual dentro de `insights`, `missions` ou `resources` exigirão extrair de JSONB.
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0010 — Insight Engine; DEC-0011 — Evolution Engine; DEC-0014 — mesmo padrão, escopo original)
+- 07_DATA_MODEL.md (Seção 18 — AssessmentResult)
+- 07C_STORAGE_MODEL.md (Seção 5 — assessment_result)
+- 07D_PRISMA_MAPPING.md (Seção 5 — AssessmentResult; Seção 8 — Tipos Estruturados)
+
+---
+
+## DEC-0021
+
+### Título
+
+`evolution_plan` (tabela estática) permanece reservada, sem seed e sem relação com `mission`/`resource`, nesta Sprint.
+
+### Data
+
+17/08/2026
+
+### Status
+
+Approved
+
+### Contexto
+
+A auditoria do `schema.prisma` identificou que `07D_PRISMA_MAPPING.md`, Seção 5, descreve uma relação `EvolutionPlan → Mission[], Resource[]`, mas `07C_STORAGE_MODEL.md` nunca definiu a tabela de junção necessária para essa relação, e não existe nenhuma fonte de seed (`core/content/evolutionPlans.ts` não existe) para a tabela estática `evolution_plan`. Por DEC-0011, o `EvolutionPlan` de cada execução é montado dinamicamente pela Evolution Engine a partir de `archetypeEvolutionContent` e constantes fixas do MVP (`Difficulty.Easy`, `estimatedDuration = 7`), nunca lido de uma tabela de conteúdo própria — a tabela `evolution_plan` está, na prática, órfã desde que foi documentada no Sprint 0.
+
+### Alternativas consideradas
+
+- Criar as tabelas de junção `evolution_plan_mission`/`evolution_plan_resource` e popular `evolution_plan` via seed sintético. Rejeitada: exigiria inventar dado de seed sem correspondência real em `core/content/`, e alteraria a Evolution Engine para passar a ler de uma fonte que ela não usa hoje — fora do escopo da Sprint 2 (persistência), sem necessidade documentada.
+- **Manter `evolution_plan` reservada, sem seed, sem relação com `mission`/`resource`, sem alteração na Evolution Engine** (adotada). Mesmo tratamento já aplicado a `report_template` em DEC-0018.
+
+### Decisão
+
+A tabela `evolution_plan` permanece no Storage Model/Prisma Mapping exatamente como já documentada (`id`, `archetype_id`, `first_step`, `estimated_duration`, `difficulty`), mas sem seed nesta Sprint, sem tabela de junção com `mission`/`resource`, e sem nenhuma Foreign Key partindo de `mission` ou `resource` em sua direção. A Evolution Engine continua produzindo o `EvolutionPlan` de cada execução dinamicamente, sem qualquer alteração de código. `evolution_plan_habits` (JSONB em `assessment_result`, já decidido em DEC-0014) permanece o único traço persistido de um plano de evolução.
+
+### Justificativa
+
+Evita inventar dado ou relação sem base real, mantendo a Sprint 2 estritamente dentro de "persistência", não "reestruturação da Evolution Engine" — mesmo raciocínio já usado em DEC-0018 para `report_template`.
+
+### Consequências
+
+Positivas:
+
+- Nenhuma tabela nova, nenhum seed artificial, nenhuma alteração na Evolution Engine.
+- Fecha, sem ambiguidade, a divergência entre `07D_PRISMA_MAPPING.md` e `07C_STORAGE_MODEL.md` identificada na auditoria.
+
+Negativas:
+
+- `evolution_plan` permanece sem uso funcional até uma futura decisão que lhe dê propósito real (ex.: se planos de evolução passarem a ser versionados como conteúdo, não apenas computados em runtime).
+
+### Documentos relacionados
+
+- 13_DECISION_LOG.md (DEC-0011 — Evolution Engine; DEC-0018 — mesmo padrão de tabela reservada)
+- 07C_STORAGE_MODEL.md (Seção 4 — evolution_plan)
+- 07D_PRISMA_MAPPING.md (Seção 5 — EvolutionPlan)
+
+---
+
+## Próximas decisões
+
+As próximas decisões deverão receber numeração sequencial:
+
+- DEC-0022
+- DEC-0023
+- DEC-0024
+- DEC-0025
+- ...
+## Regras
+
+Toda decisão aprovada deve:
+
+- possuir identificador único;
+- nunca ser removida;
+- ser marcada como **Deprecated** ou **Superseded** caso deixe de valer;
+- possuir referências aos documentos afetados;
+- ser atualizada antes da implementação correspondente.
